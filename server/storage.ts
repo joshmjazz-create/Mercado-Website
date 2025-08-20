@@ -47,6 +47,27 @@ export class MemStorage implements IStorage {
     this.photos = new Map();
     this.contacts = new Map();
     this.albums = new Map();
+    
+    // Add sample album
+    this.initializeAlbums();
+  }
+
+  private initializeAlbums() {
+    const sampleAlbum: Album = {
+      id: "rgb-album-1",
+      title: "RGB",
+      artist: "Joshua Mercado",
+      description: "Original composition featuring abstract colors and jazz fusion",
+      coverImageUrl: "/client/src/assets/rgb-album-cover.jpg",
+      spotifyUrl: "https://open.spotify.com/track/3m88YPqvxIj4VV0JJKR5FZ?si=KUHFqxetQw20rCzbYi71sA",
+      appleMusicUrl: null,
+      youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
+      releaseDate: "2024-01-01",
+      isOriginal: "true",
+      createdAt: new Date()
+    };
+    
+    this.albums.set(sampleAlbum.id, sampleAlbum);
   }
 
   // Users
