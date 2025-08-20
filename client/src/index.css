@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(224, 71.4%, 4.1%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(224, 71.4%, 4.1%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(224, 71.4%, 4.1%);
+  --primary: hsl(262.1, 83.3%, 57.8%);
+  --primary-foreground: hsl(210, 20%, 98%);
+  --secondary: hsl(220, 14.3%, 95.9%);
+  --secondary-foreground: hsl(220.9, 39.3%, 11%);
+  --muted: hsl(220, 14.3%, 95.9%);
+  --muted-foreground: hsl(220, 8.9%, 46.1%);
+  --accent: hsl(220, 14.3%, 95.9%);
+  --accent-foreground: hsl(220.9, 39.3%, 11%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(210, 20%, 98%);
+  --border: hsl(220, 13%, 91%);
+  --input: hsl(220, 13%, 91%);
+  --ring: hsl(262.1, 83.3%, 57.8%);
+  --radius: 0.5rem;
+  --chart-1: hsl(12, 76%, 61%);
+  --chart-2: hsl(173, 58%, 39%);
+  --chart-3: hsl(197, 37%, 24%);
+  --chart-4: hsl(43, 74%, 66%);
+  --chart-5: hsl(27, 87%, 67%);
+  
+  /* Jazz Color Palette - Deep Purple & Darker Yellow */
+  --jazz-purple: hsl(270, 50%, 30%);
+  --jazz-purple-light: hsl(270, 40%, 45%);
+  --jazz-yellow: hsl(45, 85%, 35%);
+  --jazz-yellow-light: hsl(45, 75%, 50%);
+  --jazz-dark: hsl(270, 30%, 15%);
+  
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+.dark {
+  --background: hsl(224, 71.4%, 4.1%);
+  --foreground: hsl(210, 20%, 98%);
+  --card: hsl(224, 71.4%, 4.1%);
+  --card-foreground: hsl(210, 20%, 98%);
+  --popover: hsl(224, 71.4%, 4.1%);
+  --popover-foreground: hsl(210, 20%, 98%);
+  --primary: hsl(263.4, 70%, 50.4%);
+  --primary-foreground: hsl(210, 20%, 98%);
+  --secondary: hsl(215, 27.9%, 16.9%);
+  --secondary-foreground: hsl(210, 20%, 98%);
+  --muted: hsl(215, 27.9%, 16.9%);
+  --muted-foreground: hsl(217.9, 10.6%, 64.9%);
+  --accent: hsl(215, 27.9%, 16.9%);
+  --accent-foreground: hsl(210, 20%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(210, 20%, 98%);
+  --border: hsl(215, 27.9%, 16.9%);
+  --input: hsl(215, 27.9%, 16.9%);
+  --ring: hsl(263.4, 70%, 50.4%);
+  --chart-1: hsl(220, 70%, 50%);
+  --chart-2: hsl(160, 60%, 45%);
+  --chart-3: hsl(30, 80%, 55%);
+  --chart-4: hsl(280, 65%, 60%);
+  --chart-5: hsl(340, 75%, 55%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer utilities {
+  .text-jazz-purple {
+    color: var(--jazz-purple);
+  }
+  .text-jazz-purple-light {
+    color: var(--jazz-purple-light);
+  }
+  .text-jazz-yellow {
+    color: var(--jazz-yellow);
+  }
+  .text-jazz-yellow-light {
+    color: var(--jazz-yellow-light);
+  }
+  .text-jazz-dark {
+    color: var(--jazz-dark);
+  }
+  .bg-jazz-purple {
+    background-color: var(--jazz-purple);
+  }
+  .bg-jazz-purple-light {
+    background-color: var(--jazz-purple-light);
+  }
+  .bg-jazz-yellow {
+    background-color: var(--jazz-yellow);
+  }
+  .bg-jazz-yellow-light {
+    background-color: var(--jazz-yellow-light);
+  }
+  .bg-jazz-dark {
+    background-color: var(--jazz-dark);
+  }
+  .border-jazz-purple {
+    border-color: var(--jazz-purple);
+  }
+  .border-jazz-yellow {
+    border-color: var(--jazz-yellow);
+  }
+  .hover\:bg-jazz-purple:hover {
+    background-color: var(--jazz-purple);
+  }
+  .hover\:bg-jazz-purple-light:hover {
+    background-color: var(--jazz-purple-light);
+  }
+  .hover\:bg-jazz-yellow:hover {
+    background-color: var(--jazz-yellow);
+  }
+  .hover\:bg-jazz-yellow-light:hover {
+    background-color: var(--jazz-yellow-light);
+  }
+  .hover\:text-jazz-purple:hover {
+    color: var(--jazz-purple);
+  }
+  .hover\:text-jazz-yellow:hover {
+    color: var(--jazz-yellow);
+  }
+}
