@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Play, Pause } from "lucide-react";
 import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
 
 interface Album {
@@ -13,21 +13,75 @@ interface Album {
   appleMusicUrl?: string;
   youtubeUrl?: string;
   releaseDate?: string;
-  isOriginal: string;
+  category: string;
+  audioPreviewUrl?: string;
   createdAt: Date;
 }
 
 export default function Music() {
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
   const [showPlatforms, setShowPlatforms] = useState(false);
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const { data: albums = [], isLoading } = useQuery<Album[]>({
     queryKey: ['/api/albums'],
   });
 
   const handleAlbumClick = (album: Album) => {
-    setSelectedAlbum(album);
-    setShowPlatforms(true);
+    if (album.category === "upcoming" && album.audioPreviewUrl) {
+      handleAudioPreview(album);
+    } else {
+      setSelectedAlbum(album);
+      setShowPlatforms(true);
+    }
+  };
+
+  const handleAudioPreview = (album: Album) => {
+    if (currentlyPlaying === album.id) {
+      // Stop current audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      setCurrentlyPlaying(null);
+      return;
+    }
+
+    // Stop any currently playing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+
+    // Start new audio
+    const audio = new Audio(album.audioPreviewUrl);
+    audioRef.current = audio;
+    setCurrentlyPlaying(album.id);
+    
+    // Fade in
+    audio.volume = 0;
+    audio.play();
+    
+    const fadeIn = setInterval(() => {
+      if (audio.volume < 1) {
+        audio.volume = Math.min(audio.volume + 0.1, 1);
+      } else {
+        clearInterval(fadeIn);
+      }
+    }, 100);
+
+    // Auto stop after 10 seconds with fade out
+    setTimeout(() => {
+      const fadeOut = setInterval(() => {
+        if (audio.volume > 0) {
+          audio.volume = Math.max(audio.volume - 0.1, 0);
+        } else {
+          clearInterval(fadeOut);
+          audio.pause();
+          setCurrentlyPlaying(null);
+        }
+      }, 100);
+    }, 9000); // Start fade out at 9 seconds for 1 second fade
   };
 
   const openPlatform = (url: string | undefined) => {
@@ -37,8 +91,18 @@ export default function Music() {
     setShowPlatforms(false);
   };
 
-  const originalAlbums = albums.filter(album => album.isOriginal === "true");
-  const featuredAlbums = albums.filter(album => album.isOriginal === "false");
+  // Cleanup audio on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
+
+  const originalAlbums = albums.filter(album => album.category === "original");
+  const featuredAlbums = albums.filter(album => album.category === "featured");
+  const upcomingAlbums = albums.filter(album => album.category === "upcoming");
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-jazz-cream via-white to-jazz-cream">
@@ -110,6 +174,48 @@ export default function Music() {
                           {new Date(album.releaseDate).getFullYear()}
                         </p>
                       )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Upcoming Albums Section */}
+          {upcomingAlbums.length > 0 && (
+            <div className="mt-16">
+              <h2 className="text-3xl font-bold text-purple-800 text-center mb-8">Upcoming</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {upcomingAlbums.map((album) => (
+                  <div key={album.id} className="relative group">
+                    <div 
+                      className="cursor-pointer transform transition-transform hover:scale-105"
+                      onClick={() => handleAlbumClick(album)}
+                    >
+                      <img
+                        src={album.coverImageUrl}
+                        alt={album.title}
+                        className="w-full aspect-square object-cover rounded-lg shadow-lg opacity-90"
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity rounded-lg flex items-center justify-center">
+                        {currentlyPlaying === album.id ? (
+                          <Pause className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        ) : (
+                          <Play className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        )}
+                      </div>
+                      {currentlyPlaying === album.id && (
+                        <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs">
+                          Playing
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-3 text-center">
+                      <h3 className="font-semibold text-purple-800">{album.title}</h3>
+                      <p className="text-sm text-gray-600">{album.artist}</p>
+                      <p className="text-xs text-green-600 mt-1">
+                        Coming {album.releaseDate && new Date(album.releaseDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      </p>
                     </div>
                   </div>
                 ))}

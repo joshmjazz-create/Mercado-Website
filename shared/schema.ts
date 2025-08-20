@@ -55,7 +55,8 @@ export const albums = pgTable("albums", {
   appleMusicUrl: text("apple_music_url"),
   youtubeUrl: text("youtube_url"),
   releaseDate: text("release_date"),
-  isOriginal: text("is_original").notNull().default("true"), // "true" or "false"
+  category: text("category").notNull().default("original"), // "original", "featured", "upcoming"
+  audioPreviewUrl: text("audio_preview_url"),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 

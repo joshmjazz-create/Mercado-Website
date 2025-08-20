@@ -54,6 +54,7 @@ export class MemStorage implements IStorage {
 
   private initializeAlbums() {
     const albums: Album[] = [
+      // Original Music
       {
         id: "rgb-album-1",
         title: "RGB",
@@ -64,7 +65,8 @@ export class MemStorage implements IStorage {
         appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
         youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
         releaseDate: "2024-01-01",
-        isOriginal: "true",
+        category: "original",
+        audioPreviewUrl: null,
         createdAt: new Date()
       },
       {
@@ -77,7 +79,8 @@ export class MemStorage implements IStorage {
         appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
         youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
         releaseDate: "2023-12-15",
-        isOriginal: "true",
+        category: "original",
+        audioPreviewUrl: null,
         createdAt: new Date()
       },
       {
@@ -90,7 +93,8 @@ export class MemStorage implements IStorage {
         appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
         youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
         releaseDate: "2023-11-20",
-        isOriginal: "true",
+        category: "original",
+        audioPreviewUrl: null,
         createdAt: new Date()
       },
       {
@@ -103,7 +107,66 @@ export class MemStorage implements IStorage {
         appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
         youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
         releaseDate: "2023-10-05",
-        isOriginal: "true",
+        category: "original",
+        audioPreviewUrl: null,
+        createdAt: new Date()
+      },
+      // Featured On
+      {
+        id: "big-band-sessions-5",
+        title: "Big Band Sessions",
+        artist: "Metropolitan Jazz Ensemble feat. Joshua Mercado",
+        description: "Featured trumpet performance on swing classics",
+        coverImageUrl: "/client/src/assets/rgb-album-cover.jpg",
+        spotifyUrl: "https://open.spotify.com/track/3m88YPqvxIj4VV0JJKR5FZ?si=KUHFqxetQw20rCzbYi71sA",
+        appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
+        youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
+        releaseDate: "2023-08-10",
+        category: "featured",
+        audioPreviewUrl: null,
+        createdAt: new Date()
+      },
+      {
+        id: "latin-rhythms-6",
+        title: "Latin Rhythms",
+        artist: "Salsa Collective feat. Joshua Mercado",
+        description: "Piano and trumpet on Latin jazz fusion",
+        coverImageUrl: "/client/src/assets/rgb-album-cover.jpg",
+        spotifyUrl: "https://open.spotify.com/track/3m88YPqvxIj4VV0JJKR5FZ?si=KUHFqxetQw20rCzbYi71sA",
+        appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
+        youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
+        releaseDate: "2023-06-22",
+        category: "featured",
+        audioPreviewUrl: null,
+        createdAt: new Date()
+      },
+      // Upcoming
+      {
+        id: "noir-nights-7",
+        title: "Noir Nights",
+        artist: "Joshua Mercado",
+        description: "Dark jazz compositions with film noir influences",
+        coverImageUrl: "/client/src/assets/rgb-album-cover.jpg",
+        spotifyUrl: null,
+        appleMusicUrl: null,
+        youtubeUrl: null,
+        releaseDate: "2024-03-15",
+        category: "upcoming",
+        audioPreviewUrl: "/client/src/assets/noir-nights-preview.mp3",
+        createdAt: new Date()
+      },
+      {
+        id: "urban-symphony-8",
+        title: "Urban Symphony",
+        artist: "Joshua Mercado",
+        description: "Modern jazz meets city soundscapes",
+        coverImageUrl: "/client/src/assets/rgb-album-cover.jpg",
+        spotifyUrl: null,
+        appleMusicUrl: null,
+        youtubeUrl: null,
+        releaseDate: "2024-05-01",
+        category: "upcoming",
+        audioPreviewUrl: "/client/src/assets/urban-symphony-preview.wav",
         createdAt: new Date()
       }
     ];
@@ -246,7 +309,8 @@ export class MemStorage implements IStorage {
       spotifyUrl: insertAlbum.spotifyUrl ?? null,
       appleMusicUrl: insertAlbum.appleMusicUrl ?? null,
       youtubeUrl: insertAlbum.youtubeUrl ?? null,
-      isOriginal: insertAlbum.isOriginal ?? "true",
+      category: insertAlbum.category ?? "original",
+      audioPreviewUrl: insertAlbum.audioPreviewUrl ?? null,
       createdAt: new Date()
     };
     this.albums.set(id, album);
