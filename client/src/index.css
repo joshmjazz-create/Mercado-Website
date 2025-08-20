@@ -30,11 +30,12 @@
   --chart-4: hsl(43, 74%, 66%);
   --chart-5: hsl(27, 87%, 67%);
   
-  /* Jazz Color Palette - Muted Blue & Green */
-  --jazz-blue: hsl(199, 60%, 55%);
-  --jazz-blue-light: hsl(199, 65%, 65%);
-  --jazz-green: hsl(142, 55%, 60%);
-  --jazz-green-light: hsl(142, 60%, 70%);
+  /* Jazz Color Palette - Deep Purple */
+  --jazz-blue: hsl(271, 81%, 30%);
+  --jazz-blue-light: hsl(271, 81%, 40%);
+  --jazz-green: hsl(271, 81%, 35%);
+  --jazz-green-light: hsl(271, 81%, 45%);
+  --jazz-teal: hsl(271, 81%, 30%);
   --jazz-dark: hsl(220, 26%, 18%);
   
   --font-sans: 'Inter', system-ui, sans-serif;
@@ -107,6 +108,18 @@
   }
   .bg-jazz-dark {
     background-color: var(--jazz-dark);
+  }
+  .bg-jazz-teal {
+    background-color: var(--jazz-teal);
+  }
+  .text-jazz-teal {
+    color: var(--jazz-teal);
+  }
+  .border-jazz-teal {
+    border-color: var(--jazz-teal);
+  }
+  .hover\:bg-jazz-teal:hover {
+    background-color: var(--jazz-teal);
   }
   .border-jazz-blue {
     border-color: var(--jazz-blue);
