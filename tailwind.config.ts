@@ -51,14 +51,15 @@ export default {
           "4": "var(--chart-4)",
           "5": "var(--chart-5)",
         },
-        'jazz-purple': "var(--jazz-purple)",
-        'jazz-purple-light': "var(--jazz-purple-light)",
-        'jazz-yellow': "var(--jazz-yellow)",
-        'jazz-yellow-light': "var(--jazz-yellow-light)",
+        'jazz-blue': "var(--jazz-blue)",
+        'jazz-blue-light': "var(--jazz-blue-light)",
+        'jazz-green': "var(--jazz-green)",
+        'jazz-green-light': "var(--jazz-green-light)",
         'jazz-dark': "var(--jazz-dark)",
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
+        display: ["var(--font-display)"],
       },
       keyframes: {
         "accordion-down": {

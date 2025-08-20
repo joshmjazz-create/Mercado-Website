@@ -33,9 +33,9 @@ export default function Contact() {
       firstName: "",
       lastName: "",
       email: "",
-      phone: null,
-      eventType: null,
-      eventDate: null,
+      phone: "",
+      eventType: "",
+      eventDate: "",
       message: "",
     },
   });
@@ -257,52 +257,47 @@ export default function Contact() {
               </CardContent>
             </Card>
             
-            <Card className="shadow-lg">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-bold text-jazz-dark mb-6 flex items-center gap-3">
-                  <Music className="text-jazz-green" />
-                  Follow Me
-                </h3>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <a 
-                    href="#" 
-                    className="flex items-center justify-center bg-jazz-dark hover:bg-jazz-teal text-white p-4 rounded-lg transition-colors duration-300"
-                  >
-                    <Instagram className="w-5 h-5 mr-2" />
-                    Instagram
-                  </a>
-                  <a 
-                    href="#" 
-                    className="flex items-center justify-center bg-jazz-dark hover:bg-jazz-blue text-white p-4 rounded-lg transition-colors duration-300"
-                  >
-                    <Music className="w-5 h-5 mr-2" />
-                    Spotify
-                  </a>
-                  <a 
-                    href="#" 
-                    className="flex items-center justify-center bg-jazz-dark hover:bg-jazz-green text-white p-4 rounded-lg transition-colors duration-300"
-                  >
-                    <Youtube className="w-5 h-5 mr-2" />
-                    YouTube
-                  </a>
-                  <a 
-                    href="#" 
-                    className="flex items-center justify-center bg-jazz-dark hover:bg-jazz-teal text-white p-4 rounded-lg transition-colors duration-300"
-                  >
-                    <Music className="w-5 h-5 mr-2" />
-                    SoundCloud
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <div className="bg-jazz-green text-white rounded-xl p-8 text-center">
+            <div className="bg-jazz-blue text-white rounded-xl p-8 text-center">
               <Music className="w-12 h-12 mx-auto mb-4" />
               <h4 className="text-xl font-bold mb-2">Ready to Book?</h4>
               <p className="mb-4">Let's create an unforgettable musical experience together.</p>
               <p className="text-lg font-semibold">Response within 24 hours guaranteed!</p>
             </div>
+          </div>
+        </div>
+        
+        {/* Social Media Icons at Bottom */}
+        <div className="text-center mt-16 pt-8 border-t border-gray-200">
+          <p className="text-gray-600 mb-6">Follow me on social media</p>
+          <div className="flex justify-center space-x-6">
+            <a 
+              href="#" 
+              className="text-jazz-dark hover:text-jazz-blue transition-colors duration-300"
+              aria-label="Instagram"
+            >
+              <Instagram className="w-8 h-8" />
+            </a>
+            <a 
+              href="#" 
+              className="text-jazz-dark hover:text-jazz-blue transition-colors duration-300"
+              aria-label="Spotify"
+            >
+              <Music className="w-8 h-8" />
+            </a>
+            <a 
+              href="#" 
+              className="text-jazz-dark hover:text-jazz-blue transition-colors duration-300"
+              aria-label="YouTube"
+            >
+              <Youtube className="w-8 h-8" />
+            </a>
+            <a 
+              href="#" 
+              className="text-jazz-dark hover:text-jazz-blue transition-colors duration-300"
+              aria-label="SoundCloud"
+            >
+              <Music className="w-8 h-8" />
+            </a>
           </div>
         </div>
       </div>

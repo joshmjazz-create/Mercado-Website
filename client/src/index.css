@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -30,14 +30,15 @@
   --chart-4: hsl(43, 74%, 66%);
   --chart-5: hsl(27, 87%, 67%);
   
-  /* Jazz Color Palette - Deep Purple & Darker Yellow */
-  --jazz-purple: hsl(270, 50%, 30%);
-  --jazz-purple-light: hsl(270, 40%, 45%);
-  --jazz-yellow: hsl(45, 85%, 35%);
-  --jazz-yellow-light: hsl(45, 75%, 50%);
-  --jazz-dark: hsl(270, 30%, 15%);
+  /* Jazz Color Palette - Muted Blue & Green */
+  --jazz-blue: hsl(199, 60%, 55%);
+  --jazz-blue-light: hsl(199, 65%, 65%);
+  --jazz-green: hsl(142, 55%, 60%);
+  --jazz-green-light: hsl(142, 60%, 70%);
+  --jazz-dark: hsl(220, 26%, 18%);
   
   --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Playfair Display', serif;
 }
 
 .dark {
@@ -77,58 +78,61 @@
 }
 
 @layer utilities {
-  .text-jazz-purple {
-    color: var(--jazz-purple);
+  .text-jazz-blue {
+    color: var(--jazz-blue);
   }
-  .text-jazz-purple-light {
-    color: var(--jazz-purple-light);
+  .text-jazz-blue-light {
+    color: var(--jazz-blue-light);
   }
-  .text-jazz-yellow {
-    color: var(--jazz-yellow);
+  .text-jazz-green {
+    color: var(--jazz-green);
   }
-  .text-jazz-yellow-light {
-    color: var(--jazz-yellow-light);
+  .text-jazz-green-light {
+    color: var(--jazz-green-light);
   }
   .text-jazz-dark {
     color: var(--jazz-dark);
   }
-  .bg-jazz-purple {
-    background-color: var(--jazz-purple);
+  .bg-jazz-blue {
+    background-color: var(--jazz-blue);
   }
-  .bg-jazz-purple-light {
-    background-color: var(--jazz-purple-light);
+  .bg-jazz-blue-light {
+    background-color: var(--jazz-blue-light);
   }
-  .bg-jazz-yellow {
-    background-color: var(--jazz-yellow);
+  .bg-jazz-green {
+    background-color: var(--jazz-green);
   }
-  .bg-jazz-yellow-light {
-    background-color: var(--jazz-yellow-light);
+  .bg-jazz-green-light {
+    background-color: var(--jazz-green-light);
   }
   .bg-jazz-dark {
     background-color: var(--jazz-dark);
   }
-  .border-jazz-purple {
-    border-color: var(--jazz-purple);
+  .border-jazz-blue {
+    border-color: var(--jazz-blue);
   }
-  .border-jazz-yellow {
-    border-color: var(--jazz-yellow);
+  .border-jazz-green {
+    border-color: var(--jazz-green);
   }
-  .hover\:bg-jazz-purple:hover {
-    background-color: var(--jazz-purple);
+  .hover\:bg-jazz-blue:hover {
+    background-color: var(--jazz-blue);
   }
-  .hover\:bg-jazz-purple-light:hover {
-    background-color: var(--jazz-purple-light);
+  .hover\:bg-jazz-blue-light:hover {
+    background-color: var(--jazz-blue-light);
   }
-  .hover\:bg-jazz-yellow:hover {
-    background-color: var(--jazz-yellow);
+  .hover\:bg-jazz-green:hover {
+    background-color: var(--jazz-green);
   }
-  .hover\:bg-jazz-yellow-light:hover {
-    background-color: var(--jazz-yellow-light);
+  .hover\:bg-jazz-green-light:hover {
+    background-color: var(--jazz-green-light);
   }
-  .hover\:text-jazz-purple:hover {
-    color: var(--jazz-purple);
+  .hover\:text-jazz-blue:hover {
+    color: var(--jazz-blue);
   }
-  .hover\:text-jazz-yellow:hover {
-    color: var(--jazz-yellow);
+  .hover\:text-jazz-green:hover {
+    color: var(--jazz-green);
+  }
+  .font-display {
+    font-family: var(--font-display);
   }
 }

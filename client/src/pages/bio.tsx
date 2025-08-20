@@ -14,7 +14,7 @@ export default function Bio() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-jazz-dark mb-4">About Joshua</h2>
-          <div className="w-24 h-1 bg-jazz-purple mx-auto"></div>
+          <div className="w-24 h-1 bg-jazz-blue mx-auto"></div>
         </div>
         
         <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -22,7 +22,7 @@ export default function Bio() {
             <Card className="shadow-lg">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold text-jazz-dark mb-4 flex items-center gap-3">
-                  <Music className="text-jazz-yellow" />
+                  <Music className="text-jazz-green" />
                   Musical Journey
                 </h3>
                 <p className="text-gray-700 leading-relaxed mb-4">
@@ -37,13 +37,13 @@ export default function Bio() {
             <Card className="shadow-lg">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold text-jazz-dark mb-4 flex items-center gap-3">
-                  <Award className="text-jazz-purple" />
+                  <Award className="text-jazz-blue" />
                   Achievements
                 </h3>
                 <ul className="space-y-2 text-gray-700">
                   {achievements.map((achievement, index) => (
                     <li key={index} className="flex items-center gap-2">
-                      <CheckCircle className="text-jazz-purple-light w-5 h-5 flex-shrink-0" />
+                      <CheckCircle className="text-jazz-blue-light w-5 h-5 flex-shrink-0" />
                       <span>{achievement}</span>
                     </li>
                   ))}
@@ -62,7 +62,7 @@ export default function Bio() {
             <Card className="shadow-lg">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold text-jazz-dark mb-4 flex items-center gap-3">
-                  <GraduationCap className="text-jazz-yellow" />
+                  <GraduationCap className="text-jazz-green" />
                   Education & Training
                 </h3>
                 <div className="space-y-3 text-gray-700">

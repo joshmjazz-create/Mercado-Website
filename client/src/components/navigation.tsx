@@ -21,7 +21,7 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
             <Link href="/">
-              <h1 className="text-jazz-yellow text-xl font-bold hover:text-jazz-yellow-light transition-colors duration-300 cursor-pointer">
+              <h1 className="text-jazz-green text-xl font-bold hover:text-jazz-green-light transition-colors duration-300 cursor-pointer">
                 Joshua Mercado
               </h1>
             </Link>
@@ -37,8 +37,8 @@ export default function Navigation() {
                   className={cn(
                     "px-3 py-2 font-medium transition-colors duration-300",
                     location === item.path
-                      ? "text-jazz-purple-light"
-                      : "text-white hover:text-jazz-purple-light"
+                      ? "text-jazz-blue-light"
+                      : "text-white hover:text-jazz-blue-light"
                   )}
                 >
                   {item.label}
@@ -51,7 +51,7 @@ export default function Navigation() {
           <div className="md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-white hover:text-jazz-yellow focus:outline-none"
+              className="text-white hover:text-jazz-green focus:outline-none"
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -75,8 +75,8 @@ export default function Navigation() {
                 className={cn(
                   "block px-3 py-2 font-medium transition-colors duration-300",
                   location === item.path
-                    ? "text-jazz-purple-light"
-                    : "text-white hover:text-jazz-purple-light"
+                    ? "text-jazz-blue-light"
+                    : "text-white hover:text-jazz-blue-light"
                 )}
               >
                 {item.label}

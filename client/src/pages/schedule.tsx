@@ -17,7 +17,7 @@ export default function Schedule() {
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-jazz-dark mb-4">Upcoming Shows</h2>
             <p className="text-xl text-gray-600 mb-8">Catch Joshua live at these upcoming performances</p>
-            <div className="w-24 h-1 bg-jazz-teal mx-auto"></div>
+            <div className="w-24 h-1 bg-jazz-blue mx-auto"></div>
           </div>
           
           <div className="space-y-6">
@@ -56,7 +56,7 @@ export default function Schedule() {
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-jazz-dark mb-4">Upcoming Shows</h2>
           <p className="text-xl text-gray-600 mb-8">Catch Joshua live at these upcoming performances</p>
-          <div className="w-24 h-1 bg-jazz-teal mx-auto"></div>
+          <div className="w-24 h-1 bg-jazz-blue mx-auto"></div>
         </div>
         
         <div className="space-y-6">
@@ -79,7 +79,7 @@ export default function Schedule() {
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-start gap-4">
-                          <div className="bg-jazz-teal text-white p-3 rounded-lg text-center min-w-[80px]">
+                          <div className="bg-jazz-blue text-white p-3 rounded-lg text-center min-w-[80px]">
                             <div className="text-sm font-semibold">{month}</div>
                             <div className="text-2xl font-bold">{day}</div>
                           </div>
@@ -111,7 +111,7 @@ export default function Schedule() {
                         {event.ticketUrl && (
                           <Button 
                             asChild
-                            className="bg-jazz-teal hover:bg-jazz-blue text-white font-semibold"
+                            className="bg-jazz-blue hover:bg-jazz-blue-light text-white font-semibold"
                           >
                             <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer">
                               <Ticket className="w-4 h-4 mr-2" />
@@ -138,7 +138,7 @@ export default function Schedule() {
         <div className="text-center mt-12">
           <p className="text-gray-600 mb-4">Schedule automatically synced with Google Calendar</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-jazz-teal hover:bg-jazz-blue text-white font-semibold">
+            <Button className="bg-jazz-blue hover:bg-jazz-blue-light text-white font-semibold">
               <Calendar className="w-5 h-5 mr-2" />
               Subscribe to Calendar
             </Button>
