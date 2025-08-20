@@ -45,6 +45,18 @@ export const contacts = pgTable("contacts", {
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const musicRecordings = pgTable("music_recordings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  artist: text("artist").notNull(),
+  description: text("description"),
+  platform: text("platform").notNull(), // youtube, spotify, apple
+  url: text("url").notNull(),
+  releaseDate: text("release_date"),
+  albumTitle: text("album_title"),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -65,6 +77,11 @@ export const insertContactSchema = createInsertSchema(contacts).omit({
   createdAt: true,
 });
 
+export const insertMusicRecordingSchema = createInsertSchema(musicRecordings).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
@@ -73,6 +90,9 @@ export type InsertEvent = z.infer<typeof insertEventSchema>;
 
 export type Photo = typeof photos.$inferSelect;
 export type InsertPhoto = z.infer<typeof insertPhotoSchema>;
+
+export type MusicRecording = typeof musicRecordings.$inferSelect;
+export type InsertMusicRecording = z.infer<typeof insertMusicRecordingSchema>;
 
 export type Contact = typeof contacts.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;

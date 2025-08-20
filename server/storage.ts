@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Event, type InsertEvent, type Photo, type InsertPhoto, type Contact, type InsertContact } from "@shared/schema";
+import { type User, type InsertUser, type Event, type InsertEvent, type Photo, type InsertPhoto, type Contact, type InsertContact, type MusicRecording, type InsertMusicRecording } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -25,6 +25,13 @@ export interface IStorage {
   getContacts(): Promise<Contact[]>;
   getContact(id: string): Promise<Contact | undefined>;
   createContact(contact: InsertContact): Promise<Contact>;
+  
+  // Music Recordings
+  getMusicRecordings(): Promise<MusicRecording[]>;
+  getMusicRecording(id: string): Promise<MusicRecording | undefined>;
+  createMusicRecording(recording: InsertMusicRecording): Promise<MusicRecording>;
+  updateMusicRecording(id: string, recording: Partial<MusicRecording>): Promise<MusicRecording | undefined>;
+  deleteMusicRecording(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -32,12 +39,14 @@ export class MemStorage implements IStorage {
   private events: Map<string, Event>;
   private photos: Map<string, Photo>;
   private contacts: Map<string, Contact>;
+  private musicRecordings: Map<string, MusicRecording>;
 
   constructor() {
     this.users = new Map();
     this.events = new Map();
     this.photos = new Map();
     this.contacts = new Map();
+    this.musicRecordings = new Map();
   }
 
   // Users
@@ -154,6 +163,42 @@ export class MemStorage implements IStorage {
     };
     this.contacts.set(id, contact);
     return contact;
+  }
+
+  // Music Recordings
+  async getMusicRecordings(): Promise<MusicRecording[]> {
+    return Array.from(this.musicRecordings.values());
+  }
+
+  async getMusicRecording(id: string): Promise<MusicRecording | undefined> {
+    return this.musicRecordings.get(id);
+  }
+
+  async createMusicRecording(insertRecording: InsertMusicRecording): Promise<MusicRecording> {
+    const id = randomUUID();
+    const recording: MusicRecording = { 
+      ...insertRecording, 
+      id,
+      description: insertRecording.description ?? null,
+      releaseDate: insertRecording.releaseDate ?? null,
+      albumTitle: insertRecording.albumTitle ?? null,
+      createdAt: new Date()
+    };
+    this.musicRecordings.set(id, recording);
+    return recording;
+  }
+
+  async updateMusicRecording(id: string, updateData: Partial<MusicRecording>): Promise<MusicRecording | undefined> {
+    const recording = this.musicRecordings.get(id);
+    if (!recording) return undefined;
+    
+    const updatedRecording = { ...recording, ...updateData };
+    this.musicRecordings.set(id, updatedRecording);
+    return updatedRecording;
+  }
+
+  async deleteMusicRecording(id: string): Promise<boolean> {
+    return this.musicRecordings.delete(id);
   }
 }
 

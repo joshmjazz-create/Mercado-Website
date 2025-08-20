@@ -8,6 +8,7 @@ import Footer from "@/components/footer";
 import Home from "@/pages/home";
 import Bio from "@/pages/bio";
 import Gallery from "@/pages/gallery";
+import Music from "@/pages/music";
 import Schedule from "@/pages/schedule";
 import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
@@ -21,6 +22,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/bio" component={Bio} />
           <Route path="/gallery" component={Gallery} />
+          <Route path="/music" component={Music} />
           <Route path="/schedule" component={Schedule} />
           <Route path="/contact" component={Contact} />
           <Route component={NotFound} />
