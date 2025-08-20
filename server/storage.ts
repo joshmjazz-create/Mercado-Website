@@ -60,7 +60,7 @@ export class MemStorage implements IStorage {
       description: "Original composition featuring abstract colors and jazz fusion",
       coverImageUrl: "/client/src/assets/rgb-album-cover.jpg",
       spotifyUrl: "https://open.spotify.com/track/3m88YPqvxIj4VV0JJKR5FZ?si=KUHFqxetQw20rCzbYi71sA",
-      appleMusicUrl: null,
+      appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
       youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
       releaseDate: "2024-01-01",
       isOriginal: "true",
