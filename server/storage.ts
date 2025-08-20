@@ -53,21 +53,62 @@ export class MemStorage implements IStorage {
   }
 
   private initializeAlbums() {
-    const sampleAlbum: Album = {
-      id: "rgb-album-1",
-      title: "RGB",
-      artist: "Joshua Mercado",
-      description: "Original composition featuring abstract colors and jazz fusion",
-      coverImageUrl: "/client/src/assets/rgb-album-cover.jpg",
-      spotifyUrl: "https://open.spotify.com/track/3m88YPqvxIj4VV0JJKR5FZ?si=KUHFqxetQw20rCzbYi71sA",
-      appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
-      youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
-      releaseDate: "2024-01-01",
-      isOriginal: "true",
-      createdAt: new Date()
-    };
+    const albums: Album[] = [
+      {
+        id: "rgb-album-1",
+        title: "RGB",
+        artist: "Joshua Mercado",
+        description: "Original composition featuring abstract colors and jazz fusion",
+        coverImageUrl: "/client/src/assets/rgb-album-cover.jpg",
+        spotifyUrl: "https://open.spotify.com/track/3m88YPqvxIj4VV0JJKR5FZ?si=KUHFqxetQw20rCzbYi71sA",
+        appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
+        youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
+        releaseDate: "2024-01-01",
+        isOriginal: "true",
+        createdAt: new Date()
+      },
+      {
+        id: "jazz-fusion-2",
+        title: "Jazz Fusion",
+        artist: "Joshua Mercado",
+        description: "Contemporary jazz with modern influences",
+        coverImageUrl: "/client/src/assets/rgb-album-cover.jpg",
+        spotifyUrl: "https://open.spotify.com/track/3m88YPqvxIj4VV0JJKR5FZ?si=KUHFqxetQw20rCzbYi71sA",
+        appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
+        youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
+        releaseDate: "2023-12-15",
+        isOriginal: "true",
+        createdAt: new Date()
+      },
+      {
+        id: "blue-notes-3",
+        title: "Blue Notes",
+        artist: "Joshua Mercado",
+        description: "Classic jazz standards with a modern twist",
+        coverImageUrl: "/client/src/assets/rgb-album-cover.jpg",
+        spotifyUrl: "https://open.spotify.com/track/3m88YPqvxIj4VV0JJKR5FZ?si=KUHFqxetQw20rCzbYi71sA",
+        appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
+        youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
+        releaseDate: "2023-11-20",
+        isOriginal: "true",
+        createdAt: new Date()
+      },
+      {
+        id: "midnight-sessions-4",
+        title: "Midnight Sessions",
+        artist: "Joshua Mercado",
+        description: "Late night jazz improvisations",
+        coverImageUrl: "/client/src/assets/rgb-album-cover.jpg",
+        spotifyUrl: "https://open.spotify.com/track/3m88YPqvxIj4VV0JJKR5FZ?si=KUHFqxetQw20rCzbYi71sA",
+        appleMusicUrl: "https://music.apple.com/us/song/26-2/962199389",
+        youtubeUrl: "https://youtu.be/OQoP9uFV_LA?si=5eET74_q1rizgNN8",
+        releaseDate: "2023-10-05",
+        isOriginal: "true",
+        createdAt: new Date()
+      }
+    ];
     
-    this.albums.set(sampleAlbum.id, sampleAlbum);
+    albums.forEach(album => this.albums.set(album.id, album));
   }
 
   // Users
