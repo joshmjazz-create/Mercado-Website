@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema, insertEventSchema, insertPhotoSchema, insertMusicRecordingSchema } from "@shared/schema";
+import { insertContactSchema, insertEventSchema, insertPhotoSchema, insertAlbumSchema } from "@shared/schema";
 import { googleApisClient } from "../client/src/lib/google-apis";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -153,63 +153,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Music Recordings API routes
-  app.get("/api/music-recordings", async (req, res) => {
+  // Albums API routes
+  app.get("/api/albums", async (req, res) => {
     try {
-      const recordings = await storage.getMusicRecordings();
-      res.json(recordings);
+      const albums = await storage.getAlbums();
+      res.json(albums);
     } catch (error: any) {
       res.status(500).json({ 
         success: false, 
-        message: "Failed to fetch music recordings" 
+        message: "Failed to fetch albums" 
       });
     }
   });
 
-  app.post("/api/music-recordings", async (req, res) => {
+  app.post("/api/albums", async (req, res) => {
     try {
-      const validatedData = insertMusicRecordingSchema.parse(req.body);
-      const recording = await storage.createMusicRecording(validatedData);
-      res.json({ success: true, recording });
+      const validatedData = insertAlbumSchema.parse(req.body);
+      const album = await storage.createAlbum(validatedData);
+      res.json({ success: true, album });
     } catch (error: any) {
       res.status(400).json({ 
         success: false, 
-        message: error.message || "Invalid music recording data" 
+        message: error.message || "Invalid album data" 
       });
     }
   });
 
-  app.put("/api/music-recordings/:id", async (req, res) => {
+  app.put("/api/albums/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const validatedData = insertMusicRecordingSchema.partial().parse(req.body);
-      const recording = await storage.updateMusicRecording(id, validatedData);
+      const validatedData = insertAlbumSchema.partial().parse(req.body);
+      const album = await storage.updateAlbum(id, validatedData);
       
-      if (!recording) {
+      if (!album) {
         return res.status(404).json({ 
           success: false, 
-          message: "Music recording not found" 
+          message: "Album not found" 
         });
       }
       
-      res.json({ success: true, recording });
+      res.json({ success: true, album });
     } catch (error: any) {
       res.status(400).json({ 
         success: false, 
-        message: error.message || "Invalid music recording data" 
+        message: error.message || "Invalid album data" 
       });
     }
   });
 
-  app.delete("/api/music-recordings/:id", async (req, res) => {
+  app.delete("/api/albums/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const deleted = await storage.deleteMusicRecording(id);
+      const deleted = await storage.deleteAlbum(id);
       
       if (!deleted) {
         return res.status(404).json({ 
           success: false, 
-          message: "Music recording not found" 
+          message: "Album not found" 
         });
       }
       
@@ -217,7 +217,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       res.status(500).json({ 
         success: false, 
-        message: "Failed to delete music recording" 
+        message: "Failed to delete album" 
       });
     }
   });

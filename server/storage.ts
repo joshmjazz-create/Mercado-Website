@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Event, type InsertEvent, type Photo, type InsertPhoto, type Contact, type InsertContact, type MusicRecording, type InsertMusicRecording } from "@shared/schema";
+import { type User, type InsertUser, type Event, type InsertEvent, type Photo, type InsertPhoto, type Contact, type InsertContact, type Album, type InsertAlbum } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -26,12 +26,12 @@ export interface IStorage {
   getContact(id: string): Promise<Contact | undefined>;
   createContact(contact: InsertContact): Promise<Contact>;
   
-  // Music Recordings
-  getMusicRecordings(): Promise<MusicRecording[]>;
-  getMusicRecording(id: string): Promise<MusicRecording | undefined>;
-  createMusicRecording(recording: InsertMusicRecording): Promise<MusicRecording>;
-  updateMusicRecording(id: string, recording: Partial<MusicRecording>): Promise<MusicRecording | undefined>;
-  deleteMusicRecording(id: string): Promise<boolean>;
+  // Albums
+  getAlbums(): Promise<Album[]>;
+  getAlbum(id: string): Promise<Album | undefined>;
+  createAlbum(album: InsertAlbum): Promise<Album>;
+  updateAlbum(id: string, album: Partial<Album>): Promise<Album | undefined>;
+  deleteAlbum(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -39,14 +39,14 @@ export class MemStorage implements IStorage {
   private events: Map<string, Event>;
   private photos: Map<string, Photo>;
   private contacts: Map<string, Contact>;
-  private musicRecordings: Map<string, MusicRecording>;
+  private albums: Map<string, Album>;
 
   constructor() {
     this.users = new Map();
     this.events = new Map();
     this.photos = new Map();
     this.contacts = new Map();
-    this.musicRecordings = new Map();
+    this.albums = new Map();
   }
 
   // Users
@@ -165,40 +165,43 @@ export class MemStorage implements IStorage {
     return contact;
   }
 
-  // Music Recordings
-  async getMusicRecordings(): Promise<MusicRecording[]> {
-    return Array.from(this.musicRecordings.values());
+  // Albums
+  async getAlbums(): Promise<Album[]> {
+    return Array.from(this.albums.values());
   }
 
-  async getMusicRecording(id: string): Promise<MusicRecording | undefined> {
-    return this.musicRecordings.get(id);
+  async getAlbum(id: string): Promise<Album | undefined> {
+    return this.albums.get(id);
   }
 
-  async createMusicRecording(insertRecording: InsertMusicRecording): Promise<MusicRecording> {
+  async createAlbum(insertAlbum: InsertAlbum): Promise<Album> {
     const id = randomUUID();
-    const recording: MusicRecording = { 
-      ...insertRecording, 
+    const album: Album = { 
+      ...insertAlbum, 
       id,
-      description: insertRecording.description ?? null,
-      releaseDate: insertRecording.releaseDate ?? null,
-      albumTitle: insertRecording.albumTitle ?? null,
+      description: insertAlbum.description ?? null,
+      releaseDate: insertAlbum.releaseDate ?? null,
+      spotifyUrl: insertAlbum.spotifyUrl ?? null,
+      appleMusicUrl: insertAlbum.appleMusicUrl ?? null,
+      youtubeUrl: insertAlbum.youtubeUrl ?? null,
+      isOriginal: insertAlbum.isOriginal ?? "true",
       createdAt: new Date()
     };
-    this.musicRecordings.set(id, recording);
-    return recording;
+    this.albums.set(id, album);
+    return album;
   }
 
-  async updateMusicRecording(id: string, updateData: Partial<MusicRecording>): Promise<MusicRecording | undefined> {
-    const recording = this.musicRecordings.get(id);
-    if (!recording) return undefined;
+  async updateAlbum(id: string, updateData: Partial<Album>): Promise<Album | undefined> {
+    const album = this.albums.get(id);
+    if (!album) return undefined;
     
-    const updatedRecording = { ...recording, ...updateData };
-    this.musicRecordings.set(id, updatedRecording);
-    return updatedRecording;
+    const updatedAlbum = { ...album, ...updateData };
+    this.albums.set(id, updatedAlbum);
+    return updatedAlbum;
   }
 
-  async deleteMusicRecording(id: string): Promise<boolean> {
-    return this.musicRecordings.delete(id);
+  async deleteAlbum(id: string): Promise<boolean> {
+    return this.albums.delete(id);
   }
 }
 

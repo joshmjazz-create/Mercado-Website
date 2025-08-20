@@ -3,10 +3,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Music as MusicIcon, ExternalLink, Edit, Trash2 } from "lucide-react";
+import { Plus, ExternalLink, Edit, Trash2 } from "lucide-react";
 import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,141 +15,168 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
-const musicRecordingSchema = z.object({
+const albumSchema = z.object({
   title: z.string().min(1, "Title is required"),
   artist: z.string().min(1, "Artist is required"),
   description: z.string().optional(),
-  platform: z.enum(["youtube", "spotify", "apple"]),
-  url: z.string().url("Please enter a valid URL"),
+  coverImageUrl: z.string().url("Please enter a valid cover image URL"),
+  spotifyUrl: z.string().url().optional().or(z.literal("")),
+  appleMusicUrl: z.string().url().optional().or(z.literal("")),
+  youtubeUrl: z.string().url().optional().or(z.literal("")),
   releaseDate: z.string().optional(),
-  albumTitle: z.string().optional(),
+  isOriginal: z.boolean().default(true),
 });
 
-type MusicRecordingData = z.infer<typeof musicRecordingSchema>;
+type AlbumData = z.infer<typeof albumSchema>;
 
-const platformIcons = {
-  youtube: FaYoutube,
-  spotify: FaSpotify,
-  apple: FaApple,
-};
-
-const platformColors = {
-  youtube: "text-[#FF0000]",
-  spotify: "text-[#1DB954]",
-  apple: "text-[#000000]",
-};
+interface Album extends AlbumData {
+  id: string;
+  createdAt: Date;
+}
 
 export default function Music() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
+  const [showPlatforms, setShowPlatforms] = useState(false);
+  const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const form = useForm<MusicRecordingData>({
-    resolver: zodResolver(musicRecordingSchema),
+  const form = useForm<AlbumData>({
+    resolver: zodResolver(albumSchema),
     defaultValues: {
       title: "",
       artist: "",
       description: "",
-      platform: "youtube",
-      url: "",
+      coverImageUrl: "",
+      spotifyUrl: "",
+      appleMusicUrl: "",
+      youtubeUrl: "",
       releaseDate: "",
-      albumTitle: "",
+      isOriginal: true,
     },
   });
 
-  const { data: recordings = [], isLoading } = useQuery<any[]>({
-    queryKey: ['/api/music-recordings'],
+  const { data: albums = [], isLoading } = useQuery<Album[]>({
+    queryKey: ['/api/albums'],
   });
 
-  const addRecordingMutation = useMutation({
-    mutationFn: async (data: MusicRecordingData) => {
-      return apiRequest('POST', '/api/music-recordings', data);
+  const addAlbumMutation = useMutation({
+    mutationFn: async (data: AlbumData) => {
+      if (editingAlbum) {
+        return apiRequest('PUT', `/api/albums/${editingAlbum.id}`, data);
+      }
+      return apiRequest('POST', '/api/albums', data);
     },
     onSuccess: () => {
       toast({
-        title: "Recording Added",
-        description: "Your music recording has been added successfully.",
+        title: editingAlbum ? "Album Updated" : "Album Added",
+        description: editingAlbum 
+          ? "Your album has been updated successfully." 
+          : "Your album has been added successfully.",
       });
       form.reset();
       setIsDialogOpen(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/music-recordings'] });
+      setEditingAlbum(null);
+      queryClient.invalidateQueries({ queryKey: ['/api/albums'] });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to add recording. Please try again.",
+        description: `Failed to ${editingAlbum ? 'update' : 'add'} album. Please try again.`,
         variant: "destructive",
       });
     },
   });
 
-  const deleteRecordingMutation = useMutation({
+  const deleteAlbumMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest('DELETE', `/api/music-recordings/${id}`);
+      return apiRequest('DELETE', `/api/albums/${id}`);
     },
     onSuccess: () => {
       toast({
-        title: "Recording Deleted",
-        description: "The recording has been removed.",
+        title: "Album Deleted",
+        description: "The album has been removed.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/music-recordings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/albums'] });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to delete recording. Please try again.",
+        description: "Failed to delete album. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  const onSubmit = (data: MusicRecordingData) => {
-    addRecordingMutation.mutate(data);
+  const onSubmit = (data: AlbumData) => {
+    addAlbumMutation.mutate(data);
   };
 
-  const handleEdit = (record: any) => {
-    setEditingRecord(record);
-    form.reset(record);
+  const handleEdit = (album: Album) => {
+    setEditingAlbum(album);
+    form.reset(album);
     setIsDialogOpen(true);
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this recording?")) {
-      deleteRecordingMutation.mutate(id);
+    if (confirm("Are you sure you want to delete this album?")) {
+      deleteAlbumMutation.mutate(id);
     }
   };
 
   const openDialog = () => {
-    setEditingRecord(null);
-    form.reset();
+    setEditingAlbum(null);
+    form.reset({
+      title: "",
+      artist: "",
+      description: "",
+      coverImageUrl: "",
+      spotifyUrl: "",
+      appleMusicUrl: "",
+      youtubeUrl: "",
+      releaseDate: "",
+      isOriginal: true,
+    });
     setIsDialogOpen(true);
   };
+
+  const handleAlbumClick = (album: Album) => {
+    setSelectedAlbum(album);
+    setShowPlatforms(true);
+  };
+
+  const openPlatform = (url: string | undefined) => {
+    if (url) {
+      window.open(url, '_blank');
+    }
+    setShowPlatforms(false);
+  };
+
+  const originalAlbums = albums.filter(album => album.isOriginal);
+  const featuredAlbums = albums.filter(album => !album.isOriginal);
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-jazz-cream via-white to-jazz-cream">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-purple-800 mb-6">Music</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Discover my musical journey through recordings available on various platforms.
-          </p>
         </div>
 
         <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-purple-800">My Recordings</h2>
+          {/* Add Album Button for Admin */}
+          <div className="flex justify-end mb-8">
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button onClick={openDialog} className="bg-purple-800 hover:bg-purple-700">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Recording
+                  Add Album
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>
-                    {editingRecord ? "Edit Recording" : "Add New Recording"}
+                    {editingAlbum ? "Edit Album" : "Add New Album"}
                   </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
@@ -159,9 +186,9 @@ export default function Music() {
                       name="title"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Title</FormLabel>
+                          <FormLabel>Album Title</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="Song title" />
+                            <Input {...field} placeholder="Album title" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -184,33 +211,10 @@ export default function Music() {
 
                     <FormField
                       control={form.control}
-                      name="platform"
+                      name="coverImageUrl"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Platform</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select platform" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="youtube">YouTube</SelectItem>
-                              <SelectItem value="spotify">Spotify</SelectItem>
-                              <SelectItem value="apple">Apple Music</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="url"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>URL</FormLabel>
+                          <FormLabel>Cover Image URL</FormLabel>
                           <FormControl>
                             <Input {...field} placeholder="https://..." />
                           </FormControl>
@@ -221,12 +225,62 @@ export default function Music() {
 
                     <FormField
                       control={form.control}
-                      name="albumTitle"
+                      name="isOriginal"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Album (Optional)</FormLabel>
+                          <FormLabel>Category</FormLabel>
+                          <Select onValueChange={(value) => field.onChange(value === "true")} value={field.value.toString()}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="true">Original Music</SelectItem>
+                              <SelectItem value="false">Featured On</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="spotifyUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Spotify URL (Optional)</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="Album name" />
+                            <Input {...field} placeholder="https://open.spotify.com/..." />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="appleMusicUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Apple Music URL (Optional)</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="https://music.apple.com/..." />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="youtubeUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>YouTube URL (Optional)</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="https://youtube.com/..." />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -254,7 +308,7 @@ export default function Music() {
                         <FormItem>
                           <FormLabel>Description (Optional)</FormLabel>
                           <FormControl>
-                            <Textarea {...field} placeholder="About this recording..." rows={3} />
+                            <Textarea {...field} placeholder="About this album..." rows={3} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -263,10 +317,10 @@ export default function Music() {
 
                     <Button 
                       type="submit" 
-                      disabled={addRecordingMutation.isPending}
+                      disabled={addAlbumMutation.isPending}
                       className="w-full bg-purple-800 hover:bg-purple-700"
                     >
-                      {addRecordingMutation.isPending ? "Adding..." : (editingRecord ? "Update Recording" : "Add Recording")}
+                      {addAlbumMutation.isPending ? "Adding..." : (editingAlbum ? "Update Album" : "Add Album")}
                     </Button>
                   </form>
                 </Form>
@@ -274,82 +328,184 @@ export default function Music() {
             </Dialog>
           </div>
 
-          {isLoading ? (
-            <div className="text-center py-12">
-              <MusicIcon className="w-12 h-12 mx-auto mb-4 text-purple-800 animate-pulse" />
-              <p className="text-gray-600">Loading recordings...</p>
-            </div>
-          ) : recordings.length === 0 ? (
-            <Card className="text-center py-12">
-              <CardContent>
-                <MusicIcon className="w-16 h-16 mx-auto mb-4 text-purple-800" />
-                <h3 className="text-xl font-semibold text-purple-800 mb-2">No Recordings Yet</h3>
-                <p className="text-gray-600 mb-4">Start building your music collection by adding your first recording.</p>
-                <Button onClick={openDialog} className="bg-purple-800 hover:bg-purple-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add First Recording
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recordings.map((recording: any) => {
-                const PlatformIcon = platformIcons[recording.platform as keyof typeof platformIcons];
-                const platformColor = platformColors[recording.platform as keyof typeof platformColors];
-                
-                return (
-                  <Card key={recording.id} className="shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-2">
-                          <PlatformIcon className={`w-5 h-5 ${platformColor}`} />
-                          <span className="text-sm text-gray-500 capitalize">{recording.platform}</span>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(recording)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(recording.id)}
-                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
+          {/* Original Music Section */}
+          <div className="mb-16">
+            {originalAlbums.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {originalAlbums.map((album) => (
+                  <div key={album.id} className="relative group">
+                    <div 
+                      className="cursor-pointer transform transition-transform hover:scale-105"
+                      onClick={() => handleAlbumClick(album)}
+                    >
+                      <img
+                        src={album.coverImageUrl}
+                        alt={album.title}
+                        className="w-full aspect-square object-cover rounded-lg shadow-lg"
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity rounded-lg flex items-center justify-center">
+                        <ExternalLink className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
-                      <CardTitle className="text-lg leading-tight">{recording.title}</CardTitle>
-                      <p className="text-sm text-purple-800 font-medium">{recording.artist}</p>
-                      {recording.albumTitle && (
-                        <p className="text-sm text-gray-600">Album: {recording.albumTitle}</p>
+                    </div>
+                    <div className="mt-3 text-center">
+                      <h3 className="font-semibold text-purple-800">{album.title}</h3>
+                      <p className="text-sm text-gray-600">{album.artist}</p>
+                      {album.releaseDate && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(album.releaseDate).getFullYear()}
+                        </p>
                       )}
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      {recording.description && (
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">{recording.description}</p>
+                    </div>
+                    {/* Admin controls */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(album);
+                          }}
+                          className="h-8 w-8 p-0 bg-black bg-opacity-50 hover:bg-opacity-70"
+                        >
+                          <Edit className="w-4 h-4 text-white" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(album.id);
+                          }}
+                          className="h-8 w-8 p-0 bg-black bg-opacity-50 hover:bg-opacity-70"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-400" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Featured On Section */}
+          {featuredAlbums.length > 0 && (
+            <div>
+              <h2 className="text-3xl font-bold text-purple-800 text-center mb-8">Featured On</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {featuredAlbums.map((album) => (
+                  <div key={album.id} className="relative group">
+                    <div 
+                      className="cursor-pointer transform transition-transform hover:scale-105"
+                      onClick={() => handleAlbumClick(album)}
+                    >
+                      <img
+                        src={album.coverImageUrl}
+                        alt={album.title}
+                        className="w-full aspect-square object-cover rounded-lg shadow-lg"
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity rounded-lg flex items-center justify-center">
+                        <ExternalLink className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </div>
+                    <div className="mt-3 text-center">
+                      <h3 className="font-semibold text-purple-800">{album.title}</h3>
+                      <p className="text-sm text-gray-600">{album.artist}</p>
+                      {album.releaseDate && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(album.releaseDate).getFullYear()}
+                        </p>
                       )}
-                      {recording.releaseDate && (
-                        <p className="text-xs text-gray-500 mb-4">Released: {new Date(recording.releaseDate).toLocaleDateString()}</p>
-                      )}
-                      <a
-                        href={recording.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-purple-800 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                      >
-                        Listen Now
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                    </div>
+                    {/* Admin controls */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(album);
+                          }}
+                          className="h-8 w-8 p-0 bg-black bg-opacity-50 hover:bg-opacity-70"
+                        >
+                          <Edit className="w-4 h-4 text-white" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(album.id);
+                          }}
+                          className="h-8 w-8 p-0 bg-black bg-opacity-50 hover:bg-opacity-70"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-400" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Platform Selection Modal */}
+          {showPlatforms && selectedAlbum && (
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+              onClick={() => setShowPlatforms(false)}
+            >
+              <div 
+                className="bg-white rounded-lg p-6 max-w-sm w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className="text-lg font-semibold text-center mb-4">Listen to {selectedAlbum.title}</h3>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => openPlatform(selectedAlbum.spotifyUrl)}
+                    disabled={!selectedAlbum.spotifyUrl}
+                    className="w-full flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FaSpotify className="w-6 h-6 text-[#1DB954]" />
+                      <span>Spotify</span>
+                    </div>
+                    {!selectedAlbum.spotifyUrl && <span className="text-sm text-gray-500">Not available</span>}
+                  </button>
+                  
+                  <button
+                    onClick={() => openPlatform(selectedAlbum.appleMusicUrl)}
+                    disabled={!selectedAlbum.appleMusicUrl}
+                    className="w-full flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FaApple className="w-6 h-6 text-[#000000]" />
+                      <span>Apple Music</span>
+                    </div>
+                    {!selectedAlbum.appleMusicUrl && <span className="text-sm text-gray-500">Not available</span>}
+                  </button>
+                  
+                  <button
+                    onClick={() => openPlatform(selectedAlbum.youtubeUrl)}
+                    disabled={!selectedAlbum.youtubeUrl}
+                    className="w-full flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FaYoutube className="w-6 h-6 text-[#FF0000]" />
+                      <span>YouTube</span>
+                    </div>
+                    {!selectedAlbum.youtubeUrl && <span className="text-sm text-gray-500">Not available</span>}
+                  </button>
+                </div>
+                <button
+                  onClick={() => setShowPlatforms(false)}
+                  className="w-full mt-4 py-2 text-gray-600 hover:text-gray-800"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           )}
         </div>

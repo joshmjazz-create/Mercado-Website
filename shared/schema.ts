@@ -45,15 +45,17 @@ export const contacts = pgTable("contacts", {
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const musicRecordings = pgTable("music_recordings", {
+export const albums = pgTable("albums", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   title: text("title").notNull(),
   artist: text("artist").notNull(),
   description: text("description"),
-  platform: text("platform").notNull(), // youtube, spotify, apple
-  url: text("url").notNull(),
+  coverImageUrl: text("cover_image_url").notNull(),
+  spotifyUrl: text("spotify_url"),
+  appleMusicUrl: text("apple_music_url"),
+  youtubeUrl: text("youtube_url"),
   releaseDate: text("release_date"),
-  albumTitle: text("album_title"),
+  isOriginal: text("is_original").notNull().default("true"), // "true" or "false"
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -77,7 +79,7 @@ export const insertContactSchema = createInsertSchema(contacts).omit({
   createdAt: true,
 });
 
-export const insertMusicRecordingSchema = createInsertSchema(musicRecordings).omit({
+export const insertAlbumSchema = createInsertSchema(albums).omit({
   id: true,
   createdAt: true,
 });
@@ -91,8 +93,8 @@ export type InsertEvent = z.infer<typeof insertEventSchema>;
 export type Photo = typeof photos.$inferSelect;
 export type InsertPhoto = z.infer<typeof insertPhotoSchema>;
 
-export type MusicRecording = typeof musicRecordings.$inferSelect;
-export type InsertMusicRecording = z.infer<typeof insertMusicRecordingSchema>;
+export type Album = typeof albums.$inferSelect;
+export type InsertAlbum = z.infer<typeof insertAlbumSchema>;
 
 export type Contact = typeof contacts.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;
