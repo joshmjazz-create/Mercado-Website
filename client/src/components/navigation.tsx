@@ -18,27 +18,19 @@ export default function Navigation() {
   return (
     <nav className="bg-black shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex-shrink-0">
-            <Link href="/">
-              <h1 className="text-jazz-green text-xl font-bold hover:text-jazz-green-light transition-colors duration-300 cursor-pointer">
-                Joshua Mercado
-              </h1>
-            </Link>
-          </div>
-          
-          {/* Desktop Navigation */}
+        <div className="flex justify-center items-center h-16">
+          {/* Desktop Navigation - Centered Tabs */}
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
+            <div className="flex items-center space-x-8">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   href={item.path}
                   className={cn(
-                    "px-3 py-2 font-medium transition-colors duration-300",
+                    "px-4 py-2 font-medium transition-all duration-300 border-b-2",
                     location === item.path
-                      ? "text-jazz-blue-light"
-                      : "text-white hover:text-jazz-blue-light"
+                      ? "text-jazz-blue-light border-jazz-blue-light"
+                      : "text-white hover:text-jazz-blue-light border-transparent hover:border-jazz-blue-light"
                   )}
                 >
                   {item.label}
