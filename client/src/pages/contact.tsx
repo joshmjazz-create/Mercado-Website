@@ -3,7 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Mail, Phone, MapPin, Send, Music, Instagram, Youtube } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Music } from "lucide-react";
+import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -135,7 +136,7 @@ export default function Contact() {
                       <FormItem>
                         <FormLabel className="text-jazz-dark font-semibold">Phone Number</FormLabel>
                         <FormControl>
-                          <Input type="tel" {...field} className="focus:ring-jazz-teal" />
+                          <Input type="tel" {...field} value={field.value || ""} className="focus:ring-jazz-teal" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -148,7 +149,7 @@ export default function Contact() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-jazz-dark font-semibold">Event Type</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
                           <FormControl>
                             <SelectTrigger className="focus:ring-jazz-teal">
                               <SelectValue placeholder="Select an event type" />
@@ -175,7 +176,7 @@ export default function Contact() {
                       <FormItem>
                         <FormLabel className="text-jazz-dark font-semibold">Preferred Event Date</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} className="focus:ring-jazz-teal" />
+                          <Input type="date" {...field} value={field.value || ""} className="focus:ring-jazz-teal" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -269,34 +270,27 @@ export default function Contact() {
         {/* Social Media Icons at Bottom */}
         <div className="text-center mt-16 pt-8 border-t border-gray-200">
           <p className="text-gray-600 mb-6">Follow me on social media</p>
-          <div className="flex justify-center space-x-6">
+          <div className="flex justify-center space-x-8">
             <a 
               href="#" 
-              className="text-jazz-dark hover:text-jazz-blue transition-colors duration-300"
+              className="text-[#1877F2] hover:opacity-80 transition-opacity duration-300"
+              aria-label="Facebook"
+            >
+              <FaFacebook className="w-10 h-10" />
+            </a>
+            <a 
+              href="#" 
+              className="text-[#E4405F] hover:opacity-80 transition-opacity duration-300"
               aria-label="Instagram"
             >
-              <Instagram className="w-8 h-8" />
+              <FaInstagram className="w-10 h-10" />
             </a>
             <a 
               href="#" 
-              className="text-jazz-dark hover:text-jazz-blue transition-colors duration-300"
-              aria-label="Spotify"
-            >
-              <Music className="w-8 h-8" />
-            </a>
-            <a 
-              href="#" 
-              className="text-jazz-dark hover:text-jazz-blue transition-colors duration-300"
+              className="text-[#FF0000] hover:opacity-80 transition-opacity duration-300"
               aria-label="YouTube"
             >
-              <Youtube className="w-8 h-8" />
-            </a>
-            <a 
-              href="#" 
-              className="text-jazz-dark hover:text-jazz-blue transition-colors duration-300"
-              aria-label="SoundCloud"
-            >
-              <Music className="w-8 h-8" />
+              <FaYoutube className="w-10 h-10" />
             </a>
           </div>
         </div>
