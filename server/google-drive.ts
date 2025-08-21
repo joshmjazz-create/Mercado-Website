@@ -181,6 +181,160 @@ class GoogleDriveService {
     
     return this.getDirectImageUrl(photo.id, size);
   }
+
+  // Get content from Google Docs
+  async getDocContent(fileId: string): Promise<string> {
+    try {
+      await this.initializeDrive();
+      
+      // Export Google Doc as plain text
+      const response = await this.drive.files.export({
+        fileId: fileId,
+        mimeType: 'text/plain',
+      });
+
+      return response.data || '';
+    } catch (error) {
+      console.error('Error fetching Google Doc content:', error);
+      throw error;
+    }
+  }
+
+  // Parse album metadata from Google Doc content
+  parseAlbumMetadata(docContent: string): any {
+    const metadata: any = {
+      title: '',
+      artist: '',
+      year: '',
+      links: {}
+    };
+
+    const lines = docContent.split('\n');
+    let inLinksSection = false;
+
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      
+      if (trimmedLine.startsWith('TITLE:')) {
+        metadata.title = trimmedLine.replace('TITLE:', '').trim();
+      } else if (trimmedLine.startsWith('ARTIST:')) {
+        metadata.artist = trimmedLine.replace('ARTIST:', '').trim();
+      } else if (trimmedLine.startsWith('YEAR:')) {
+        metadata.year = trimmedLine.replace('YEAR:', '').trim();
+      } else if (trimmedLine === 'LINKS:') {
+        inLinksSection = true;
+      } else if (inLinksSection && trimmedLine.includes(' - ')) {
+        const [platform, url] = trimmedLine.split(' - ');
+        if (platform && url) {
+          const platformKey = platform.toLowerCase().replace(/\s+/g, '');
+          metadata.links[platformKey] = url.trim();
+        }
+      }
+    }
+
+    return metadata;
+  }
+
+  // Get albums from music folders structure
+  async getMusicAlbums(musicFolderId: string): Promise<any> {
+    try {
+      await this.initializeDrive();
+      
+      const categories: { [key: string]: any[] } = {
+        original: [],
+        featured: [],
+        upcoming: []
+      };
+
+      // Get the three main folders
+      const mainFolders = await this.getFoldersInFolder(musicFolderId);
+      
+      for (const folder of mainFolders) {
+        let categoryKey = '';
+        
+        if (folder.name === 'My Music') {
+          categoryKey = 'original';
+        } else if (folder.name === 'Featured On') {
+          categoryKey = 'featured';
+        } else if (folder.name === 'Upcoming') {
+          categoryKey = 'upcoming';
+        }
+
+        if (categoryKey) {
+          // Get Google Docs from this category folder
+          const files = await this.getFilesFromFolder(folder.id, "mimeType='application/vnd.google-apps.document'");
+          
+          for (const file of files) {
+            try {
+              const docContent = await this.getDocContent(file.id);
+              const metadata = this.parseAlbumMetadata(docContent);
+              
+              if (metadata.title) {
+                const spotifyImageUrl = await this.getSpotifyAlbumCover(metadata.links.spotify || '');
+                
+                const album = {
+                  id: file.id,
+                  title: metadata.title,
+                  artist: metadata.artist,
+                  year: metadata.year,
+                  links: metadata.links,
+                  category: categoryKey,
+                  spotifyId: this.extractSpotifyId(metadata.links.spotify || ''),
+                  coverImageUrl: spotifyImageUrl,
+                  createdTime: file.createdTime
+                };
+                
+                categories[categoryKey].push(album);
+              }
+            } catch (error) {
+              console.error(`Error processing document ${file.name}:`, error);
+            }
+          }
+        }
+      }
+
+      return categories;
+    } catch (error) {
+      console.error('Error fetching music albums:', error);
+      throw error;
+    }
+  }
+
+  // Extract Spotify album ID from URL
+  extractSpotifyId(spotifyUrl: string): string | null {
+    if (!spotifyUrl) return null;
+    const match = spotifyUrl.match(/album\/([a-zA-Z0-9]+)/);
+    return match ? match[1] : null;
+  }
+
+  // Get Spotify album cover using public OEmbed API
+  async getSpotifyAlbumCover(spotifyUrl: string): Promise<string | null> {
+    try {
+      if (!spotifyUrl) return null;
+      
+      const albumId = this.extractSpotifyId(spotifyUrl);
+      if (!albumId) return null;
+      
+      // Use Spotify's oEmbed API which is public and doesn't require authentication
+      const oEmbedUrl = `https://open.spotify.com/oembed?url=${encodeURIComponent(spotifyUrl)}`;
+      const response = await fetch(oEmbedUrl);
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.thumbnail_url) {
+          // Convert thumbnail to higher resolution
+          return data.thumbnail_url.replace('cover-size', '640');
+        }
+      }
+      
+      // Fallback: construct direct Spotify image URL
+      // This works for many albums and doesn't require API key
+      return `https://i.scdn.co/image/ab67616d0000b273${albumId}`;
+    } catch (error) {
+      console.error('Error fetching Spotify album cover:', error);
+      return null;
+    }
+  }
 }
 
 export const googleDriveService = new GoogleDriveService();

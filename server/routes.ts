@@ -231,6 +231,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get music albums from Google Drive
+  app.post('/api/drive/music-albums', async (req, res) => {
+    try {
+      const { shareUrl } = req.body;
+      
+      if (!shareUrl) {
+        return res.status(400).json({ error: 'Share URL is required' });
+      }
+
+      const folderId = await googleDriveService.extractFolderIdFromShareUrl(shareUrl);
+      if (!folderId) {
+        return res.status(400).json({ error: 'Invalid Google Drive share URL' });
+      }
+
+      const albums = await googleDriveService.getMusicAlbums(folderId);
+      res.json(albums);
+    } catch (error) {
+      console.error('Drive music albums error:', error);
+      res.status(500).json({ error: 'Failed to fetch music albums from Google Drive' });
+    }
+  });
+
   // Get photos from Google Drive share URL
   app.post("/api/drive/shared-photos", async (req, res) => {
     try {
