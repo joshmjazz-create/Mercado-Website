@@ -128,8 +128,8 @@ export default function Gallery() {
   }
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 bg-white min-h-screen">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-5xl font-bold text-purple-800 mb-4">Gallery</h2>
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
@@ -229,11 +229,7 @@ export default function Gallery() {
           </div>
         )}
         
-        <div className="text-center mt-8">
-          <p className="text-gray-600">
-            Performance gallery powered by Google Drive - {photos.length} photos
-          </p>
-        </div>
+
       </div>
     </section>
   );
