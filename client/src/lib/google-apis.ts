@@ -52,12 +52,15 @@ export class GoogleApisClient {
   }
 
   async getCalendarEvents(): Promise<GoogleCalendarEvent[]> {
-    if (!this.calendarApiKey || !this.calendarId) {
-      throw new Error('Google Calendar API key or Calendar ID not configured');
+    // Use the public calendar directly - no API key needed for public calendars
+    const publicCalendarId = 'joshm.jazz@gmail.com';
+    
+    if (!this.calendarApiKey) {
+      throw new Error('Google Calendar API key not configured');
     }
 
     const now = new Date().toISOString();
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(this.calendarId)}/events?key=${this.calendarApiKey}&timeMin=${now}&singleEvents=true&orderBy=startTime&maxResults=10`;
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(publicCalendarId)}/events?key=${this.calendarApiKey}&timeMin=${now}&singleEvents=true&orderBy=startTime&maxResults=10`;
 
     try {
       const response = await fetch(url);
