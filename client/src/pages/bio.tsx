@@ -10,23 +10,15 @@ export default function Bio() {
           <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
             <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-6">
               <p>
-                Joshua Mercado began his musical journey at the age of 8, first discovering his passion for music through the trumpet. His dedication to the craft led him to master both trumpet and piano, developing a unique style that blends traditional jazz with contemporary influences. What started as childhood curiosity quickly blossomed into a lifelong commitment to musical excellence.
+                Joshua Mercado is a young, up and coming trumpet player based in New Jersey. Raised in Central Florida, he earned his Bachelor's degree in Jazz Studies from the University of Central Florida and is currently pursuing a Master's degree at William Paterson University, where he studies with renowned trumpeter Jeremy Pelt.
               </p>
               
               <p>
-                With over 15 years of professional performance experience, Joshua has graced stages from intimate jazz clubs to major concert halls, captivating audiences with his soulful interpretations and masterful improvisations. His performances are characterized by a deep understanding of jazz tradition coupled with innovative approaches that keep the music fresh and engaging for modern audiences.
+                Mercado moved into the New York City area in 2024 where he quickly started getting his name out and onto the scene. He regularly performs with Winard Harper and the Jeli Posse, having played at venues such as The Bean Runner and Martha's Vineyard in Massachusetts. Other notable musicians he's played with throughout his young career are Joy Brown, Rodney Green, Mike Lee, and Clarence Penn, performing at some of the top clubs in the city such as Smalls and Dizzy's Jazz Club.
               </p>
               
               <p>
-                Joshua's educational background includes a Master of Music in Jazz Performance from Berklee College of Music in Boston and a Bachelor of Arts in Music Composition from New England Conservatory. This formal training provided him with both the technical foundation and creative freedom to explore the boundaries of jazz music while respecting its rich heritage.
-              </p>
-              
-              <p>
-                Throughout his career, Joshua has achieved significant recognition in the jazz community. He was a featured performer at the Chicago Jazz Festival 2023, winner of the Downtown Jazz Competition 2022, and has released three studio albums that showcase his versatility as both a performer and composer. As a resident musician at the Blue Note Jazz Club, he continues to develop his craft and connect with fellow musicians and jazz enthusiasts.
-              </p>
-              
-              <p>
-                Beyond performing, Joshua is passionate about music education and mentoring young musicians. He believes in the power of jazz to bring people together and create meaningful connections across cultural and generational divides. His approach to music emphasizes both technical precision and emotional authenticity, creating performances that resonate deeply with listeners.
+                His versatility as a musician has also led him to national touring opportunities. In 2024, he went on the road with Joey Fatone (*NSYNC) and AJ McLean (Backstreet Boys) on their A Legendary Night tour, performing at historic venues such as The Ryman, The Factory, and The MGM Grand National Harbor. Through his connection with Joey Fatone, he has shared the stage with other celebrities, including but not limited to Debbie Gibson, Lance Bass, Chris Kirkpatrick, Montell Jordan, Shawn Stockman, Wanya Morris, and even Murr from Impractical Jokers.
               </p>
             </div>
           </div>
