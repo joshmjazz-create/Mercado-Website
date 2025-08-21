@@ -15,13 +15,14 @@ function parseBiographyContent(content: string) {
   const paragraphs = content.split('\n\n').filter(p => p.trim());
   
   return paragraphs.map((paragraph, index) => {
-    // Create JSX with specific italicization for the exact titles mentioned in replit.md
+    // Create JSX with specific italicization, removing any asterisks first
     let processedText = paragraph;
     
-    // Italicize "A Legendary Night" specifically
-    processedText = processedText.replace(/A Legendary Night/g, '<em>A Legendary Night</em>');
+    // Remove any asterisks around text that might be leftover
+    processedText = processedText.replace(/\*([^*]+)\*/g, '$1');
     
-    // Italicize "Impractical Jokers" specifically  
+    // Then italicize only the specific titles mentioned in replit.md
+    processedText = processedText.replace(/A Legendary Night/g, '<em>A Legendary Night</em>');
     processedText = processedText.replace(/Impractical Jokers/g, '<em>Impractical Jokers</em>');
     
     return (
