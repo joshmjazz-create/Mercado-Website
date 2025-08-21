@@ -4,7 +4,6 @@ import { ExternalLink } from "lucide-react";
 import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { apiRequest } from "@/lib/queryClient";
 
 interface Album {
   id: string;
@@ -27,10 +26,6 @@ export default function Music() {
 
   const { data: albums, isLoading, error } = useQuery({
     queryKey: ['/api/albums'],
-    queryFn: async () => {
-      const response = await apiRequest('/api/albums');
-      return response;
-    },
     staleTime: 30 * 60 * 1000, // Cache for 30 minutes
     gcTime: 60 * 60 * 1000, // Keep in cache for 1 hour
     refetchOnWindowFocus: false,
