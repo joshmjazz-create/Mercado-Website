@@ -79,20 +79,38 @@ class GoogleDriveService {
     }
   }
 
-  // Generate direct image URLs for display
+  // Generate direct image URLs for display using Google Drive's public sharing
   getDirectImageUrl(fileId: string, size: 'small' | 'medium' | 'large' = 'medium'): string {
     const sizeMap = {
-      small: 'w600-h400',
-      medium: 'w1200-h800', 
-      large: 'w1920-h1280'
+      small: 's600',
+      medium: 's1200', 
+      large: 's1920'
     };
     
-    return `https://drive.google.com/thumbnail?id=${fileId}&sz=${sizeMap[size]}`;
+    // Use Google Drive's public image serving endpoint
+    return `https://lh3.googleusercontent.com/d/${fileId}=${sizeMap[size]}`;
   }
 
   // Get high quality direct download URL for full-size images
   getHighQualityImageUrl(fileId: string): string {
-    return `https://drive.google.com/uc?id=${fileId}&export=download`;
+    return `https://drive.google.com/uc?id=${fileId}&export=view`;
+  }
+
+  // Alternative method using Drive's native thumbnail if available
+  getThumbnailFromDrive(photo: any, size: 'small' | 'medium' | 'large' = 'medium'): string {
+    if (photo.thumbnailLink) {
+      // Use the native thumbnail from Google Drive and modify size
+      const sizeMap = {
+        small: 's600',
+        medium: 's1200', 
+        large: 's1920'
+      };
+      
+      // Replace the =s220 parameter in thumbnailLink with our desired size
+      return photo.thumbnailLink.replace(/=s\d+/, `=${sizeMap[size]}`);
+    }
+    
+    return this.getDirectImageUrl(photo.id, size);
   }
 }
 

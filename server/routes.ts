@@ -151,12 +151,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const photos = await googleDriveService.getPhotosFromFolder(folderId);
       
-      // Transform photos to include direct image URLs
+      // Transform photos to include direct image URLs  
       const transformedPhotos = photos.map(photo => ({
         ...photo,
         directUrl: googleDriveService.getHighQualityImageUrl(photo.id),
-        thumbnailUrl: googleDriveService.getDirectImageUrl(photo.id, 'medium'),
-        largeUrl: googleDriveService.getDirectImageUrl(photo.id, 'large'),
+        thumbnailUrl: googleDriveService.getThumbnailFromDrive(photo, 'medium'),
+        largeUrl: googleDriveService.getThumbnailFromDrive(photo, 'large'),
+        fallbackUrl: googleDriveService.getDirectImageUrl(photo.id, 'medium'),
       }));
       
       res.json(transformedPhotos);
@@ -187,8 +188,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const transformedPhotos = photos.map(photo => ({
         ...photo,
         directUrl: googleDriveService.getHighQualityImageUrl(photo.id),
-        thumbnailUrl: googleDriveService.getDirectImageUrl(photo.id, 'medium'),
-        largeUrl: googleDriveService.getDirectImageUrl(photo.id, 'large'),
+        thumbnailUrl: googleDriveService.getThumbnailFromDrive(photo, 'medium'),
+        largeUrl: googleDriveService.getThumbnailFromDrive(photo, 'large'),
+        fallbackUrl: googleDriveService.getDirectImageUrl(photo.id, 'medium'),
       }));
       
       res.json(transformedPhotos);

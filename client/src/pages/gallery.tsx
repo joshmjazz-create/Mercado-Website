@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface DrivePhoto {
   id: string;
@@ -7,6 +7,7 @@ interface DrivePhoto {
   thumbnailUrl: string;
   directUrl: string;
   largeUrl: string;
+  fallbackUrl: string;
   webViewLink: string;
   mimeType: string;
   createdTime: string;
@@ -14,9 +15,15 @@ interface DrivePhoto {
 
 export default function Gallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   
   // Joshua's Google Drive performance photos folder
   const driveShareUrl = "https://drive.google.com/drive/folders/1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd";
+
+  // Force invalidate cache on mount to get fresh images
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['/api/drive/shared-photos'] });
+  }, [queryClient]);
   
   const { data: photos = [], isLoading, error } = useQuery<DrivePhoto[]>({
     queryKey: ['/api/drive/shared-photos'],
@@ -35,6 +42,8 @@ export default function Gallery() {
       
       return response.json();
     },
+    staleTime: 0, // Always refetch
+    gcTime: 0, // Don't cache (TanStack Query v5 uses gcTime instead of cacheTime)
   });
 
   if (isLoading) {
@@ -111,9 +120,11 @@ export default function Gallery() {
                   className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                   onError={(e) => {
-                    // Fallback to largeUrl if thumbnail fails
+                    // Try fallback URLs if main thumbnail fails
                     const target = e.target as HTMLImageElement;
-                    if (target.src !== photo.largeUrl) {
+                    if (target.src === photo.thumbnailUrl && photo.fallbackUrl) {
+                      target.src = photo.fallbackUrl;
+                    } else if (target.src === photo.fallbackUrl && photo.largeUrl) {
                       target.src = photo.largeUrl;
                     }
                   }}
