@@ -60,7 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (description.includes('TEAL')) return 'teal';
           if (description.includes('CYAN')) return 'cyan';
           if (description.includes('INDIGO')) return 'indigo';
-          return 'default';
+          return 'purple'; // Default to purple instead of 'default'
         };
 
         // Helper function to clean description (remove SHOW and color keywords)
