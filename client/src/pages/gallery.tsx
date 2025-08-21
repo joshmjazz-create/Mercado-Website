@@ -1,15 +1,10 @@
 import { useState, useEffect } from "react";
 
-// Manual photo gallery - Add your Google Photos album image URLs here
-const GALLERY_PHOTOS = [
-  // INSTRUCTIONS: Replace these example URLs with direct image links from your Google Photos album
-  // To get direct links: Open photo in Google Photos > Share > Copy link > Replace 'open' with 'uc' in URL
-  // Example format: "https://drive.google.com/uc?id=YOUR_PHOTO_ID"
-  
-  // Add your photo URLs here:
-  // "https://drive.google.com/uc?id=PHOTO_ID_1",
-  // "https://drive.google.com/uc?id=PHOTO_ID_2",
-  // "https://drive.google.com/uc?id=PHOTO_ID_3",
+// Manual photo gallery - Google Photos album images
+const GALLERY_PHOTOS: string[] = [
+  // Joshua Mercado Performance Gallery
+  // Note: Google Photos shared album - images will be extracted from: https://photos.app.goo.gl/Aiv4XCPayaM17DMy9
+  // For now, displaying placeholder message until individual photo URLs are added
 ];
 
 interface Photo {
