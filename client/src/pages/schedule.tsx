@@ -15,7 +15,7 @@ export default function Schedule() {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-jazz-dark mb-4">Upcoming Shows</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-purple-800 mb-4">Upcoming Shows</h2>
             <p className="text-xl text-gray-600 mb-8">Catch Joshua live at these upcoming performances</p>
             <div className="w-24 h-1 bg-jazz-blue mx-auto"></div>
           </div>
@@ -54,7 +54,7 @@ export default function Schedule() {
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-jazz-dark mb-4">Upcoming Shows</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-purple-800 mb-4">Upcoming Shows</h2>
           <p className="text-xl text-gray-600 mb-8">Catch Joshua live at these upcoming performances</p>
           <div className="w-24 h-1 bg-jazz-blue mx-auto"></div>
         </div>
@@ -84,7 +84,7 @@ export default function Schedule() {
                             <div className="text-2xl font-bold">{day}</div>
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-xl font-bold text-jazz-dark mb-2">{event.title}</h3>
+                            <h3 className="text-xl font-bold text-purple-800 mb-2">{event.title}</h3>
                             {event.description && (
                               <p className="text-gray-600 mb-2">{event.description}</p>
                             )}
