@@ -14,8 +14,8 @@ interface DrivePhoto {
 export default function Gallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   
-  // Your Google Drive share URL - replace this with your actual folder share URL
-  const driveShareUrl = "https://drive.google.com/drive/folders/YOUR_FOLDER_ID";
+  // Joshua's Google Drive performance photos folder
+  const driveShareUrl = "https://drive.google.com/drive/folders/1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd";
   
   const { data: photos = [], isLoading, error } = useQuery<DrivePhoto[]>({
     queryKey: ['/api/drive/shared-photos'],
