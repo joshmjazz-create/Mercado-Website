@@ -160,8 +160,8 @@ export default function Music() {
       }
       
       // Start exactly at 1/3 mark, but ensure we don't start too close to the end
-      const startTime = Math.min(duration / 3, duration - 12); // Leave at least 12 seconds
-      const previewDuration = 10; // Exactly 10 seconds
+      const startTime = Math.min(duration / 3, duration - 17); // Leave at least 17 seconds
+      const previewDuration = 15; // Exactly 15 seconds
       console.log('Start time:', startTime, 'Preview duration:', previewDuration, 'Total duration:', duration);
 
       // Set start time
