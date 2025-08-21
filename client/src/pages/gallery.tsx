@@ -26,25 +26,30 @@ export default function Gallery() {
     queryClient.invalidateQueries({ queryKey: ['/api/drive/shared-photos'] });
   }, [queryClient]);
 
-  // Function to determine container class based on image aspect ratio
-  const getImageContainerClass = (photoId: string) => {
+  // Function to determine container style based on exact image aspect ratio
+  const getImageContainerStyle = (photoId: string) => {
     const dimensions = imageDimensions[photoId];
     if (!dimensions) {
-      return "h-64"; // Default height while loading
+      return { height: '256px' }; // Default height while loading (h-64 = 16rem = 256px)
     }
     
     const aspectRatio = dimensions.width / dimensions.height;
     
-    if (aspectRatio > 1.5) {
-      // Wide/landscape images
-      return "h-48";
-    } else if (aspectRatio < 0.7) {
-      // Tall/portrait images
-      return "h-80";
-    } else {
-      // Square-ish images
-      return "h-64";
-    }
+    // Set a base width for the grid column and calculate height to match aspect ratio
+    // Use a consistent width reference of 300px (approximate grid column width)
+    const baseWidth = 300;
+    const calculatedHeight = baseWidth / aspectRatio;
+    
+    // Set reasonable min/max heights to prevent extremely tall or short containers
+    const minHeight = 180; // Minimum height for very wide images
+    const maxHeight = 400; // Maximum height for very tall images
+    
+    const finalHeight = Math.max(minHeight, Math.min(maxHeight, calculatedHeight));
+    
+    return {
+      height: `${finalHeight}px`,
+      aspectRatio: aspectRatio.toString()
+    };
   };
 
   // Function to handle image load and store dimensions
@@ -130,9 +135,9 @@ export default function Gallery() {
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
           {photos.length === 0 ? (
-            <div className="col-span-full text-center py-16">
+            <div className="break-inside-avoid w-full text-center py-16">
               <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -145,7 +150,8 @@ export default function Gallery() {
             photos.map((photo) => (
               <div
                 key={photo.id}
-                className={`group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer ${getImageContainerClass(photo.id)}`}
+                className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer break-inside-avoid mb-6"
+                style={getImageContainerStyle(photo.id)}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
