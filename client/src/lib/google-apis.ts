@@ -52,31 +52,100 @@ export class GoogleApisClient {
   }
 
   async getCalendarEvents(): Promise<GoogleCalendarEvent[]> {
-    // Use the public calendar directly - no API key needed for public calendars
+    // Use public iCal feed - no API key needed for public calendars
     const publicCalendarId = 'joshm.jazz@gmail.com';
     
-    if (!this.calendarApiKey) {
-      throw new Error('Google Calendar API key not configured');
-    }
-
-    const now = new Date().toISOString();
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(publicCalendarId)}/events?key=${this.calendarApiKey}&timeMin=${now}&singleEvents=true&orderBy=startTime&maxResults=10`;
-
     try {
-      const response = await fetch(url);
+      const icalUrl = `https://calendar.google.com/calendar/ical/${encodeURIComponent(publicCalendarId)}/public/basic.ics`;
+      const response = await fetch(icalUrl);
       
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Calendar API error response:`, errorText);
-        throw new Error(`Calendar API error: ${response.status} ${response.statusText} - ${errorText}`);
+        throw new Error(`Calendar feed error: ${response.status} ${response.statusText}`);
       }
       
-      const data = await response.json();
-      return data.items || [];
+      const icalData = await response.text();
+      return this.parseICalData(icalData);
+      
     } catch (error) {
       console.error('Error fetching calendar events:', error);
       throw error;
     }
+  }
+
+  private parseICalData(icalData: string): GoogleCalendarEvent[] {
+    const events: GoogleCalendarEvent[] = [];
+    const lines = icalData.split('\n');
+    let currentEvent: any = null;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      
+      if (line === 'BEGIN:VEVENT') {
+        currentEvent = {};
+      } else if (line === 'END:VEVENT' && currentEvent) {
+        if (currentEvent.summary && currentEvent.dtstart) {
+          events.push({
+            id: currentEvent.uid || Date.now().toString(),
+            summary: currentEvent.summary,
+            description: currentEvent.description || '',
+            start: {
+              dateTime: this.parseICalDateTime(currentEvent.dtstart),
+              timeZone: 'America/New_York'
+            },
+            end: {
+              dateTime: this.parseICalDateTime(currentEvent.dtend || currentEvent.dtstart),
+              timeZone: 'America/New_York'
+            },
+            location: currentEvent.location || ''
+          });
+        }
+        currentEvent = null;
+      } else if (currentEvent && line.includes(':')) {
+        const [key, ...valueParts] = line.split(':');
+        const value = valueParts.join(':');
+        
+        switch (key) {
+          case 'SUMMARY':
+            currentEvent.summary = value;
+            break;
+          case 'DESCRIPTION':
+            currentEvent.description = value;
+            break;
+          case 'DTSTART':
+            currentEvent.dtstart = value;
+            break;
+          case 'DTEND':
+            currentEvent.dtend = value;
+            break;
+          case 'LOCATION':
+            currentEvent.location = value;
+            break;
+          case 'UID':
+            currentEvent.uid = value;
+            break;
+        }
+      }
+    }
+    
+    // Filter future events only and sort by start time
+    const now = new Date();
+    return events
+      .filter(event => new Date(event.start.dateTime) >= now)
+      .sort((a, b) => new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime())
+      .slice(0, 10);
+  }
+
+  private parseICalDateTime(icalDateTime: string): string {
+    // Parse iCal datetime format (YYYYMMDDTHHMMSSZ) to ISO string
+    if (!icalDateTime) return new Date().toISOString();
+    
+    const match = icalDateTime.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/);
+    if (match) {
+      const [, year, month, day, hour, minute, second] = match;
+      return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}Z`).toISOString();
+    }
+    
+    return new Date().toISOString();
   }
 
   async getPhotos(): Promise<GooglePhoto[]> {
