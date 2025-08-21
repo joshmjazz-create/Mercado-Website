@@ -136,6 +136,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get photos from Google Drive
+  app.get("/api/drive/photos/:folderId", async (req, res) => {
+    try {
+      const { folderId } = req.params;
+      
+      if (!process.env.GOOGLE_DRIVE_CREDENTIALS) {
+        return res.status(500).json({ 
+          success: false, 
+          message: "Google Drive credentials not configured" 
+        });
+      }
+
+      // TODO: Implement Google Drive API integration
+      // This will be completed once the full credentials are provided
+      
+      res.json([]);
+    } catch (error: any) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to fetch Drive photos" 
+      });
+    }
+  });
+
   // Get photos from Google Photos and local storage
   app.get("/api/photos", async (req, res) => {
     try {
