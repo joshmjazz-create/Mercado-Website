@@ -58,6 +58,10 @@ A professional jazz musician website for Joshua Mercado featuring:
 - Replaced Google Photos/PublicAlbum widget with direct Google Drive API photo fetching
 - Added responsive photo grid with lightbox modal and hover effects
 - Google Drive credentials configured: mercado-website@mercado-driveapi547.iam.gserviceaccount.com
+- Optimized gallery layout with clean grid system and mobile-responsive sizing
+- Removed gallery footer text and photo count for cleaner appearance
+- Implemented smaller preview sizes on mobile with proper spacing to prevent overlap
+- Added full-page expansion with max-width removal for better space utilization
 
 ## Music Page Features
 - Album covers displayed in responsive grid

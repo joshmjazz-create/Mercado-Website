@@ -16,6 +16,7 @@ interface DrivePhoto {
 export default function Gallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [imageDimensions, setImageDimensions] = useState<Record<string, { width: number; height: number }>>({});
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const queryClient = useQueryClient();
   
   // Joshua's Google Drive performance photos folder
@@ -26,29 +27,43 @@ export default function Gallery() {
     queryClient.invalidateQueries({ queryKey: ['/api/drive/shared-photos'] });
   }, [queryClient]);
 
+  // Handle window resize for responsive sizing
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Function to determine container style based on exact image aspect ratio
   const getImageContainerStyle = (photoId: string) => {
     const dimensions = imageDimensions[photoId];
     if (!dimensions) {
-      return { height: '256px' }; // Default height while loading (h-64 = 16rem = 256px)
+      return { 
+        height: '200px', // Smaller default for mobile
+        aspectRatio: '1'
+      };
     }
     
     const aspectRatio = dimensions.width / dimensions.height;
     
-    // Set a base width for the grid column and calculate height to match aspect ratio
-    // Use a consistent width reference of 300px (approximate grid column width)
-    const baseWidth = 300;
+    // Mobile-first responsive sizing
+    const isMobile = windowWidth < 768;
+    const baseWidth = isMobile ? 150 : 280; // Smaller base width for mobile
     const calculatedHeight = baseWidth / aspectRatio;
     
-    // Set reasonable min/max heights to prevent extremely tall or short containers
-    const minHeight = 180; // Minimum height for very wide images
-    const maxHeight = 400; // Maximum height for very tall images
+    // Different min/max heights for mobile vs desktop
+    const minHeight = isMobile ? 120 : 160;
+    const maxHeight = isMobile ? 250 : 320;
     
     const finalHeight = Math.max(minHeight, Math.min(maxHeight, calculatedHeight));
     
     return {
       height: `${finalHeight}px`,
-      aspectRatio: aspectRatio.toString()
+      aspectRatio: aspectRatio.toString(),
+      width: '100%'
     };
   };
 
@@ -135,9 +150,9 @@ export default function Gallery() {
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
         
-        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
           {photos.length === 0 ? (
-            <div className="break-inside-avoid w-full text-center py-16">
+            <div className="col-span-full text-center py-16">
               <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -150,7 +165,7 @@ export default function Gallery() {
             photos.map((photo) => (
               <div
                 key={photo.id}
-                className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer break-inside-avoid mb-6"
+                className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
                 style={getImageContainerStyle(photo.id)}
                 onClick={(e) => {
                   e.preventDefault();
@@ -162,7 +177,7 @@ export default function Gallery() {
                 <img
                   src={photo.thumbnailUrl}
                   alt={photo.name}
-                  className="w-full h-full object-contain bg-gray-100 group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover bg-gray-100 group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                   onLoad={(e) => handleImageLoad(photo.id, e)}
                   onError={(e) => {
