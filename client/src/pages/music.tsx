@@ -5,14 +5,14 @@ import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-interface DriveAlbum {
+interface Album {
   id: string;
   title: string;
   artist: string;
   year: string;
   links: {
     spotify?: string;
-    applemusic?: string;
+    apple?: string;
     youtube?: string;
   };
   category: string;
@@ -23,13 +23,13 @@ interface DriveAlbum {
 }
 
 interface AlbumCategories {
-  original: DriveAlbum[];
-  featured: DriveAlbum[];
-  upcoming: DriveAlbum[];
+  original: Album[];
+  featured: Album[];
+  upcoming: Album[];
 }
 
 export default function Music() {
-  const [selectedAlbum, setSelectedAlbum] = useState<DriveAlbum | null>(null);
+  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
   const [showPlatforms, setShowPlatforms] = useState(false);
 
   const musicFolderUrl = "https://drive.google.com/drive/folders/1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6";
@@ -49,29 +49,25 @@ export default function Music() {
       
       return await response.json();
     },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
-    refetchOnWindowFocus: false, // Don't refetch on focus
-    retry: 1, // Reduce retry attempts for faster failure
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
 
-  const handleAlbumClick = (album: DriveAlbum) => {
+  const handleAlbumClick = (album: Album) => {
     setSelectedAlbum(album);
     setShowPlatforms(true);
   };
 
   const handlePlatformClick = (url: string) => {
-    window.open(url, '_blank');
-    setShowPlatforms(false);
-  };
-
-  const getCategoryTitle = (category: string) => {
-    switch (category) {
-      case 'original': return 'My Music';
-      case 'featured': return 'Featured On';
-      case 'upcoming': return 'Upcoming';
-      default: return category;
+    // Clean up the URL if it has prefix text
+    let cleanUrl = url;
+    if (url.includes(' - ')) {
+      cleanUrl = url.split(' - ').pop() || url;
     }
+    window.open(cleanUrl, '_blank');
+    setShowPlatforms(false);
   };
 
   if (isLoading) {
@@ -108,19 +104,13 @@ export default function Music() {
             <div className="w-24 h-1 bg-purple-800 mx-auto mb-8"></div>
           </div>
           <div className="text-center">
-            <div className="text-red-500 text-lg mb-4">Unable to load albums from Google Drive</div>
-            <div className="text-gray-600">Please check your internet connection and try again</div>
+            <div className="text-red-500 text-lg mb-4">Unable to load albums</div>
+            <div className="text-gray-600">Please try refreshing the page</div>
           </div>
         </div>
       </div>
     );
   }
-
-  const allAlbums = [
-    ...(categories?.original || []),
-    ...(categories?.featured || []),
-    ...(categories?.upcoming || [])
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 py-8">
@@ -130,7 +120,7 @@ export default function Music() {
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
 
-        {/* My Music (Original) - No header shown */}
+        {/* Original Music - No header shown */}
         {categories?.original && categories.original.length > 0 && (
           <div className="mb-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -144,7 +134,7 @@ export default function Music() {
                   <div className="aspect-square bg-gradient-to-br from-purple-100 to-yellow-100 flex items-center justify-center">
                     {album.coverImageUrl ? (
                       <img
-                        src={`https://drive.google.com/thumbnail?id=${album.coverImageUrl}&sz=w400-h400`}
+                        src={album.coverImageUrl}
                         alt={album.title}
                         className="w-full h-full object-cover"
                         loading="lazy"
@@ -183,7 +173,7 @@ export default function Music() {
                   <div className="aspect-square bg-gradient-to-br from-purple-100 to-yellow-100 flex items-center justify-center">
                     {album.coverImageUrl ? (
                       <img
-                        src={`https://drive.google.com/thumbnail?id=${album.coverImageUrl}&sz=w400-h400`}
+                        src={album.coverImageUrl}
                         alt={album.title}
                         className="w-full h-full object-cover"
                         loading="lazy"
@@ -222,7 +212,7 @@ export default function Music() {
                   <div className="aspect-square bg-gradient-to-br from-purple-100 to-yellow-100 flex items-center justify-center">
                     {album.coverImageUrl ? (
                       <img
-                        src={`https://drive.google.com/thumbnail?id=${album.coverImageUrl}&sz=w400-h400`}
+                        src={album.coverImageUrl}
                         alt={album.title}
                         className="w-full h-full object-cover"
                         loading="lazy"
@@ -263,9 +253,9 @@ export default function Music() {
                 </Button>
               )}
 
-              {selectedAlbum?.links?.applemusic && (
+              {selectedAlbum?.links?.apple && (
                 <Button
-                  onClick={() => handlePlatformClick(selectedAlbum.links.applemusic!)}
+                  onClick={() => handlePlatformClick(selectedAlbum.links.apple!)}
                   className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg flex items-center justify-center gap-3"
                 >
                   <FaApple className="text-xl" />
@@ -285,7 +275,7 @@ export default function Music() {
                 </Button>
               )}
 
-              {(!selectedAlbum?.links?.spotify && !selectedAlbum?.links?.applemusic && !selectedAlbum?.links?.youtube) && (
+              {(!selectedAlbum?.links?.spotify && !selectedAlbum?.links?.apple && !selectedAlbum?.links?.youtube) && (
                 <div className="text-center py-8 text-gray-500">
                   Links not available yet
                 </div>
