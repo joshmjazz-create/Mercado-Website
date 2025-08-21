@@ -254,7 +254,7 @@ export default function Schedule() {
           <DialogHeader>
             <DialogTitle className="text-purple-800">{selectedEvent?.title}</DialogTitle>
             <DialogDescription>
-              Event details and booking information
+              {selectedEvent?.description || " "}
             </DialogDescription>
           </DialogHeader>
           
