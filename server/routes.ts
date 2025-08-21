@@ -79,13 +79,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           color: getEventColor(gEvent.description || ""),
         }));
 
-        // Filter to only show events with exactly "SHOWS" in the description (case-sensitive)
+        // Filter to only show events with exactly "SHOW" in the description (case-sensitive)
         const events = allEvents.filter(event => 
-          event.description.includes('SHOWS')
+          event.description.includes('SHOW')
         );
         
         // Log for debugging (remove in production)
-        console.log(`Found ${allEvents.length} total events, ${events.length} with "SHOWS" in description`);
+        console.log(`Found ${allEvents.length} total events, ${events.length} with "SHOW" in description`);
         
         // Sort events by start time
         events.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
