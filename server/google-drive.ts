@@ -261,33 +261,42 @@ class GoogleDriveService {
         }
 
         if (categoryKey) {
-          // Get Google Docs from this category folder
-          const files = await this.getFilesFromFolder(folder.id, "mimeType='application/vnd.google-apps.document'");
+          // Get album folders from this category folder (My Music, Featured On, Upcoming)
+          const albumFolders = await this.getFoldersInFolder(folder.id);
           
-          for (const file of files) {
+          for (const albumFolder of albumFolders) {
             try {
-              const docContent = await this.getDocContent(file.id);
-              const metadata = this.parseAlbumMetadata(docContent);
+              // Get Google Docs from each album folder
+              const files = await this.getFilesFromFolder(albumFolder.id, "mimeType='application/vnd.google-apps.document'");
               
-              if (metadata.title) {
-                const spotifyImageUrl = await this.getSpotifyAlbumCover(metadata.links.spotify || '');
-                
-                const album = {
-                  id: file.id,
-                  title: metadata.title,
-                  artist: metadata.artist,
-                  year: metadata.year,
-                  links: metadata.links,
-                  category: categoryKey,
-                  spotifyId: this.extractSpotifyId(metadata.links.spotify || ''),
-                  coverImageUrl: spotifyImageUrl,
-                  createdTime: file.createdTime
-                };
-                
-                categories[categoryKey].push(album);
+              for (const file of files) {
+                try {
+                  const docContent = await this.getDocContent(file.id);
+                  const metadata = this.parseAlbumMetadata(docContent);
+                  
+                  if (metadata.title) {
+                    const spotifyImageUrl = await this.getSpotifyAlbumCover(metadata.links.spotify || '');
+                    
+                    const album = {
+                      id: file.id,
+                      title: metadata.title,
+                      artist: metadata.artist,
+                      year: metadata.year,
+                      links: metadata.links,
+                      category: categoryKey,
+                      spotifyId: this.extractSpotifyId(metadata.links.spotify || ''),
+                      coverImageUrl: spotifyImageUrl,
+                      createdTime: file.createdTime
+                    };
+                    
+                    categories[categoryKey].push(album);
+                  }
+                } catch (error) {
+                  console.error(`Error processing document ${file.name} in folder ${albumFolder.name}:`, error);
+                }
               }
             } catch (error) {
-              console.error(`Error processing document ${file.name}:`, error);
+              console.error(`Error processing album folder ${albumFolder.name}:`, error);
             }
           }
         }

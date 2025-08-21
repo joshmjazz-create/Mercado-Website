@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ExternalLink, Play, Pause, Loader2 } from "lucide-react";
+import { ExternalLink, Loader2 } from "lucide-react";
 import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -43,11 +43,17 @@ export default function Music() {
   const { data: categories, isLoading, error } = useQuery({
     queryKey: ['/api/drive/music-albums'],
     queryFn: async (): Promise<AlbumCategories> => {
-      return await apiRequest('/api/drive/music-albums', {
+      const response = await fetch('/api/drive/music-albums', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ shareUrl: musicFolderUrl })
       });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch albums: ${response.status}`);
+      }
+      
+      return await response.json();
     },
   });
 
@@ -179,6 +185,9 @@ export default function Music() {
         {/* Platform Selection Dialog */}
         <Dialog open={showPlatforms} onOpenChange={setShowPlatforms}>
           <DialogContent className="sm:max-w-md">
+            <DialogTitle className="sr-only">
+              {selectedAlbum ? `Listen to ${selectedAlbum.title}` : 'Select Platform'}
+            </DialogTitle>
             {selectedAlbum && (
               <div className="text-center p-6">
                 <div className="aspect-square w-32 mx-auto mb-4 rounded-lg overflow-hidden">

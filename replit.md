@@ -43,14 +43,7 @@ A professional jazz musician website for Joshua Mercado featuring:
 - Event descriptions hide "SHOW" and color keywords from display while using them for filtering/styling
 - Made venue locations clickable for navigation and removed backslashes from addresses
 - Updated Bio page to single "Biography" heading with continuous narrative text
-- Added Music page with album cover gallery and three categories
-- Implemented album categories: Original (4), Featured On (2), Upcoming (2)
-- Added audio preview functionality for upcoming albums with 10-second fade in/out
-- Removed all admin controls from Music page per user request
-- Updated subcategory headings to be smaller, underlined, grey, and left-aligned
 - Implemented mobile navigation with hamburger menu
-- Added platform selection modal (Spotify, Apple Music, YouTube)
-- Updated database schema from music recordings to albums with category field
 - Removed all page descriptions for cleaner appearance (January 2025)
 - Standardized all page title font sizes to text-5xl across all pages
 - Made purple underlines match exact same color as titles (purple-800)
@@ -62,6 +55,15 @@ A professional jazz musician website for Joshua Mercado featuring:
 - Removed gallery footer text and photo count for cleaner appearance
 - Implemented smaller preview sizes on mobile with proper spacing to prevent overlap
 - Added full-page expansion with max-width removal for better space utilization
+- **MAJOR UPDATE: Fully integrated Music page with Google Drive API (August 2025)**
+- Replaced static album system with dynamic Google Drive integration
+- Implemented nested folder parsing: Music → Category folders → Individual album folders → Google Docs
+- Added automatic Google Docs metadata parsing with exact user format (TITLE, ARTIST, YEAR, LINKS)
+- Integrated Spotify oEmbed API for automatic album cover fetching from provided Spotify URLs
+- Real-time content management: albums update automatically when Drive folders are modified
+- Supports three categories: "My Music" (original), "Featured On" (collaborations), "Upcoming" (unreleased)
+- Added platform selection modal with Spotify, Apple Music, and YouTube integration
+- Contact page icons made clickable with purple hover effects matching calendar design
 
 ## Music Page Features
 - Album covers displayed in responsive grid
