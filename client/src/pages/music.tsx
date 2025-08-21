@@ -276,9 +276,11 @@ export default function Music() {
 
     return (
       <div className="mb-12 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
-        <h3 className="text-lg font-semibold text-purple-800 mb-6 underline text-left">
-          {title}
-        </h3>
+        {title !== 'My Music' && (
+          <h3 className="text-lg font-semibold text-gray-500 mb-6 underline text-left">
+            {title}
+          </h3>
+        )}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {albums.map((album, index) => (
             <div

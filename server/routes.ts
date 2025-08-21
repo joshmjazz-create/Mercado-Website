@@ -266,74 +266,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Audio file streaming endpoint for upcoming albums with proper metadata support
+  // Audio file streaming endpoint for upcoming albums
   app.get('/api/audio/:fileId', async (req, res) => {
     try {
       const { fileId } = req.params;
+      console.log(`Audio request for file ID: ${fileId}`);
       
-      // Get file metadata first - use getFileInfo for proper metadata
-      const metadata = await googleDriveService.getFileInfo(fileId);
-      if (!metadata || !metadata.mimeType?.startsWith('audio/')) {
+      // Get file metadata to verify it's an audio file
+      let metadata;
+      try {
+        metadata = await googleDriveService.getFile(fileId);
+        console.log(`File metadata:`, metadata);
+      } catch (metaError) {
+        console.error('Error getting file metadata:', metaError);
+        return res.status(404).json({ error: 'Audio file not found' });
+      }
+
+      if (!metadata?.mimeType?.startsWith('audio/')) {
+        console.log(`File is not audio: ${metadata?.mimeType}`);
         return res.status(400).json({ error: 'File is not an audio file' });
       }
       
-      // Set headers optimized for audio metadata loading
+      // Set headers for audio streaming
       res.set({
         'Content-Type': metadata.mimeType,
-        'Content-Length': metadata.size?.toString() || '0',
         'Accept-Ranges': 'bytes',
-        'Cache-Control': 'no-cache', // Disable cache for metadata loading
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Range',
-        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS'
+        'Cache-Control': 'public, max-age=3600',
+        'Access-Control-Allow-Origin': '*'
       });
 
-      // Handle range requests properly for seeking and metadata
-      const range = req.headers.range;
-      if (range) {
-        const parts = range.replace(/bytes=/, "").split("-");
-        const start = parseInt(parts[0], 10) || 0;
-        const fileSize = parseInt(metadata.size) || 0;
-        const end = parseInt(parts[1], 10) || fileSize - 1;
-        const chunksize = (end - start) + 1;
-
-        // Set partial content headers
-        res.set({
-          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-          'Content-Length': chunksize.toString(),
-        });
-        res.status(206);
-        
-        console.log(`Audio range request: ${start}-${end}/${fileSize} (chunk: ${chunksize})`);
+      // If metadata has size, set content length
+      if (metadata.size) {
+        res.set('Content-Length', metadata.size.toString());
       }
       
-      // Get the audio file stream from Google Drive API properly
+      // Stream the file using the public method
       try {
-        const driveResponse = await googleDriveService.drive.files.get({
-          fileId: fileId,
-          alt: 'media'
-        }, { responseType: 'stream' });
+        const fileStream = await googleDriveService.getFileStream(fileId);
+        console.log(`Successfully got stream for file: ${fileId}`);
         
-        // Pipe the Google Drive stream directly to response
-        driveResponse.data.on('error', (err: Error) => {
-          console.error('Google Drive stream error:', err);
+        fileStream.on('error', (err: Error) => {
+          console.error('File stream error:', err);
           if (!res.headersSent) {
-            res.status(500).json({ error: 'Google Drive stream error' });
+            res.status(500).json({ error: 'Stream error' });
           }
         });
         
-        driveResponse.data.pipe(res);
+        fileStream.pipe(res);
+        
       } catch (streamError) {
-        console.error('Error getting stream from Google Drive:', streamError);
-        if (!res.headersSent) {
-          res.status(500).json({ error: 'Failed to get audio stream' });
-        }
+        console.error('Error getting file stream:', streamError);
+        return res.status(500).json({ error: 'Failed to stream audio file' });
       }
       
     } catch (error) {
-      console.error('Error streaming audio file:', error);
+      console.error('Outer error in audio endpoint:', error);
       if (!res.headersSent) {
-        res.status(500).json({ error: 'Failed to stream audio file' });
+        res.status(500).json({ error: 'Internal server error' });
       }
     }
   });
