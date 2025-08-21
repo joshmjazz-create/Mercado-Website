@@ -82,12 +82,17 @@ class GoogleDriveService {
   // Generate direct image URLs for display
   getDirectImageUrl(fileId: string, size: 'small' | 'medium' | 'large' = 'medium'): string {
     const sizeMap = {
-      small: 'w400-h300',
-      medium: 'w800-h600', 
-      large: 'w1200-h900'
+      small: 'w600-h400',
+      medium: 'w1200-h800', 
+      large: 'w1920-h1280'
     };
     
     return `https://drive.google.com/thumbnail?id=${fileId}&sz=${sizeMap[size]}`;
+  }
+
+  // Get high quality direct download URL for full-size images
+  getHighQualityImageUrl(fileId: string): string {
+    return `https://drive.google.com/uc?id=${fileId}&export=download`;
   }
 }
 

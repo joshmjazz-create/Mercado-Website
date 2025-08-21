@@ -6,6 +6,7 @@ interface DrivePhoto {
   name: string;
   thumbnailUrl: string;
   directUrl: string;
+  largeUrl: string;
   webViewLink: string;
   mimeType: string;
   createdTime: string;
@@ -109,6 +110,13 @@ export default function Gallery() {
                   alt={photo.name}
                   className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
+                  onError={(e) => {
+                    // Fallback to largeUrl if thumbnail fails
+                    const target = e.target as HTMLImageElement;
+                    if (target.src !== photo.largeUrl) {
+                      target.src = photo.largeUrl;
+                    }
+                  }}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity duration-300 flex items-center justify-center">
                   <svg className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
