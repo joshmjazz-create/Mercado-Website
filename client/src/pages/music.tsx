@@ -46,9 +46,10 @@ export default function Music() {
 
   const musicFolderUrl = "https://drive.google.com/drive/folders/1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6";
 
-  const { data: categories, isLoading, error } = useQuery({
-    queryKey: ['/api/drive/music-albums'],
-    queryFn: async (): Promise<AlbumCategories> => {
+  // Load each section independently for better performance
+  const { data: originalAlbums, isLoading: originalLoading } = useQuery({
+    queryKey: ['/api/drive/music-albums', 'original'],
+    queryFn: async (): Promise<DriveAlbum[]> => {
       const response = await fetch('/api/drive/music-albums', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -56,13 +57,54 @@ export default function Music() {
       });
       
       if (!response.ok) {
-        throw new Error(`Failed to fetch albums: ${response.status}`);
+        return [];
       }
       
-      return await response.json();
+      const data: AlbumCategories = await response.json();
+      return data.original || [];
     },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const { data: featuredAlbums, isLoading: featuredLoading } = useQuery({
+    queryKey: ['/api/drive/music-albums', 'featured'],
+    queryFn: async (): Promise<DriveAlbum[]> => {
+      const response = await fetch('/api/drive/music-albums', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shareUrl: musicFolderUrl })
+      });
+      
+      if (!response.ok) {
+        return [];
+      }
+      
+      const data: AlbumCategories = await response.json();
+      return data.featured || [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const { data: upcomingAlbums, isLoading: upcomingLoading } = useQuery({
+    queryKey: ['/api/drive/music-albums', 'upcoming'],
+    queryFn: async (): Promise<DriveAlbum[]> => {
+      const response = await fetch('/api/drive/music-albums', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shareUrl: musicFolderUrl })
+      });
+      
+      if (!response.ok) {
+        return [];
+      }
+      
+      const data: AlbumCategories = await response.json();
+      return data.upcoming || [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const handleAlbumClick = (album: DriveAlbum) => {
@@ -391,20 +433,25 @@ export default function Music() {
     );
   };
 
-  if (isLoading) {
-    return <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white"></div>;
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white px-4 py-8 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">Failed to load music catalog</p>
-          <p className="text-gray-600 text-sm">Please try again later</p>
-        </div>
+  // Loading component for individual sections
+  const LoadingSection = ({ title }: { title?: string }) => (
+    <div className="mb-12 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
+      {title && title !== 'My Music' && (
+        <h3 className="text-lg font-semibold text-gray-500 mb-6 underline text-left">
+          {title}
+        </h3>
+      )}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {[...Array(4)].map((_, index) => (
+          <div key={index} className="animate-pulse">
+            <div className="aspect-square bg-gray-200 rounded-lg mb-3"></div>
+            <div className="h-4 bg-gray-200 rounded mb-2"></div>
+            <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+          </div>
+        ))}
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white px-4 py-8">
@@ -414,9 +461,26 @@ export default function Music() {
           <div className="w-32 h-1 bg-purple-800 mx-auto"></div>
         </div>
 
-        {categories && categories.original && renderAlbumGrid(categories.original, "My Music")}
-        {categories && categories.featured && renderAlbumGrid(categories.featured, "Featured On")}
-        {categories && categories.upcoming && renderAlbumGrid(categories.upcoming, "Upcoming")}
+        {/* My Music Section */}
+        {originalLoading ? (
+          <LoadingSection />
+        ) : originalAlbums && originalAlbums.length > 0 ? (
+          renderAlbumGrid(originalAlbums, "My Music")
+        ) : null}
+
+        {/* Featured On Section */}
+        {featuredLoading ? (
+          <LoadingSection title="Featured On" />
+        ) : featuredAlbums && featuredAlbums.length > 0 ? (
+          renderAlbumGrid(featuredAlbums, "Featured On")
+        ) : null}
+
+        {/* Upcoming Section */}
+        {upcomingLoading ? (
+          <LoadingSection title="Upcoming" />
+        ) : upcomingAlbums && upcomingAlbums.length > 0 ? (
+          renderAlbumGrid(upcomingAlbums, "Upcoming")
+        ) : null}
 
         {/* Platform Selection Dialog */}
         <Dialog open={showPlatforms} onOpenChange={setShowPlatforms}>
