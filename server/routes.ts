@@ -35,6 +35,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get events from Google Calendar (always fresh data)
   app.get("/api/events", async (req, res) => {
+    // Set headers to prevent caching
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store'
+    });
+    
     try {
       // Always fetch fresh data from Google Calendar
       try {
