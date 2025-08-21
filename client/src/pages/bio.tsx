@@ -3,20 +3,26 @@ import { useQuery } from '@tanstack/react-query';
 // Biography Google Drive folder ID
 const BIOGRAPHY_FOLDER_URL = 'https://drive.google.com/drive/folders/1RH0mRswhyD0rXU2mAsrj3fGpevbcw1Th';
 
-// Static fallback content
+// Static fallback content - matches exact original formatting
 const STATIC_BIOGRAPHY = `Joshua Mercado is a young, up and coming trumpet player based in New Jersey. Raised in Central Florida, he earned his Bachelor's degree in Jazz Studies from the University of Central Florida and is currently pursuing a Master's degree at William Paterson University, where he studies with renowned trumpeter Jeremy Pelt.
 
 Mercado moved into the New York City area in 2024 where he quickly started getting his name out and onto the scene. He regularly performs with Winard Harper and the Jeli Posse, having played at venues such as The Bean Runner and Martha's Vineyard in Massachusetts. Other notable musicians he's played with throughout his young career are Joy Brown, Rodney Green, Mike Lee, and Clarence Penn, performing at some of the top clubs in the city such as Smalls and Dizzy's Jazz Club.
 
-His versatility as a musician has also led him to national touring opportunities. In 2024, he went on the road with Joey Fatone (*NSYNC) and AJ McLean (Backstreet Boys) on their *A Legendary Night* tour, performing at historic venues such as The Ryman, The Factory, and The MGM Grand National Harbor. Through his connection with Joey Fatone, he has shared the stage with other celebrities, including but not limited to Debbie Gibson, Lance Bass, Chris Kirkpatrick, Montell Jordan, Shawn Stockman, Wanya Morris, and even Murr from *Impractical Jokers*.`;
+His versatility as a musician has also led him to national touring opportunities. In 2024, he went on the road with Joey Fatone (*NSYNC) and AJ McLean (Backstreet Boys) on their A Legendary Night tour, performing at historic venues such as The Ryman, The Factory, and The MGM Grand National Harbor. Through his connection with Joey Fatone, he has shared the stage with other celebrities, including but not limited to Debbie Gibson, Lance Bass, Chris Kirkpatrick, Montell Jordan, Shawn Stockman, Wanya Morris, and even Murr from Impractical Jokers.`;
 
-// Function to parse Google Docs content and convert to JSX
+// Function to parse biography content with exact formatting
 function parseBiographyContent(content: string) {
   const paragraphs = content.split('\n\n').filter(p => p.trim());
   
   return paragraphs.map((paragraph, index) => {
-    // Convert *text* to <em>text</em>
-    const processedText = paragraph.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    // Create JSX with specific italicization for the exact titles mentioned in replit.md
+    let processedText = paragraph;
+    
+    // Italicize "A Legendary Night" specifically
+    processedText = processedText.replace(/A Legendary Night/g, '<em>A Legendary Night</em>');
+    
+    // Italicize "Impractical Jokers" specifically  
+    processedText = processedText.replace(/Impractical Jokers/g, '<em>Impractical Jokers</em>');
     
     return (
       <p 
