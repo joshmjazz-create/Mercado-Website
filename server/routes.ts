@@ -281,7 +281,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.set({
         'Content-Type': metadata.mimeType,
         'Accept-Ranges': 'bytes',
-        'Cache-Control': 'public, max-age=3600'
+        'Cache-Control': 'public, max-age=3600',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Range'
       });
       
       // Stream the audio file

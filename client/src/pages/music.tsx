@@ -90,40 +90,62 @@ export default function Music() {
       }
 
       // Create new audio element
-      const audio = new Audio(`/api/audio/${album.audioFileId}`);
+      const audio = new Audio();
       audioRef.current = audio;
       setCurrentAudio(album.audioFileId);
 
+      // Set the source and load
+      audio.src = `/api/audio/${album.audioFileId}`;
+      audio.preload = 'metadata';
+
       // Wait for audio to load enough data
       await new Promise((resolve, reject) => {
-        const onLoadedData = () => {
-          audio.removeEventListener('loadeddata', onLoadedData);
+        const timeout = setTimeout(() => {
+          audio.removeEventListener('canplay', onCanPlay);
+          audio.removeEventListener('error', onError);
+          reject(new Error('Audio loading timeout - server may be slow'));
+        }, 15000); // 15 second timeout for large files
+
+        const onCanPlay = () => {
+          clearTimeout(timeout);
+          audio.removeEventListener('canplay', onCanPlay);
           audio.removeEventListener('error', onError);
           resolve(true);
         };
         const onError = (e: Event) => {
-          audio.removeEventListener('loadeddata', onLoadedData);
+          clearTimeout(timeout);
+          audio.removeEventListener('canplay', onCanPlay);
           audio.removeEventListener('error', onError);
-          reject(e);
+          console.error('Audio load error:', e, 'Audio src:', audio.src, 'Audio error:', audio.error);
+          reject(new Error(`Audio load failed: ${audio.error?.message || 'Network or format error'}`));
         };
         
-        audio.addEventListener('loadeddata', onLoadedData);
+        audio.addEventListener('canplay', onCanPlay);
         audio.addEventListener('error', onError);
         audio.load();
       });
 
-      const duration = audio.duration;
+      // Get duration and set safe defaults
+      let duration = audio.duration;
+      console.log('Audio duration:', duration);
       
-      // Validate duration and set safe defaults
+      // If duration is not available, use a default approach
       if (!duration || !isFinite(duration) || duration <= 0) {
-        throw new Error('Invalid audio duration');
+        console.log('Duration not available, using default timing');
+        duration = 120; // Assume 2 minutes for calculation
       }
       
-      const startTime = Math.max(0, duration / 3); // Start at 1/3 mark
+      const startTime = Math.max(0, Math.min(duration / 3, duration - 15)); // Start at 1/3 mark, but not too late
       const previewDuration = 12; // 12 seconds total preview
+      console.log('Start time:', startTime, 'Preview duration:', previewDuration);
 
       // Set start time safely
-      audio.currentTime = startTime;
+      try {
+        audio.currentTime = startTime;
+      } catch (timeError) {
+        console.log('Could not set start time, starting from beginning');
+        audio.currentTime = 0;
+      }
 
       // Set up fade in/out effects
       audio.volume = 0;
@@ -165,6 +187,8 @@ export default function Music() {
 
     } catch (error) {
       console.error('Error playing audio preview:', error);
+      console.error('Album data:', album);
+      console.error('Audio URL:', `/api/audio/${album.audioFileId}`);
       setIsPlaying(false);
       setCurrentAudio(null);
       audioRef.current = null;
