@@ -40,6 +40,7 @@ export default function Music() {
   const [showPlatforms, setShowPlatforms] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentAudio, setCurrentAudio] = useState<string | null>(null);
+  const [previewCompleted, setPreviewCompleted] = useState<Set<string>>(new Set());
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const musicFolderUrl = "https://drive.google.com/drive/folders/1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6";
@@ -66,6 +67,14 @@ export default function Music() {
   const handleAlbumClick = (album: DriveAlbum) => {
     if (album.category === 'upcoming' && album.audioFileId) {
       // Handle audio preview for upcoming albums
+      if (previewCompleted.has(album.audioFileId)) {
+        // Reset the completed state for this album to allow new preview
+        setPreviewCompleted(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(album.audioFileId!);
+          return newSet;
+        });
+      }
       handleAudioPreview(album);
     } else {
       // Handle platform selection for released albums
@@ -195,6 +204,10 @@ export default function Music() {
               setIsPlaying(false);
               setCurrentAudio(null);
               audioRef.current = null;
+              // Mark this preview as completed
+              if (album.audioFileId) {
+                setPreviewCompleted(prev => new Set(prev).add(album.audioFileId!));
+              }
             }
           }, 100);
         }
@@ -207,6 +220,10 @@ export default function Music() {
           setIsPlaying(false);
           setCurrentAudio(null);
           audioRef.current = null;
+          // Mark this preview as completed
+          if (album.audioFileId) {
+            setPreviewCompleted(prev => new Set(prev).add(album.audioFileId!));
+          }
         }
       }, previewDuration * 1000);
 
@@ -215,6 +232,10 @@ export default function Music() {
         setIsPlaying(false);
         setCurrentAudio(null);
         audioRef.current = null;
+        // Mark this preview as completed
+        if (album.audioFileId) {
+          setPreviewCompleted(prev => new Set(prev).add(album.audioFileId!));
+        }
       });
 
     } catch (error) {
@@ -315,7 +336,7 @@ export default function Music() {
                 )}
                 
                 {/* Audio preview overlay for upcoming albums */}
-                {album.category === 'upcoming' && album.audioFileId && (
+                {album.category === 'upcoming' && album.audioFileId && !previewCompleted.has(album.audioFileId) && (
                   <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     {currentAudio === album.audioFileId ? (
                       isPlaying ? (
