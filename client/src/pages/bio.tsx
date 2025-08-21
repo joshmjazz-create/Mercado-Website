@@ -1,8 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
 
 // Biography Google Drive folder ID
 const BIOGRAPHY_FOLDER_URL = 'https://drive.google.com/drive/folders/1RH0mRswhyD0rXU2mAsrj3fGpevbcw1Th';
+
+// Static fallback content
+const STATIC_BIOGRAPHY = `Joshua Mercado is a young, up and coming trumpet player based in New Jersey. Raised in Central Florida, he earned his Bachelor's degree in Jazz Studies from the University of Central Florida and is currently pursuing a Master's degree at William Paterson University, where he studies with renowned trumpeter Jeremy Pelt.
+
+Mercado moved into the New York City area in 2024 where he quickly started getting his name out and onto the scene. He regularly performs with Winard Harper and the Jeli Posse, having played at venues such as The Bean Runner and Martha's Vineyard in Massachusetts. Other notable musicians he's played with throughout his young career are Joy Brown, Rodney Green, Mike Lee, and Clarence Penn, performing at some of the top clubs in the city such as Smalls and Dizzy's Jazz Club.
+
+His versatility as a musician has also led him to national touring opportunities. In 2024, he went on the road with Joey Fatone (*NSYNC) and AJ McLean (Backstreet Boys) on their *A Legendary Night* tour, performing at historic venues such as The Ryman, The Factory, and The MGM Grand National Harbor. Through his connection with Joey Fatone, he has shared the stage with other celebrities, including but not limited to Debbie Gibson, Lance Bass, Chris Kirkpatrick, Montell Jordan, Shawn Stockman, Wanya Morris, and even Murr from *Impractical Jokers*.`;
 
 // Function to parse Google Docs content and convert to JSX
 function parseBiographyContent(content: string) {
@@ -24,14 +30,10 @@ function parseBiographyContent(content: string) {
 }
 
 export default function Bio() {
-  const [biographyContent, setBiographyContent] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Fetch biography from Google Drive
-  const { data: biography, isLoading: queryLoading, error } = useQuery({
+  // Fetch biography from Google Drive with silent fallback
+  const { data: biography } = useQuery({
     queryKey: ['biography'],
     queryFn: async () => {
-      setIsLoading(true);
       try {
         const response = await fetch('/api/drive/biography', {
           method: 'POST',
@@ -42,29 +44,21 @@ export default function Bio() {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch biography');
+          return STATIC_BIOGRAPHY;
         }
 
         const data = await response.json();
-        setBiographyContent(data.biography);
         return data.biography;
       } catch (error) {
-        console.error('Error fetching biography:', error);
-        // Fallback to static content
-        return `Joshua Mercado is a young, up and coming trumpet player based in New Jersey. Raised in Central Florida, he earned his Bachelor's degree in Jazz Studies from the University of Central Florida and is currently pursuing a Master's degree at William Paterson University, where he studies with renowned trumpeter Jeremy Pelt.
-
-Mercado moved into the New York City area in 2024 where he quickly started getting his name out and onto the scene. He regularly performs with Winard Harper and the Jeli Posse, having played at venues such as The Bean Runner and Martha's Vineyard in Massachusetts. Other notable musicians he's played with throughout his young career are Joy Brown, Rodney Green, Mike Lee, and Clarence Penn, performing at some of the top clubs in the city such as Smalls and Dizzy's Jazz Club.
-
-His versatility as a musician has also led him to national touring opportunities. In 2024, he went on the road with Joey Fatone (*NSYNC) and AJ McLean (Backstreet Boys) on their *A Legendary Night* tour, performing at historic venues such as The Ryman, The Factory, and The MGM Grand National Harbor. Through his connection with Joey Fatone, he has shared the stage with other celebrities, including but not limited to Debbie Gibson, Lance Bass, Chris Kirkpatrick, Montell Jordan, Shawn Stockman, Wanya Morris, and even Murr from *Impractical Jokers*.`;
-      } finally {
-        setIsLoading(false);
+        // Silent fallback - no console errors shown to user
+        return STATIC_BIOGRAPHY;
       }
     },
     staleTime: 10 * 60 * 1000, // 10 minutes cache
   });
 
-  const content = biography || biographyContent;
-  const loading = queryLoading || isLoading;
+  // Always use content immediately - either from API or static fallback
+  const content = biography || STATIC_BIOGRAPHY;
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-jazz-cream via-white to-jazz-cream">
@@ -77,15 +71,7 @@ His versatility as a musician has also led him to national touring opportunities
         <div className="max-w-4xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
           <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
             <div className="prose prose-base max-w-none text-gray-700 leading-relaxed space-y-6">
-              {loading ? (
-                <div className="flex justify-center items-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-800"></div>
-                </div>
-              ) : content ? (
-                parseBiographyContent(content)
-              ) : (
-                <p className="text-center text-gray-500">Biography not available</p>
-              )}
+              {parseBiographyContent(content)}
             </div>
           </div>
         </div>
