@@ -27,6 +27,8 @@ A professional jazz musician website for Joshua Mercado featuring:
 - Database Schema: Albums table with platform URLs (Spotify, Apple Music, YouTube)
 
 ## Recent Changes
+- Updated fonts to more serious, professional serif fonts (Libre Baskerville, Playfair Display)
+- Added actual social media links to Contact page (YouTube, Instagram, Facebook)
 - Updated Bio page to single "Biography" heading with continuous narrative text
 - Added Music page with album cover gallery and three categories
 - Implemented album categories: Original (4), Featured On (2), Upcoming (2)

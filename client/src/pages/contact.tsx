@@ -44,21 +44,27 @@ export default function Contact() {
           <p className="text-gray-600 mb-6">Follow me on social media</p>
           <div className="flex justify-center space-x-8">
             <a 
-              href="#" 
+              href="https://www.facebook.com/share/19eJ712nF4/" 
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-[#1877F2] hover:opacity-80 transition-opacity duration-300"
               aria-label="Facebook"
             >
               <FaFacebook className="w-10 h-10" />
             </a>
             <a 
-              href="#" 
+              href="https://www.instagram.com/josh.m_music?igsh=MWtlZmZlZDQ5enZtMQ==" 
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-[#E4405F] hover:opacity-80 transition-opacity duration-300"
               aria-label="Instagram"
             >
               <FaInstagram className="w-10 h-10" />
             </a>
             <a 
-              href="#" 
+              href="https://youtube.com/@joshm.music_?si=6rdyKqF43CHNXqDY" 
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-[#FF0000] hover:opacity-80 transition-opacity duration-300"
               aria-label="YouTube"
             >
