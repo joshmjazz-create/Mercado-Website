@@ -109,6 +109,7 @@ export default function Music() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-purple-800 mb-6">Music</h1>
+          <div className="w-24 h-1 bg-purple-600 mx-auto"></div>
         </div>
 
         <div className="max-w-6xl mx-auto">
