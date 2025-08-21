@@ -231,6 +231,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Audio file streaming endpoint for upcoming albums
+  app.get('/api/audio/:fileId', async (req, res) => {
+    try {
+      const { fileId } = req.params;
+      
+      // Get file metadata first
+      const metadata = await googleDriveService.getFile(fileId);
+      if (!metadata.mimeType?.startsWith('audio/')) {
+        return res.status(400).json({ error: 'File is not an audio file' });
+      }
+      
+      // Set appropriate headers for audio streaming
+      res.set({
+        'Content-Type': metadata.mimeType,
+        'Accept-Ranges': 'bytes',
+        'Cache-Control': 'public, max-age=3600'
+      });
+      
+      // Stream the audio file
+      const fileStream = await googleDriveService.getFileStream(fileId);
+      fileStream.pipe(res);
+      
+    } catch (error) {
+      console.error('Error streaming audio file:', error);
+      res.status(500).json({ error: 'Failed to stream audio file' });
+    }
+  });
+
   // Get music albums from Google Drive
   app.post('/api/drive/music-albums', async (req, res) => {
     try {

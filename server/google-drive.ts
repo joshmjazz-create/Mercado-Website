@@ -266,33 +266,75 @@ class GoogleDriveService {
           
           for (const albumFolder of albumFolders) {
             try {
-              // Get Google Docs from each album folder
-              const files = await this.getFilesFromFolder(albumFolder.id, "mimeType='application/vnd.google-apps.document'");
-              
-              for (const file of files) {
-                try {
-                  const docContent = await this.getDocContent(file.id);
-                  const metadata = this.parseAlbumMetadata(docContent);
-                  
-                  if (metadata.title) {
-                    const spotifyImageUrl = await this.getSpotifyAlbumCover(metadata.links.spotify || '');
-                    
-                    const album = {
-                      id: file.id,
-                      title: metadata.title,
-                      artist: metadata.artist,
-                      year: metadata.year,
-                      links: metadata.links,
-                      category: categoryKey,
-                      spotifyId: this.extractSpotifyId(metadata.links.spotify || ''),
-                      coverImageUrl: spotifyImageUrl,
-                      createdTime: file.createdTime
-                    };
-                    
-                    categories[categoryKey].push(album);
+              if (categoryKey === 'upcoming') {
+                // Handle upcoming albums differently - look for audio files and custom images
+                const files = await this.getFilesFromFolder(albumFolder.id);
+                const docs = files.filter(f => f.mimeType === 'application/vnd.google-apps.document');
+                const audioFiles = files.filter(f => f.mimeType?.startsWith('audio/'));
+                const imageFiles = files.filter(f => f.mimeType?.startsWith('image/'));
+                
+                if (docs.length > 0) {
+                  for (const docFile of docs) {
+                    try {
+                      const docContent = await this.getDocContent(docFile.id);
+                      const metadata = this.parseAlbumMetadata(docContent);
+                      
+                      if (metadata.title) {
+                        // Use custom image from folder if available
+                        const customImage = imageFiles.length > 0 ? imageFiles[0] : null;
+                        const audioFile = audioFiles.length > 0 ? audioFiles[0] : null;
+                        
+                        const album = {
+                          id: docFile.id,
+                          title: metadata.title,
+                          artist: metadata.artist,
+                          year: metadata.year,
+                          links: metadata.links,
+                          category: categoryKey,
+                          spotifyId: null,
+                          coverImageUrl: customImage ? `https://drive.google.com/uc?id=${customImage.id}` : null,
+                          customImageFile: customImage,
+                          audioFile: audioFile,
+                          audioFileId: audioFile?.id || null,
+                          createdTime: docFile.createdTime
+                        };
+                        
+                        categories[categoryKey].push(album);
+                      }
+                    } catch (error) {
+                      console.error(`Error processing upcoming document ${docFile.name}:`, error);
+                    }
                   }
-                } catch (error) {
-                  console.error(`Error processing document ${file.name} in folder ${albumFolder.name}:`, error);
+                }
+              } else {
+                // Handle released albums (My Music, Featured On) - existing logic
+                const files = await this.getFilesFromFolder(albumFolder.id, "mimeType='application/vnd.google-apps.document'");
+                
+                for (const file of files) {
+                  try {
+                    const docContent = await this.getDocContent(file.id);
+                    const metadata = this.parseAlbumMetadata(docContent);
+                    
+                    if (metadata.title) {
+                      const spotifyImageUrl = await this.getSpotifyAlbumCover(metadata.links.spotify || '');
+                      
+                      const album = {
+                        id: file.id,
+                        title: metadata.title,
+                        artist: metadata.artist,
+                        year: metadata.year,
+                        links: metadata.links,
+                        category: categoryKey,
+                        spotifyId: this.extractSpotifyId(metadata.links.spotify || ''),
+                        coverImageUrl: spotifyImageUrl,
+                        createdTime: file.createdTime
+                      };
+                      
+                      categories[categoryKey].push(album);
+                    }
+                  } catch (error) {
+                    console.error(`Error processing document ${file.name} in folder ${albumFolder.name}:`, error);
+                  }
                 }
               }
             } catch (error) {
@@ -314,6 +356,26 @@ class GoogleDriveService {
     if (!spotifyUrl) return null;
     const match = spotifyUrl.match(/album\/([a-zA-Z0-9]+)/);
     return match ? match[1] : null;
+  }
+
+  // Get file stream for streaming audio files
+  async getFileStream(fileId: string) {
+    const res = await this.drive.files.get({
+      fileId: fileId,
+      alt: 'media'
+    }, {
+      responseType: 'stream'
+    });
+    return res.data;
+  }
+
+  // Get file metadata
+  async getFile(fileId: string) {
+    const res = await this.drive.files.get({
+      fileId: fileId,
+      fields: 'id,name,mimeType,size,createdTime'
+    });
+    return res.data;
   }
 
   // Get Spotify album cover using public OEmbed API

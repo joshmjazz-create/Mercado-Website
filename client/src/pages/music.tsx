@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink, Loader2, Play, Pause, Volume2 } from "lucide-react";
 import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ interface DriveAlbum {
   category: string;
   spotifyId: string | null;
   coverImageUrl: string | null;
+  audioFileId?: string | null;
   createdTime: string;
 }
 
@@ -37,6 +38,9 @@ interface SpotifyAlbumImage {
 export default function Music() {
   const [selectedAlbum, setSelectedAlbum] = useState<DriveAlbum | null>(null);
   const [showPlatforms, setShowPlatforms] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const musicFolderUrl = "https://drive.google.com/drive/folders/1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6";
 
@@ -58,9 +62,107 @@ export default function Music() {
   });
 
   const handleAlbumClick = (album: DriveAlbum) => {
-    setSelectedAlbum(album);
-    setShowPlatforms(true);
+    if (album.category === 'upcoming' && album.audioFileId) {
+      // Handle audio preview for upcoming albums
+      handleAudioPreview(album);
+    } else {
+      // Handle platform selection for released albums
+      setSelectedAlbum(album);
+      setShowPlatforms(true);
+    }
   };
+
+  const handleAudioPreview = async (album: DriveAlbum) => {
+    if (!album.audioFileId) return;
+
+    try {
+      // Stop current audio if playing
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+
+      if (currentAudio === album.audioFileId && isPlaying) {
+        // Stop current preview
+        setIsPlaying(false);
+        setCurrentAudio(null);
+        return;
+      }
+
+      // Create new audio element
+      const audio = new Audio(`/api/audio/${album.audioFileId}`);
+      audioRef.current = audio;
+      setCurrentAudio(album.audioFileId);
+
+      // Wait for audio to load enough data
+      await new Promise((resolve, reject) => {
+        audio.addEventListener('loadedmetadata', resolve);
+        audio.addEventListener('error', reject);
+        audio.load();
+      });
+
+      const duration = audio.duration;
+      const startTime = duration / 3; // Start at 1/3 mark
+      const previewDuration = 12; // 12 seconds total preview
+
+      // Set start time
+      audio.currentTime = startTime;
+
+      // Set up fade in/out effects
+      audio.volume = 0;
+      audio.play();
+      setIsPlaying(true);
+
+      // Fade in over 1 second
+      const fadeInInterval = setInterval(() => {
+        if (audio.volume < 0.8) {
+          audio.volume = Math.min(0.8, audio.volume + 0.1);
+        } else {
+          clearInterval(fadeInInterval);
+        }
+      }, 100);
+
+      // Set up fade out and stop after preview duration
+      setTimeout(() => {
+        if (audioRef.current === audio) {
+          const fadeOutInterval = setInterval(() => {
+            if (audio.volume > 0.1) {
+              audio.volume = Math.max(0, audio.volume - 0.1);
+            } else {
+              clearInterval(fadeOutInterval);
+              audio.pause();
+              setIsPlaying(false);
+              setCurrentAudio(null);
+              audioRef.current = null;
+            }
+          }, 100);
+        }
+      }, (previewDuration - 1) * 1000);
+
+      // Handle audio end
+      audio.addEventListener('ended', () => {
+        setIsPlaying(false);
+        setCurrentAudio(null);
+        audioRef.current = null;
+      });
+
+    } catch (error) {
+      console.error('Error playing audio preview:', error);
+      setIsPlaying(false);
+      setCurrentAudio(null);
+      audioRef.current = null;
+    }
+  };
+
+  // Clean up audio on component unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   const handlePlatformClick = (url: string) => {
     if (url) {
@@ -111,7 +213,7 @@ export default function Music() {
               className="cursor-pointer group transition-transform hover:scale-105"
               onClick={() => handleAlbumClick(album)}
             >
-              <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden mb-3">
+              <div className="relative aspect-square bg-gray-200 rounded-lg overflow-hidden mb-3">
                 {album.coverImageUrl ? (
                   <img
                     src={album.coverImageUrl}
@@ -129,9 +231,30 @@ export default function Music() {
                     </div>
                   </div>
                 )}
+                
+                {/* Audio preview overlay for upcoming albums */}
+                {album.category === 'upcoming' && album.audioFileId && (
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {currentAudio === album.audioFileId && isPlaying ? (
+                      <Pause className="h-8 w-8 text-white" />
+                    ) : (
+                      <Play className="h-8 w-8 text-white ml-1" />
+                    )}
+                  </div>
+                )}
+                
+                {/* Platform links icon for released albums */}
+                {album.category !== 'upcoming' && (
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <ExternalLink className="h-8 w-8 text-white" />
+                  </div>
+                )}
               </div>
               <h4 className="font-semibold text-sm text-center truncate">
                 {album.title}
+                {currentAudio === album.audioFileId && isPlaying && (
+                  <span className="ml-2 text-purple-600">♪</span>
+                )}
               </h4>
               <p className="text-xs text-gray-600 text-center truncate">
                 {album.artist}
@@ -139,6 +262,13 @@ export default function Music() {
               {album.year && (
                 <p className="text-xs text-gray-500 text-center">
                   {album.year}
+                </p>
+              )}
+              
+              {/* Preview indicator for upcoming albums */}
+              {album.category === 'upcoming' && album.audioFileId && (
+                <p className="text-purple-600 text-xs text-center mt-1 font-medium">
+                  Preview Available
                 </p>
               )}
             </div>
