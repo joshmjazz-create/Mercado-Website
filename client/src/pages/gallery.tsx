@@ -23,24 +23,27 @@ export default function Gallery() {
         </div>
         
         <div className="max-w-6xl mx-auto">
-          {/* Google Photos Album Embed */}
+          {/* Google Photos Album Grid */}
           <div 
-            className="pa-gallery-player-widget rounded-lg shadow-lg overflow-hidden" 
-            style={{ width: '100%', height: '600px', display: 'block' }}
+            className="pa-carousel-widget rounded-lg" 
+            style={{ width: '100%', height: 'auto', display: 'block' }}
             data-link="https://photos.app.goo.gl/Aiv4XCPayaM17DMy9"
             data-title="Joshua Mercado Performance Gallery"
             data-description="Capturing moments from performances, studio sessions, and musical journeys"
+            data-repeat="false"
+            data-delay="0"
+            data-fullscreen="false"
           >
             <object 
               data="https://lh3.googleusercontent.com/pw/AP1GczPslFa0ml9Lb3_7bXsh8WOgP4kzeTGO-62dNAfFsFMQ1gbaQfNWClvRIyNJlJO7iCZoOVBeJG92WPE9oBY3frKFf_PEDjoL_ubeVFiZQ3ddIeFKEaOK=w1920-h1080"
-              className="w-full h-full object-cover"
+              className="w-full rounded-lg"
             >
             </object>
           </div>
           
           <div className="text-center mt-8">
             <p className="text-gray-600">
-              Interactive gallery powered by Google Photos - click any photo to view full size
+              Photo gallery from Google Photos - click any photo to view full size
             </p>
           </div>
         </div>
