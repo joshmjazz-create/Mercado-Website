@@ -354,6 +354,7 @@ export class GoogleDriveService {
 
   // Get file stream for streaming audio files
   async getFileStream(fileId: string) {
+    await this.initializeDrive();
     const res = await this.drive!.files.get({
       fileId: fileId,
       alt: 'media'
@@ -365,6 +366,7 @@ export class GoogleDriveService {
 
   // Get file metadata
   async getFile(fileId: string) {
+    await this.initializeDrive();
     const res = await this.drive!.files.get({
       fileId: fileId,
       fields: 'id,name,mimeType,size,createdTime'
