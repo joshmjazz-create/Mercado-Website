@@ -185,7 +185,7 @@ export default function Gallery() {
   return (
     <section className="py-20 bg-white min-h-screen">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h2 className="text-5xl font-bold text-purple-800 mb-4">Gallery</h2>
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
@@ -202,11 +202,11 @@ export default function Gallery() {
               <p className="text-gray-500">Check that your Google Drive folder contains images and is properly shared.</p>
             </div>
           ) : (
-            organizePhotosForMasonry(photos).map((photo) => (
+            organizePhotosForMasonry(photos).map((photo, index) => (
               <div
                 key={photo.id}
-                className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer break-inside-avoid mb-2 sm:mb-3 md:mb-4"
-                style={getImageContainerStyle(photo.id)}
+                className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer break-inside-avoid mb-2 sm:mb-3 md:mb-4 opacity-0 translate-y-4 animate-in"
+                style={{ ...getImageContainerStyle(photo.id), animationDelay: `${400 + index * 50}ms` }}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();

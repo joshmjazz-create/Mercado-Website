@@ -6,12 +6,12 @@ export default function Contact() {
   return (
     <section className="min-h-screen bg-gradient-to-br from-jazz-cream via-white to-jazz-cream">
       <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-800 mb-6">Contact</h1>
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
 
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
           {/* Contact Information */}
           <Card className="shadow-xl border-0 overflow-hidden mb-16">
             <CardContent className="p-8">
@@ -47,7 +47,7 @@ export default function Contact() {
         </div>
         
         {/* Social Media Icons at Bottom */}
-        <div className="text-center pt-8 border-t border-gray-200">
+        <div className="text-center pt-8 border-t border-gray-200 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '600ms' }}>
           <p className="text-gray-600 mb-6">Follow me on social media</p>
           <div className="flex justify-center space-x-8">
             <a 

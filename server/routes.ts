@@ -266,7 +266,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Audio file streaming endpoint for upcoming albums
+  // Audio file streaming endpoint for upcoming albums with proper metadata support
   app.get('/api/audio/:fileId', async (req, res) => {
     try {
       const { fileId } = req.params;
@@ -277,22 +277,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'File is not an audio file' });
       }
       
-      // Set appropriate headers for audio streaming
+      // Set headers optimized for audio metadata loading
       res.set({
         'Content-Type': metadata.mimeType,
+        'Content-Length': metadata.size?.toString() || '0',
         'Accept-Ranges': 'bytes',
-        'Cache-Control': 'public, max-age=3600',
+        'Cache-Control': 'no-cache', // Disable cache for metadata loading
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Range'
+        'Access-Control-Allow-Headers': 'Range',
+        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS'
+      });
+
+      // Handle range requests properly for seeking and metadata
+      const range = req.headers.range;
+      if (range) {
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10) || 0;
+        const fileSize = parseInt(metadata.size) || 0;
+        const end = parseInt(parts[1], 10) || fileSize - 1;
+        const chunksize = (end - start) + 1;
+
+        // Set partial content headers
+        res.set({
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Content-Length': chunksize.toString(),
+        });
+        res.status(206);
+        
+        console.log(`Audio range request: ${start}-${end}/${fileSize} (chunk: ${chunksize})`);
+      }
+      
+      // Stream the audio file with error handling
+      const fileStream = await googleDriveService.getFileStream(fileId);
+      fileStream.on('error', (err) => {
+        console.error('Audio stream error:', err);
+        if (!res.headersSent) {
+          res.status(500).json({ error: 'Audio stream error' });
+        }
       });
       
-      // Stream the audio file
-      const fileStream = await googleDriveService.getFileStream(fileId);
       fileStream.pipe(res);
       
     } catch (error) {
       console.error('Error streaming audio file:', error);
-      res.status(500).json({ error: 'Failed to stream audio file' });
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Failed to stream audio file' });
+      }
     }
   });
 

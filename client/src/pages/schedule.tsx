@@ -188,13 +188,13 @@ export default function Schedule() {
   return (
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h2 className="text-5xl font-bold text-purple-800 mb-4">Schedule</h2>
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
         
         {/* Calendar Header */}
-        <Card className="shadow-lg mb-8">
+        <Card className="shadow-lg mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-6">
               <Button

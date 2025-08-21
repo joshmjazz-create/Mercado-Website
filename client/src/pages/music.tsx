@@ -91,56 +91,72 @@ export default function Music() {
         return;
       }
 
-      // Create new audio element
+      // Create new audio element with more aggressive loading
       const audio = new Audio();
       audioRef.current = audio;
       setCurrentAudio(album.audioFileId);
 
-      // Set the source and load
+      // Set the source with aggressive preloading
       audio.src = `/api/audio/${album.audioFileId}`;
-      audio.preload = 'metadata';
+      audio.preload = 'auto'; // Load the entire file
+      audio.crossOrigin = 'anonymous';
 
-      // Wait for enough data to be loaded for seeking
+      // Try multiple events to get duration
       await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
-          audio.removeEventListener('canplaythrough', onCanPlayThrough);
-          audio.removeEventListener('error', onError);
-          reject(new Error('Audio loading timeout'));
-        }, 15000);
+          cleanup();
+          reject(new Error('Audio loading timeout - file may be too large'));
+        }, 20000); // Extended timeout
 
-        const onCanPlayThrough = () => {
-          clearTimeout(timeout);
-          audio.removeEventListener('canplaythrough', onCanPlayThrough);
+        let resolved = false;
+        const cleanup = () => {
+          audio.removeEventListener('durationchange', onDurationChange);
+          audio.removeEventListener('loadedmetadata', onLoadedMetadata);
+          audio.removeEventListener('canplay', onCanPlay);
           audio.removeEventListener('error', onError);
-          console.log('Audio can play through, duration:', audio.duration);
-          resolve(true);
+          clearTimeout(timeout);
+        };
+
+        const tryResolve = () => {
+          if (!resolved && audio.duration && isFinite(audio.duration) && audio.duration > 0) {
+            resolved = true;
+            cleanup();
+            console.log('Audio duration detected:', audio.duration);
+            resolve(true);
+          }
+        };
+
+        const onDurationChange = () => {
+          console.log('Duration changed:', audio.duration);
+          tryResolve();
+        };
+        const onLoadedMetadata = () => {
+          console.log('Metadata loaded, duration:', audio.duration);
+          tryResolve();
+        };
+        const onCanPlay = () => {
+          console.log('Can play, duration:', audio.duration);
+          tryResolve();
         };
         const onError = (e: Event) => {
-          clearTimeout(timeout);
-          audio.removeEventListener('canplaythrough', onCanPlayThrough);
-          audio.removeEventListener('error', onError);
+          cleanup();
           console.error('Audio load error:', e, 'Audio src:', audio.src, 'Audio error:', audio.error);
           reject(new Error(`Audio load failed: ${audio.error?.message || 'Network or format error'}`));
         };
         
-        audio.addEventListener('canplaythrough', onCanPlayThrough);
+        audio.addEventListener('durationchange', onDurationChange);
+        audio.addEventListener('loadedmetadata', onLoadedMetadata);
+        audio.addEventListener('canplay', onCanPlay);
         audio.addEventListener('error', onError);
+        audio.load();
       });
 
-      // Get duration - should be available now
-      let duration = audio.duration;
-      console.log('Audio duration:', duration);
+      // Duration should be available now
+      const duration = audio.duration;
+      console.log('Final audio duration:', duration);
       
       if (!duration || !isFinite(duration) || duration <= 0) {
-        console.log('Duration still not available, trying to get it differently');
-        // Try waiting a bit more for duration
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        duration = audio.duration;
-        console.log('Audio duration after wait:', duration);
-      }
-      
-      if (!duration || !isFinite(duration) || duration <= 0) {
-        throw new Error('Could not get audio duration - file may be corrupted or too large');
+        throw new Error('Could not get audio duration - file may be corrupted or streaming issue');
       }
       
       // Start exactly at 1/3 mark, but ensure we don't start too close to the end
@@ -330,7 +346,7 @@ export default function Music() {
               )}
               
               {/* Preview indicator for upcoming albums - only show if audio file exists */}
-              {album.category === 'upcoming' && album.audioFile && album.audioFileId && (
+              {album.category === 'upcoming' && album.audioFileId && (
                 <p className="text-purple-600 text-xs text-center mt-1 font-medium">
                   Preview Available
                 </p>
