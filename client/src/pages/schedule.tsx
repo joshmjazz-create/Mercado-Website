@@ -244,10 +244,6 @@ export default function Schedule() {
             </div>
           </CardContent>
         </Card>
-        
-        <div className="text-center">
-          <p className="text-gray-600">Schedule automatically synced with Google Calendar</p>
-        </div>
       </div>
       
       {/* Event Details Dialog */}
