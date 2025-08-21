@@ -137,17 +137,10 @@ export default function Schedule() {
         
         <div className="text-center mt-12">
           <p className="text-gray-600 mb-4">Schedule automatically synced with Google Calendar</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <Button className="bg-jazz-blue hover:bg-jazz-blue-light text-white font-semibold">
               <Calendar className="w-5 h-5 mr-2" />
               Subscribe to Calendar
-            </Button>
-            <Button 
-              variant="outline" 
-              className="border-jazz-green hover:bg-jazz-green hover:text-white text-jazz-green font-semibold"
-            >
-              <ExternalLink className="w-5 h-5 mr-2" />
-              Book Private Event
             </Button>
           </div>
         </div>
