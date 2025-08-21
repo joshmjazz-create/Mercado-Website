@@ -292,7 +292,7 @@ class GoogleDriveService {
                           links: metadata.links,
                           category: categoryKey,
                           spotifyId: null,
-                          coverImageUrl: customImage ? `https://drive.google.com/uc?id=${customImage.id}` : null,
+                          coverImageUrl: customImage ? `/api/image/${customImage.id}` : null,
                           customImageFile: customImage,
                           audioFile: audioFile,
                           audioFileId: audioFile?.id || null,

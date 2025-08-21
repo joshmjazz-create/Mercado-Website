@@ -96,16 +96,33 @@ export default function Music() {
 
       // Wait for audio to load enough data
       await new Promise((resolve, reject) => {
-        audio.addEventListener('loadedmetadata', resolve);
-        audio.addEventListener('error', reject);
+        const onLoadedData = () => {
+          audio.removeEventListener('loadeddata', onLoadedData);
+          audio.removeEventListener('error', onError);
+          resolve(true);
+        };
+        const onError = (e: Event) => {
+          audio.removeEventListener('loadeddata', onLoadedData);
+          audio.removeEventListener('error', onError);
+          reject(e);
+        };
+        
+        audio.addEventListener('loadeddata', onLoadedData);
+        audio.addEventListener('error', onError);
         audio.load();
       });
 
       const duration = audio.duration;
-      const startTime = duration / 3; // Start at 1/3 mark
+      
+      // Validate duration and set safe defaults
+      if (!duration || !isFinite(duration) || duration <= 0) {
+        throw new Error('Invalid audio duration');
+      }
+      
+      const startTime = Math.max(0, duration / 3); // Start at 1/3 mark
       const previewDuration = 12; // 12 seconds total preview
 
-      // Set start time
+      // Set start time safely
       audio.currentTime = startTime;
 
       // Set up fade in/out effects
@@ -220,7 +237,9 @@ export default function Music() {
                     alt={`${album.title} cover`}
                     className="w-full h-full object-cover group-hover:opacity-90"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/api/placeholder/300/300';
+                      console.log('Image load error for:', album.coverImageUrl);
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
                     }}
                   />
                 ) : (

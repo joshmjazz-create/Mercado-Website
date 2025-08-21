@@ -231,6 +231,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Image proxy endpoint for Google Drive images
+  app.get('/api/image/:fileId', async (req, res) => {
+    try {
+      const { fileId } = req.params;
+      
+      // Get file metadata first
+      const metadata = await googleDriveService.getFile(fileId);
+      if (!metadata.mimeType?.startsWith('image/')) {
+        return res.status(400).json({ error: 'File is not an image file' });
+      }
+      
+      // Set appropriate headers for image serving
+      res.set({
+        'Content-Type': metadata.mimeType,
+        'Cache-Control': 'public, max-age=3600',
+        'Access-Control-Allow-Origin': '*',
+        'Content-Length': metadata.size
+      });
+      
+      // Stream the image file
+      const fileStream = await googleDriveService.getFileStream(fileId);
+      fileStream.on('error', (err: Error) => {
+        console.error('Stream error:', err);
+        if (!res.headersSent) {
+          res.status(500).json({ error: 'Stream error' });
+        }
+      });
+      fileStream.pipe(res);
+      
+    } catch (error) {
+      console.error('Error streaming image file:', error);
+      res.status(500).json({ error: 'Failed to stream image file' });
+    }
+  });
+
   // Audio file streaming endpoint for upcoming albums
   app.get('/api/audio/:fileId', async (req, res) => {
     try {
