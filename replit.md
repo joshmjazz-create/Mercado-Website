@@ -29,6 +29,8 @@ A professional jazz musician website for Joshua Mercado featuring:
 ## Recent Changes
 - Updated fonts to more serious, professional serif fonts (Libre Baskerville, Playfair Display)
 - Added actual social media links to Contact page (YouTube, Instagram, Facebook)
+- Updated all headings to purple including Joshua's name on home page for consistent branding
+- Added JM Music logo to footer alongside copyright notice
 - Updated Bio page to single "Biography" heading with continuous narrative text
 - Added Music page with album cover gallery and three categories
 - Implemented album categories: Original (4), Featured On (2), Upcoming (2)
