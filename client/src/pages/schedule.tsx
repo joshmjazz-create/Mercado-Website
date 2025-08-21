@@ -11,6 +11,7 @@ export default function Schedule() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
+  const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
   
   const { data: events = [], isLoading } = useQuery<Event[]>({
     queryKey: ['/api/events'],
@@ -61,6 +62,50 @@ export default function Schedule() {
       }
       return newDate;
     });
+  };
+
+  const goToCurrentMonth = () => {
+    const now = new Date();
+    setCurrentDate(new Date(now.getFullYear(), now.getMonth(), 1));
+  };
+
+  const isCurrentMonth = () => {
+    const now = new Date();
+    return currentDate.getMonth() === now.getMonth() && currentDate.getFullYear() === now.getFullYear();
+  };
+
+  const shouldShowGoToCurrentButton = (direction: 'prev' | 'next') => {
+    if (isCurrentMonth()) return false;
+    
+    const now = new Date();
+    const isBeforeCurrent = currentDate.getFullYear() < now.getFullYear() || 
+                           (currentDate.getFullYear() === now.getFullYear() && currentDate.getMonth() < now.getMonth());
+    
+    return (direction === 'prev' && !isBeforeCurrent) || (direction === 'next' && isBeforeCurrent);
+  };
+
+  const handleMouseDown = (direction: 'prev' | 'next') => {
+    if (!shouldShowGoToCurrentButton(direction)) return;
+    
+    const timer = setTimeout(() => {
+      goToCurrentMonth();
+    }, 2000);
+    
+    setHoldTimer(timer);
+  };
+
+  const handleMouseUp = () => {
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      setHoldTimer(null);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      setHoldTimer(null);
+    }
   };
 
   const openEventDialog = (event: Event) => {
@@ -186,7 +231,13 @@ export default function Schedule() {
               <Button
                 variant="outline"
                 onClick={() => navigateMonth('prev')}
-                className="flex items-center gap-2"
+                onMouseDown={() => handleMouseDown('prev')}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+                className={`flex items-center gap-2 transition-all ${
+                  shouldShowGoToCurrentButton('prev') ? 'hover:bg-purple-100 hover:border-purple-300' : ''
+                }`}
+                title={shouldShowGoToCurrentButton('prev') ? 'Click to go back one month, hold for 2 seconds to return to current month' : 'Go back one month'}
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous
@@ -199,7 +250,13 @@ export default function Schedule() {
               <Button
                 variant="outline"
                 onClick={() => navigateMonth('next')}
-                className="flex items-center gap-2"
+                onMouseDown={() => handleMouseDown('next')}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+                className={`flex items-center gap-2 transition-all ${
+                  shouldShowGoToCurrentButton('next') ? 'hover:bg-purple-100 hover:border-purple-300' : ''
+                }`}
+                title={shouldShowGoToCurrentButton('next') ? 'Click to go forward one month, hold for 2 seconds to return to current month' : 'Go forward one month'}
               >
                 Next
                 <ChevronRight className="w-4 h-4" />
