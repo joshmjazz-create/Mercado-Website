@@ -48,8 +48,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const googleEvents = await googleApisClient.getCalendarEvents();
         
-        // Convert Google Calendar events to our schema
-        const events = googleEvents.map(gEvent => ({
+        // Helper function to determine color from description
+        const getEventColor = (description: string) => {
+          const desc = description.toLowerCase();
+          if (desc.includes('red')) return 'red';
+          if (desc.includes('orange')) return 'orange';
+          if (desc.includes('yellow')) return 'yellow';
+          if (desc.includes('green')) return 'green';
+          if (desc.includes('blue')) return 'blue';
+          if (desc.includes('purple')) return 'purple';
+          if (desc.includes('pink')) return 'pink';
+          if (desc.includes('teal')) return 'teal';
+          if (desc.includes('cyan')) return 'cyan';
+          if (desc.includes('indigo')) return 'indigo';
+          return 'default';
+        };
+
+        // Convert Google Calendar events to our schema and filter for SHOW events only
+        const allEvents = googleEvents.map(gEvent => ({
           id: gEvent.id,
           googleEventId: gEvent.id,
           title: gEvent.summary,
@@ -60,8 +76,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           address: gEvent.location ? gEvent.location.replace(/\\,/g, ',').replace(/\\\\/g, '\\') : "",
           ticketPrice: "",
           ticketUrl: "",
-          color: "default", // Color will be handled by frontend styling
+          color: getEventColor(gEvent.description || ""),
         }));
+
+        // Filter to only show events with "SHOW" in the description
+        const events = allEvents.filter(event => 
+          event.description.toLowerCase().includes('show')
+        );
+        
+        // Log for debugging (remove in production)
+        console.log(`Found ${allEvents.length} total events, ${events.length} with "SHOW" in description`);
         
         // Sort events by start time
         events.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
