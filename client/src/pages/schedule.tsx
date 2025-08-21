@@ -4,7 +4,7 @@ import { Calendar, Clock, MapPin, Ticket, ChevronLeft, ChevronRight, X } from "l
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import type { Event } from "@shared/schema";
 
 export default function Schedule() {
@@ -253,6 +253,9 @@ export default function Schedule() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-purple-800">{selectedEvent?.title}</DialogTitle>
+            <DialogDescription>
+              Event details and booking information
+            </DialogDescription>
           </DialogHeader>
           
           {selectedEvent && (
