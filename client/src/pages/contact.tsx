@@ -16,25 +16,31 @@ export default function Contact() {
           <Card className="shadow-xl border-0 overflow-hidden mb-16">
             <CardContent className="p-8">
               <div className="space-y-8">
-                <div className="flex flex-col sm:flex-row items-center justify-center">
-                  <div className="bg-purple-800 text-white p-3 rounded-lg mb-2 sm:mb-0 sm:mr-4">
+                <a 
+                  href="mailto:joshm.jazz@gmail.com"
+                  className="flex flex-col sm:flex-row items-center justify-center hover:bg-gray-50 rounded-lg p-4 transition-colors duration-300 cursor-pointer"
+                >
+                  <div className="bg-purple-800 text-white p-3 rounded-lg mb-2 sm:mb-0 sm:mr-4 group-hover:bg-purple-700 transition-colors duration-300">
                     <Mail className="w-5 h-5" />
                   </div>
                   <div className="text-center">
                     <p className="font-semibold text-purple-800">Email</p>
-                    <p className="text-gray-600 text-lg">joshm.jazz@gmail.com</p>
+                    <p className="text-gray-600 text-lg hover:text-purple-600 transition-colors duration-300">joshm.jazz@gmail.com</p>
                   </div>
-                </div>
+                </a>
                 
-                <div className="flex flex-col sm:flex-row items-center justify-center">
-                  <div className="bg-purple-800 text-white p-3 rounded-lg mb-2 sm:mb-0 sm:mr-4">
+                <a 
+                  href="tel:+14072760739"
+                  className="flex flex-col sm:flex-row items-center justify-center hover:bg-gray-50 rounded-lg p-4 transition-colors duration-300 cursor-pointer"
+                >
+                  <div className="bg-purple-800 text-white p-3 rounded-lg mb-2 sm:mb-0 sm:mr-4 group-hover:bg-purple-700 transition-colors duration-300">
                     <Phone className="w-5 h-5" />
                   </div>
                   <div className="text-center">
                     <p className="font-semibold text-purple-800">Phone</p>
-                    <p className="text-gray-600 text-lg">(407) 276-0739</p>
+                    <p className="text-gray-600 text-lg hover:text-purple-600 transition-colors duration-300">(407) 276-0739</p>
                   </div>
-                </div>
+                </a>
               </div>
             </CardContent>
           </Card>
