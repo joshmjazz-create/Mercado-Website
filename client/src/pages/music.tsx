@@ -59,6 +59,8 @@ export default function Music() {
       
       return await response.json();
     },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
 
   const handleAlbumClick = (album: DriveAlbum) => {
@@ -248,15 +250,20 @@ export default function Music() {
     }
 
     return (
-      <div className="mb-12">
+      <div className="mb-12 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
         <h3 className="text-lg font-semibold text-purple-800 mb-6 underline text-left">
           {title}
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {albums.map((album) => (
+          {albums.map((album, index) => (
             <div
               key={album.id}
-              className="cursor-pointer group transition-transform hover:scale-105"
+              className="cursor-pointer group transition-all duration-500 ease-out hover:scale-105 opacity-0 translate-y-4 animate-in"
+              style={{
+                animationDelay: `${index * 100}ms`,
+                animationDuration: '600ms',
+                animationFillMode: 'forwards'
+              }}
               onClick={() => handleAlbumClick(album)}
             >
               <div className="relative aspect-square bg-gray-200 rounded-lg overflow-hidden mb-3">

@@ -235,8 +235,18 @@ class GoogleDriveService {
     return metadata;
   }
 
+  // Cache for albums data
+  private albumsCache = new Map<string, { data: any; timestamp: number }>();
+  private readonly CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
   // Get albums from music folders structure
   async getMusicAlbums(musicFolderId: string): Promise<any> {
+    // Check cache first
+    const cached = this.albumsCache.get(musicFolderId);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+      return cached.data;
+    }
+
     try {
       await this.initializeDrive();
       
@@ -343,6 +353,12 @@ class GoogleDriveService {
           }
         }
       }
+
+      // Cache the result
+      this.albumsCache.set(musicFolderId, {
+        data: categories,
+        timestamp: Date.now()
+      });
 
       return categories;
     } catch (error) {
