@@ -37,31 +37,71 @@ export default function Gallery() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Function to classify images by orientation and size
+  const classifyImage = (photoId: string) => {
+    const dimensions = imageDimensions[photoId];
+    if (!dimensions) return 'square';
+    
+    const aspectRatio = dimensions.width / dimensions.height;
+    
+    if (aspectRatio > 1.3) return 'landscape';
+    if (aspectRatio < 0.75) return 'portrait';
+    return 'square';
+  };
+
+  // Function to organize photos into masonry groups
+  const organizePhotosForMasonry = (photos: DrivePhoto[]) => {
+    const organized: DrivePhoto[] = [];
+    const landscape = photos.filter(photo => classifyImage(photo.id) === 'landscape');
+    const portrait = photos.filter(photo => classifyImage(photo.id) === 'portrait');
+    const square = photos.filter(photo => classifyImage(photo.id) === 'square');
+    
+    // Interleave different orientations to minimize white space
+    const maxLength = Math.max(landscape.length, portrait.length, square.length);
+    
+    for (let i = 0; i < maxLength; i++) {
+      if (i < landscape.length) organized.push(landscape[i]);
+      if (i < portrait.length) organized.push(portrait[i]);
+      if (i < square.length) organized.push(square[i]);
+    }
+    
+    return organized;
+  };
+
   // Function to determine container style based on exact image aspect ratio
   const getImageContainerStyle = (photoId: string) => {
     const dimensions = imageDimensions[photoId];
     if (!dimensions) {
       return { 
-        height: '200px', // Smaller default for mobile
+        height: '200px',
         aspectRatio: '1'
       };
     }
     
     const aspectRatio = dimensions.width / dimensions.height;
+    const classification = classifyImage(photoId);
     
-    // Mobile-first responsive sizing
+    // Mobile-first responsive sizing with tighter spacing
     const isMobile = windowWidth < 768;
-    const baseWidth = isMobile ? 150 : 280; // Smaller base width for mobile
-    const calculatedHeight = baseWidth / aspectRatio;
     
-    // Different min/max heights for mobile vs desktop
-    const minHeight = isMobile ? 120 : 160;
-    const maxHeight = isMobile ? 250 : 320;
-    
-    const finalHeight = Math.max(minHeight, Math.min(maxHeight, calculatedHeight));
+    // More consistent sizing based on classification
+    let height;
+    if (isMobile) {
+      switch (classification) {
+        case 'landscape': height = 120; break;
+        case 'portrait': height = 200; break;
+        default: height = 160; break;
+      }
+    } else {
+      switch (classification) {
+        case 'landscape': height = 180; break;
+        case 'portrait': height = 280; break;
+        default: height = 220; break;
+      }
+    }
     
     return {
-      height: `${finalHeight}px`,
+      height: `${height}px`,
       aspectRatio: aspectRatio.toString(),
       width: '100%'
     };
@@ -150,9 +190,9 @@ export default function Gallery() {
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+        <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-2 sm:gap-3 md:gap-4">
           {photos.length === 0 ? (
-            <div className="col-span-full text-center py-16">
+            <div className="break-inside-avoid w-full text-center py-16">
               <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -162,10 +202,10 @@ export default function Gallery() {
               <p className="text-gray-500">Check that your Google Drive folder contains images and is properly shared.</p>
             </div>
           ) : (
-            photos.map((photo) => (
+            organizePhotosForMasonry(photos).map((photo) => (
               <div
                 key={photo.id}
-                className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
+                className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer break-inside-avoid mb-2 sm:mb-3 md:mb-4"
                 style={getImageContainerStyle(photo.id)}
                 onClick={(e) => {
                   e.preventDefault();
