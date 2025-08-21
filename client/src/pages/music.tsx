@@ -98,75 +98,70 @@ export default function Music() {
       audio.src = `/api/audio/${album.audioFileId}`;
       audio.preload = 'metadata';
 
-      // Wait for audio to load enough data
+      // Wait for metadata to be loaded so we get the real duration
       await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
-          audio.removeEventListener('canplay', onCanPlay);
+          audio.removeEventListener('loadedmetadata', onLoadedMetadata);
           audio.removeEventListener('error', onError);
-          reject(new Error('Audio loading timeout - server may be slow'));
-        }, 15000); // 15 second timeout for large files
+          reject(new Error('Audio metadata loading timeout'));
+        }, 10000);
 
-        const onCanPlay = () => {
+        const onLoadedMetadata = () => {
           clearTimeout(timeout);
-          audio.removeEventListener('canplay', onCanPlay);
+          audio.removeEventListener('loadedmetadata', onLoadedMetadata);
           audio.removeEventListener('error', onError);
           resolve(true);
         };
         const onError = (e: Event) => {
           clearTimeout(timeout);
-          audio.removeEventListener('canplay', onCanPlay);
+          audio.removeEventListener('loadedmetadata', onLoadedMetadata);
           audio.removeEventListener('error', onError);
           console.error('Audio load error:', e, 'Audio src:', audio.src, 'Audio error:', audio.error);
           reject(new Error(`Audio load failed: ${audio.error?.message || 'Network or format error'}`));
         };
         
-        audio.addEventListener('canplay', onCanPlay);
+        audio.addEventListener('loadedmetadata', onLoadedMetadata);
         audio.addEventListener('error', onError);
-        audio.load();
       });
 
-      // Get duration and set safe defaults
-      let duration = audio.duration;
+      // Now we should have the real duration
+      const duration = audio.duration;
       console.log('Audio duration:', duration);
       
-      // If duration is not available, use a default approach
       if (!duration || !isFinite(duration) || duration <= 0) {
-        console.log('Duration not available, using default timing');
-        duration = 120; // Assume 2 minutes for calculation
+        throw new Error('Could not get audio duration');
       }
       
-      const startTime = Math.max(0, Math.min(duration / 3, duration - 15)); // Start at 1/3 mark, but not too late
-      const previewDuration = 12; // 12 seconds total preview
+      // Start exactly at 1/3 mark
+      const startTime = duration / 3;
+      const previewDuration = 10; // Exactly 10 seconds
       console.log('Start time:', startTime, 'Preview duration:', previewDuration);
 
-      // Set start time safely
-      try {
-        audio.currentTime = startTime;
-      } catch (timeError) {
-        console.log('Could not set start time, starting from beginning');
-        audio.currentTime = 0;
-      }
+      // Set start time
+      audio.currentTime = startTime;
 
       // Set up fade in/out effects
       audio.volume = 0;
-      audio.play();
       setIsPlaying(true);
+      
+      // Start playing
+      await audio.play();
 
-      // Fade in over 1 second
+      // Fade in over 1 second (0 to 0.7 volume)
       const fadeInInterval = setInterval(() => {
-        if (audio.volume < 0.8) {
-          audio.volume = Math.min(0.8, audio.volume + 0.1);
+        if (audio.volume < 0.7) {
+          audio.volume = Math.min(0.7, audio.volume + 0.07);
         } else {
           clearInterval(fadeInInterval);
         }
       }, 100);
 
-      // Set up fade out and stop after preview duration
-      setTimeout(() => {
+      // Set up fade out 1 second before the end
+      const fadeOutTimer = setTimeout(() => {
         if (audioRef.current === audio) {
           const fadeOutInterval = setInterval(() => {
-            if (audio.volume > 0.1) {
-              audio.volume = Math.max(0, audio.volume - 0.1);
+            if (audio.volume > 0.05) {
+              audio.volume = Math.max(0, audio.volume - 0.07);
             } else {
               clearInterval(fadeOutInterval);
               audio.pause();
@@ -177,6 +172,16 @@ export default function Music() {
           }, 100);
         }
       }, (previewDuration - 1) * 1000);
+
+      // Stop exactly after preview duration
+      const stopTimer = setTimeout(() => {
+        if (audioRef.current === audio) {
+          audio.pause();
+          setIsPlaying(false);
+          setCurrentAudio(null);
+          audioRef.current = null;
+        }
+      }, previewDuration * 1000);
 
       // Handle audio end
       audio.addEventListener('ended', () => {
