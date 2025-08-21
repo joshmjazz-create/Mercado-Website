@@ -41,6 +41,7 @@ export default function Music() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentAudio, setCurrentAudio] = useState<string | null>(null);
   const [previewCompleted, setPreviewCompleted] = useState<Set<string>>(new Set());
+  const [loadingPreview, setLoadingPreview] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const musicFolderUrl = "https://drive.google.com/drive/folders/1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6";
@@ -100,6 +101,9 @@ export default function Music() {
         return;
       }
 
+      // Show loading state
+      setLoadingPreview(album.audioFileId);
+      
       // Create new audio element with more aggressive loading
       const audio = new Audio();
       audioRef.current = audio;
@@ -179,6 +183,7 @@ export default function Music() {
       // Set up fade in/out effects
       audio.volume = 0;
       setIsPlaying(true);
+      setLoadingPreview(null); // Clear loading state
       
       // Start playing
       await audio.play();
@@ -244,6 +249,7 @@ export default function Music() {
       console.error('Audio URL:', `/api/audio/${album.audioFileId}`);
       setIsPlaying(false);
       setCurrentAudio(null);
+      setLoadingPreview(null); // Clear loading state on error
       audioRef.current = null;
     }
   };
@@ -338,7 +344,9 @@ export default function Music() {
                 {/* Audio preview overlay for upcoming albums */}
                 {album.category === 'upcoming' && album.audioFileId && !previewCompleted.has(album.audioFileId) && (
                   <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {currentAudio === album.audioFileId ? (
+                    {loadingPreview === album.audioFileId ? (
+                      <Loader2 className="h-8 w-8 text-white animate-spin" />
+                    ) : currentAudio === album.audioFileId ? (
                       isPlaying ? (
                         <Pause className="h-8 w-8 text-white" />
                       ) : null
