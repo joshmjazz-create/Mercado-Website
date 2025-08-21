@@ -112,12 +112,17 @@ export default function Gallery() {
               <div
                 key={photo.id}
                 className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
-                onClick={() => setSelectedPhoto(photo.directUrl)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  // Use largeUrl for lightbox display instead of directUrl
+                  setSelectedPhoto(photo.largeUrl || photo.thumbnailUrl);
+                }}
               >
                 <img
                   src={photo.thumbnailUrl}
                   alt={photo.name}
-                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-64 object-contain bg-gray-100 group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                   onError={(e) => {
                     // Try fallback URLs if main thumbnail fails
@@ -142,20 +147,40 @@ export default function Gallery() {
         {/* Lightbox Modal */}
         {selectedPhoto && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedPhoto(null)}
+            className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setSelectedPhoto(null);
+            }}
           >
-            <div className="relative max-w-4xl max-h-full">
+            <div 
+              className="relative max-w-6xl max-h-full w-full h-full flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
               <img
                 src={selectedPhoto}
                 alt="Gallery photo"
-                className="max-w-full max-h-full object-contain rounded-lg"
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                onLoad={() => console.log('Lightbox image loaded:', selectedPhoto)}
+                onError={(e) => {
+                  console.error('Lightbox image failed to load:', selectedPhoto);
+                  // Try to reload with a cache-busting parameter
+                  const target = e.target as HTMLImageElement;
+                  if (!target.src.includes('?refresh=')) {
+                    target.src = selectedPhoto + '?refresh=' + Date.now();
+                  }
+                }}
               />
               <button
-                onClick={() => setSelectedPhoto(null)}
-                className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelectedPhoto(null);
+                }}
+                className="absolute top-4 right-4 bg-black bg-opacity-50 rounded-full p-2 text-white hover:text-gray-300 hover:bg-opacity-70 transition-all"
               >
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
