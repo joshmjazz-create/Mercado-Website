@@ -11,7 +11,6 @@ export default function Schedule() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
-  const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
   
   const { data: events = [], isLoading } = useQuery<Event[]>({
     queryKey: ['/api/events'],
@@ -74,37 +73,9 @@ export default function Schedule() {
     return currentDate.getMonth() === now.getMonth() && currentDate.getFullYear() === now.getFullYear();
   };
 
-  const shouldShowGoToCurrentButton = (direction: 'prev' | 'next') => {
-    if (isCurrentMonth()) return false;
-    
-    const now = new Date();
-    const isBeforeCurrent = currentDate.getFullYear() < now.getFullYear() || 
-                           (currentDate.getFullYear() === now.getFullYear() && currentDate.getMonth() < now.getMonth());
-    
-    return (direction === 'prev' && !isBeforeCurrent) || (direction === 'next' && isBeforeCurrent);
-  };
-
-  const handleMouseDown = (direction: 'prev' | 'next') => {
-    if (!shouldShowGoToCurrentButton(direction)) return;
-    
-    const timer = setTimeout(() => {
+  const handleMonthHeaderDoubleClick = () => {
+    if (!isCurrentMonth()) {
       goToCurrentMonth();
-    }, 2000);
-    
-    setHoldTimer(timer);
-  };
-
-  const handleMouseUp = () => {
-    if (holdTimer) {
-      clearTimeout(holdTimer);
-      setHoldTimer(null);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (holdTimer) {
-      clearTimeout(holdTimer);
-      setHoldTimer(null);
     }
   };
 
@@ -231,32 +202,26 @@ export default function Schedule() {
               <Button
                 variant="outline"
                 onClick={() => navigateMonth('prev')}
-                onMouseDown={() => handleMouseDown('prev')}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseLeave}
-                className={`flex items-center gap-2 transition-all ${
-                  shouldShowGoToCurrentButton('prev') ? 'hover:bg-purple-100 hover:border-purple-300' : ''
-                }`}
-                title={shouldShowGoToCurrentButton('prev') ? 'Click to go back one month, hold for 2 seconds to return to current month' : 'Go back one month'}
+                className="flex items-center gap-2"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous
               </Button>
               
-              <h3 className="text-2xl font-bold text-purple-800">
+              <h3 
+                className={`text-2xl font-bold text-purple-800 cursor-pointer transition-colors ${
+                  !isCurrentMonth() ? 'hover:text-purple-600' : ''
+                }`}
+                onDoubleClick={handleMonthHeaderDoubleClick}
+                title={!isCurrentMonth() ? 'Double-click to return to current month' : 'Current month'}
+              >
                 {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
               </h3>
               
               <Button
                 variant="outline"
                 onClick={() => navigateMonth('next')}
-                onMouseDown={() => handleMouseDown('next')}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseLeave}
-                className={`flex items-center gap-2 transition-all ${
-                  shouldShowGoToCurrentButton('next') ? 'hover:bg-purple-100 hover:border-purple-300' : ''
-                }`}
-                title={shouldShowGoToCurrentButton('next') ? 'Click to go forward one month, hold for 2 seconds to return to current month' : 'Go forward one month'}
+                className="flex items-center gap-2"
               >
                 Next
                 <ChevronRight className="w-4 h-4" />
