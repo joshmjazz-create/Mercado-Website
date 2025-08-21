@@ -39,7 +39,8 @@ A professional jazz musician website for Joshua Mercado featuring:
 - Successfully implemented Google Calendar integration using public iCal feed (no API key required)
 - Updated calendar to auto-resync on every page reload and window focus for real-time updates
 - Added event filtering to only display events with exactly "SHOW" (case-sensitive) in description
-- Implemented color detection from event descriptions (red, blue, green, purple, etc.)
+- Implemented color detection from ALL CAPS keywords in descriptions (RED, BLUE, GREEN, etc.)
+- Event descriptions hide "SHOW" and color keywords from display while using them for filtering/styling
 - Made venue locations clickable for navigation and removed backslashes from addresses
 - Updated Bio page to single "Biography" heading with continuous narrative text
 - Added Music page with album cover gallery and three categories

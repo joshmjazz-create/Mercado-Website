@@ -48,36 +48,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const googleEvents = await googleApisClient.getCalendarEvents();
         
-        // Helper function to determine color from description
+        // Helper function to determine color from description (only ALL CAPS)
         const getEventColor = (description: string) => {
-          const desc = description.toLowerCase();
-          if (desc.includes('red')) return 'red';
-          if (desc.includes('orange')) return 'orange';
-          if (desc.includes('yellow')) return 'yellow';
-          if (desc.includes('green')) return 'green';
-          if (desc.includes('blue')) return 'blue';
-          if (desc.includes('purple')) return 'purple';
-          if (desc.includes('pink')) return 'pink';
-          if (desc.includes('teal')) return 'teal';
-          if (desc.includes('cyan')) return 'cyan';
-          if (desc.includes('indigo')) return 'indigo';
+          if (description.includes('RED')) return 'red';
+          if (description.includes('ORANGE')) return 'orange';
+          if (description.includes('YELLOW')) return 'yellow';
+          if (description.includes('GREEN')) return 'green';
+          if (description.includes('BLUE')) return 'blue';
+          if (description.includes('PURPLE')) return 'purple';
+          if (description.includes('PINK')) return 'pink';
+          if (description.includes('TEAL')) return 'teal';
+          if (description.includes('CYAN')) return 'cyan';
+          if (description.includes('INDIGO')) return 'indigo';
           return 'default';
         };
 
+        // Helper function to clean description (remove SHOW and color keywords)
+        const cleanDescription = (description: string) => {
+          return description
+            .replace(/\bSHOW\b/g, '')
+            .replace(/\b(RED|ORANGE|YELLOW|GREEN|BLUE|PURPLE|PINK|TEAL|CYAN|INDIGO)\b/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        };
+
         // Convert Google Calendar events to our schema and filter for SHOW events only
-        const allEvents = googleEvents.map(gEvent => ({
-          id: gEvent.id,
-          googleEventId: gEvent.id,
-          title: gEvent.summary,
-          description: gEvent.description || "",
-          startTime: new Date(gEvent.start.dateTime),
-          endTime: new Date(gEvent.end.dateTime),
-          venue: gEvent.location ? gEvent.location.replace(/\\,/g, ',').replace(/\\\\/g, '\\') : "TBD",
-          address: gEvent.location ? gEvent.location.replace(/\\,/g, ',').replace(/\\\\/g, '\\') : "",
-          ticketPrice: "",
-          ticketUrl: "",
-          color: getEventColor(gEvent.description || ""),
-        }));
+        const allEvents = googleEvents.map(gEvent => {
+          const originalDescription = gEvent.description || "";
+          return {
+            id: gEvent.id,
+            googleEventId: gEvent.id,
+            title: gEvent.summary,
+            description: cleanDescription(originalDescription),
+            startTime: new Date(gEvent.start.dateTime),
+            endTime: new Date(gEvent.end.dateTime),
+            venue: gEvent.location ? gEvent.location.replace(/\\,/g, ',').replace(/\\\\/g, '\\') : "TBD",
+            address: gEvent.location ? gEvent.location.replace(/\\,/g, ',').replace(/\\\\/g, '\\') : "",
+            ticketPrice: "",
+            ticketUrl: "",
+            color: getEventColor(originalDescription),
+          };
+        });
 
         // Filter to only show events with exactly "SHOW" in the description (case-sensitive)
         const events = allEvents.filter(event => 
