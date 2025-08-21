@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactSchema, insertEventSchema, insertPhotoSchema, insertAlbumSchema } from "@shared/schema";
 import { googleApisClient } from "../client/src/lib/google-apis";
+import { googleDriveService } from "./google-drive";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -136,7 +137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get photos from Google Drive
+  // Get photos from Google Drive folder
   app.get("/api/drive/photos/:folderId", async (req, res) => {
     try {
       const { folderId } = req.params;
@@ -148,14 +149,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // TODO: Implement Google Drive API integration
-      // This will be completed once the full credentials are provided
+      const photos = await googleDriveService.getPhotosFromFolder(folderId);
       
-      res.json([]);
+      // Transform photos to include direct image URLs
+      const transformedPhotos = photos.map(photo => ({
+        ...photo,
+        directUrl: googleDriveService.getDirectImageUrl(photo.id, 'large'),
+        thumbnailUrl: googleDriveService.getDirectImageUrl(photo.id, 'small'),
+      }));
+      
+      res.json(transformedPhotos);
     } catch (error: any) {
+      console.error('Drive photos error:', error);
       res.status(500).json({ 
         success: false, 
         message: "Failed to fetch Drive photos" 
+      });
+    }
+  });
+
+  // Get photos from Google Drive share URL
+  app.post("/api/drive/shared-photos", async (req, res) => {
+    try {
+      const { shareUrl } = req.body;
+      
+      if (!process.env.GOOGLE_DRIVE_CREDENTIALS) {
+        return res.status(500).json({ 
+          success: false, 
+          message: "Google Drive credentials not configured" 
+        });
+      }
+
+      const photos = await googleDriveService.getPublicPhotos(shareUrl);
+      
+      // Transform photos to include direct image URLs
+      const transformedPhotos = photos.map(photo => ({
+        ...photo,
+        directUrl: googleDriveService.getDirectImageUrl(photo.id, 'large'),
+        thumbnailUrl: googleDriveService.getDirectImageUrl(photo.id, 'small'),
+      }));
+      
+      res.json(transformedPhotos);
+    } catch (error: any) {
+      console.error('Drive shared photos error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to fetch shared Drive photos" 
       });
     }
   });

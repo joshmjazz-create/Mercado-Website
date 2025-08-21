@@ -51,6 +51,13 @@ A professional jazz musician website for Joshua Mercado featuring:
 - Implemented mobile navigation with hamburger menu
 - Added platform selection modal (Spotify, Apple Music, YouTube)
 - Updated database schema from music recordings to albums with category field
+- Removed all page descriptions for cleaner appearance (January 2025)
+- Standardized all page title font sizes to text-5xl across all pages
+- Made purple underlines match exact same color as titles (purple-800)
+- Implemented Google Drive API integration for Gallery page with service account authentication
+- Replaced Google Photos/PublicAlbum widget with direct Google Drive API photo fetching
+- Added responsive photo grid with lightbox modal and hover effects
+- Google Drive credentials configured: mercado-website@mercado-driveapi547.iam.gserviceaccount.com
 
 ## Music Page Features
 - Album covers displayed in responsive grid
