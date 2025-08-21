@@ -14,6 +14,10 @@ export default function Schedule() {
   
   const { data: events = [], isLoading } = useQuery<Event[]>({
     queryKey: ['/api/events'],
+    staleTime: 0, // Always treat data as stale
+    gcTime: 0, // Don't cache data
+    refetchOnMount: true, // Refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when window gains focus
   });
 
   const monthNames = [
