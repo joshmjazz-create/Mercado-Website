@@ -15,7 +15,7 @@ export default function Gallery() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold text-purple-800 mb-4">Gallery</h2>
-            <div className="w-24 h-1 bg-purple-600 mx-auto"></div>
+            <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -33,7 +33,7 @@ export default function Gallery() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-5xl font-bold text-purple-800 mb-4">Gallery</h2>
-          <div className="w-24 h-1 bg-purple-600 mx-auto"></div>
+          <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
