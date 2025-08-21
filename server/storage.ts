@@ -210,7 +210,8 @@ export class MemStorage implements IStorage {
       description: insertEvent.description ?? null,
       ticketPrice: insertEvent.ticketPrice ?? null,
       ticketUrl: insertEvent.ticketUrl ?? null,
-      googleEventId: googleEventId || null 
+      googleEventId: googleEventId || null,
+      color: insertEvent.color ?? null
     };
     this.events.set(id, event);
     return event;

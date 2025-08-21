@@ -86,7 +86,7 @@ export class GoogleDriveService {
         pageSize: 1000, // Increased for better performance
       });
 
-      return response.data.files || [];
+      return (response.data.files || []).filter(file => file.id) as DrivePhoto[];
     } catch (error) {
       console.error('Error fetching folders from Drive folder:', error);
       throw error;
@@ -107,7 +107,7 @@ export class GoogleDriveService {
         pageSize: 1000, // Increased for better performance
       });
 
-      return response.data.files || [];
+      return (response.data.files || []).filter(file => file.id) as DrivePhoto[];
     } catch (error) {
       console.error('Error fetching files from Drive folder:', error);
       throw error;
@@ -399,37 +399,7 @@ export class GoogleDriveService {
     }
   }
 
-  // Extract folder ID from URL (synchronous method)
-  extractFolderIdFromUrl(shareUrl: string): string {
-    if (!shareUrl) {
-      throw new Error('Share URL is required');
-    }
-    
-    const folderMatch = shareUrl.match(/\/folders\/([a-zA-Z0-9-_]+)/);
-    if (folderMatch) {
-      return folderMatch[1];
-    }
-    
-    throw new Error('Invalid Google Drive folder URL');
-  }
 
-  // High quality image URL helper methods
-  getHighQualityImageUrl(fileId: string): string {
-    return `/api/image/${fileId}`;
-  }
-
-  getThumbnailFromDrive(photo: DrivePhoto, size: 'small' | 'medium' | 'large'): string {
-    if (photo.thumbnailLink) {
-      const sizeMap = { small: 's220', medium: 's512', large: 's1024' };
-      return photo.thumbnailLink.replace('s220', sizeMap[size]);
-    }
-    return `/api/image/${photo.id}`;
-  }
-
-  getDirectImageUrl(fileId: string, size: 'small' | 'medium' | 'large' = 'medium'): string {
-    const sizeParam = size === 'large' ? '800' : size === 'medium' ? '400' : '220';
-    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${sizeParam}`;
-  }
 
   // New method to get biography content
   async getBiographyContent(biographyFolderId: string): Promise<string> {

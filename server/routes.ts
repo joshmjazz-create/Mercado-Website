@@ -176,9 +176,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { shareUrl, folderId } = req.body;
       
+      const driveService = new GoogleDriveService();
       let targetFolderId = folderId;
       if (shareUrl && !folderId) {
-        targetFolderId = await driveService.extractFolderIdFromShareUrl(shareUrl);
+        targetFolderId = driveService.extractFolderIdFromUrl(shareUrl);
       }
       
       if (!targetFolderId) {

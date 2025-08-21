@@ -354,7 +354,10 @@ class GoogleDriveService {
             } catch (error) {
               console.error(`Error processing album folder ${albumFolder.name}:`, error);
             }
-          }
+          });
+
+          // Wait for all album processing to complete
+          await Promise.all(albumPromises);
         }
       }
 
