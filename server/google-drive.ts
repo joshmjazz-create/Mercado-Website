@@ -26,7 +26,7 @@ interface AlbumMetadata {
 export class GoogleDriveService {
   private drive: drive_v3.Drive | null = null;
   private albumsCache = new Map<string, { data: any; timestamp: number }>();
-  private readonly CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+  private readonly CACHE_DURATION = 30 * 60 * 1000; // 30 minutes for better performance
 
   private async initializeDrive() {
     if (this.drive) return;
@@ -281,7 +281,7 @@ export class GoogleDriveService {
                         links: metadata.links,
                         category: categoryKey,
                         spotifyId: null,
-                        coverImageUrl: customImage ? `/api/image/${customImage.id}` : null,
+                        coverImageUrl: customImage ? this.getDirectImageUrl(customImage.id, 'large') : null,
                         customImageFile: customImage,
                         audioFile: audioFile,
                         audioFileId: audioFile?.id || null,
@@ -426,8 +426,9 @@ export class GoogleDriveService {
     return `/api/image/${photo.id}`;
   }
 
-  getDirectImageUrl(fileId: string, size: 'small' | 'medium' | 'large'): string {
-    return `/api/image/${fileId}`;
+  getDirectImageUrl(fileId: string, size: 'small' | 'medium' | 'large' = 'medium'): string {
+    const sizeParam = size === 'large' ? '800' : size === 'medium' ? '400' : '220';
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${sizeParam}`;
   }
 
   // New method to get biography content
