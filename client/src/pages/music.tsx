@@ -174,21 +174,21 @@ export default function Music() {
       // Start playing
       await audio.play();
 
-      // Fade in over 1 second (0 to 0.7 volume)
+      // Fade in over 2 seconds (0 to 0.7 volume)
       const fadeInInterval = setInterval(() => {
         if (audio.volume < 0.7) {
-          audio.volume = Math.min(0.7, audio.volume + 0.07);
+          audio.volume = Math.min(0.7, audio.volume + 0.035);
         } else {
           clearInterval(fadeInInterval);
         }
       }, 100);
 
-      // Set up fade out 1 second before the end
+      // Set up fade out 2 seconds before the end
       const fadeOutTimer = setTimeout(() => {
         if (audioRef.current === audio) {
           const fadeOutInterval = setInterval(() => {
-            if (audio.volume > 0.05) {
-              audio.volume = Math.max(0, audio.volume - 0.07);
+            if (audio.volume > 0.035) {
+              audio.volume = Math.max(0, audio.volume - 0.035);
             } else {
               clearInterval(fadeOutInterval);
               audio.pause();
@@ -198,7 +198,7 @@ export default function Music() {
             }
           }, 100);
         }
-      }, (previewDuration - 1) * 1000);
+      }, (previewDuration - 2) * 1000);
 
       // Stop exactly after preview duration
       const stopTimer = setTimeout(() => {
