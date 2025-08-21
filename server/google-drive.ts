@@ -274,7 +274,8 @@ class GoogleDriveService {
           // Get album folders from this category folder (My Music, Featured On, Upcoming)
           const albumFolders = await this.getFoldersInFolder(folder.id);
           
-          for (const albumFolder of albumFolders) {
+          // Process albums in parallel for this category
+          const albumPromises = albumFolders.map(async (albumFolder) => {
             try {
               if (categoryKey === 'upcoming') {
                 // Handle upcoming albums differently - look for audio files and custom images
@@ -284,7 +285,8 @@ class GoogleDriveService {
                 const imageFiles = files.filter(f => f.mimeType?.startsWith('image/'));
                 
                 if (docs.length > 0) {
-                  for (const docFile of docs) {
+                  // Process documents in parallel
+                  const docPromises = docs.map(async (docFile) => {
                     try {
                       const docContent = await this.getDocContent(docFile.id);
                       const metadata = this.parseAlbumMetadata(docContent);
