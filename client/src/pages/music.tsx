@@ -210,7 +210,7 @@ export default function Music() {
         }
       }, previewDuration * 1000);
 
-      // Handle audio end
+      // Handle audio end - reset to allow new preview
       audio.addEventListener('ended', () => {
         setIsPlaying(false);
         setCurrentAudio(null);
@@ -317,8 +317,10 @@ export default function Music() {
                 {/* Audio preview overlay for upcoming albums */}
                 {album.category === 'upcoming' && album.audioFileId && (
                   <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {currentAudio === album.audioFileId && isPlaying ? (
-                      <Pause className="h-8 w-8 text-white" />
+                    {currentAudio === album.audioFileId ? (
+                      isPlaying ? (
+                        <Pause className="h-8 w-8 text-white" />
+                      ) : null
                     ) : (
                       <Play className="h-8 w-8 text-white ml-1" />
                     )}
