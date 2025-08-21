@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactSchema, insertEventSchema, insertPhotoSchema, insertAlbumSchema } from "@shared/schema";
 import { googleApisClient } from "../client/src/lib/google-apis";
-import { GoogleDriveService } from "./google-drive";
+import { googleDriveService } from "./google-drive";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -149,16 +149,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const driveService = new GoogleDriveService();
-      const photos = await driveService.getPhotosFromFolder(folderId);
+      const photos = await googleDriveService.getPhotosFromFolder(folderId);
       
       // Transform photos to include direct image URLs  
       const transformedPhotos = photos.map(photo => ({
         ...photo,
-        directUrl: driveService.getHighQualityImageUrl(photo.id),
-        thumbnailUrl: driveService.getThumbnailFromDrive(photo, 'medium'),
-        largeUrl: driveService.getThumbnailFromDrive(photo, 'large'),
-        fallbackUrl: driveService.getDirectImageUrl(photo.id, 'medium'),
+        directUrl: googleDriveService.getHighQualityImageUrl(photo.id),
+        thumbnailUrl: googleDriveService.getThumbnailFromDrive(photo, 'medium'),
+        largeUrl: googleDriveService.getThumbnailFromDrive(photo, 'large'),
+        fallbackUrl: googleDriveService.getDirectImageUrl(photo.id, 'medium'),
       }));
       
       res.json(transformedPhotos);
@@ -176,17 +175,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { shareUrl, folderId } = req.body;
       
-      const driveService = new GoogleDriveService();
       let targetFolderId = folderId;
       if (shareUrl && !folderId) {
-        targetFolderId = driveService.extractFolderIdFromUrl(shareUrl);
+        targetFolderId = await googleDriveService.extractFolderIdFromShareUrl(shareUrl);
       }
       
       if (!targetFolderId) {
         return res.status(400).json({ error: 'Folder ID or share URL is required' });
       }
       
-      const folders = await driveService.getFoldersInFolder(targetFolderId);
+      const folders = await googleDriveService.getFoldersInFolder(targetFolderId);
       res.json(folders);
     } catch (error) {
       console.error('Drive folders error:', error);
@@ -203,8 +201,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Folder ID is required' });
       }
       
-      const driveService = new GoogleDriveService();
-      const files = await driveService.getFilesFromFolder(folderId, mimeTypeFilter);
+      const files = await googleDriveService.getFilesFromFolder(folderId, mimeTypeFilter);
       res.json(files);
     } catch (error) {
       console.error('Drive files error:', error);
@@ -217,17 +214,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { parentFolderId, searchTerm, shareUrl } = req.body;
       
-      const driveService = new GoogleDriveService();
       let targetFolderId = parentFolderId;
       if (shareUrl && !parentFolderId) {
-        targetFolderId = driveService.extractFolderIdFromUrl(shareUrl);
+        targetFolderId = await googleDriveService.extractFolderIdFromShareUrl(shareUrl);
       }
       
       if (!targetFolderId || !searchTerm) {
         return res.status(400).json({ error: 'Parent folder ID and search term are required' });
       }
       
-      const folders = await driveService.searchFoldersRecursively(targetFolderId, searchTerm);
+      const folders = await googleDriveService.searchFoldersRecursively(targetFolderId, searchTerm);
       res.json(folders);
     } catch (error) {
       console.error('Drive folder search error:', error);
@@ -239,21 +235,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/image/:fileId', async (req, res) => {
     try {
       const { fileId } = req.params;
-      console.log(`Image request for file ID: ${fileId}`);
-      const driveService = new GoogleDriveService();
       
       // Get file metadata first
-      let metadata;
-      try {
-        metadata = await driveService.getFile(fileId);
-        console.log(`Image metadata:`, metadata);
-      } catch (metaError) {
-        console.error('Error getting image metadata:', metaError);
-        return res.status(404).json({ error: 'Image file not found' });
-      }
-
+      const metadata = await googleDriveService.getFile(fileId);
       if (!metadata.mimeType?.startsWith('image/')) {
-        console.log(`File is not an image: ${metadata?.mimeType}`);
         return res.status(400).json({ error: 'File is not an image file' });
       }
       
@@ -261,37 +246,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.set({
         'Content-Type': metadata.mimeType,
         'Cache-Control': 'public, max-age=3600',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Content-Length': metadata.size
       });
-
-      if (metadata.size) {
-        res.set('Content-Length', metadata.size.toString());
-      }
       
       // Stream the image file
-      try {
-        const fileStream = await driveService.getFileStream(fileId);
-        console.log(`Successfully got image stream for file: ${fileId}`);
-        
-        fileStream.on('error', (err: Error) => {
-          console.error('Image stream error:', err);
-          if (!res.headersSent) {
-            res.status(500).json({ error: 'Stream error' });
-          }
-        });
-        
-        fileStream.pipe(res);
-        
-      } catch (streamError) {
-        console.error('Error getting image stream:', streamError);
-        return res.status(500).json({ error: 'Failed to stream image file' });
-      }
+      const fileStream = await googleDriveService.getFileStream(fileId);
+      fileStream.on('error', (err: Error) => {
+        console.error('Stream error:', err);
+        if (!res.headersSent) {
+          res.status(500).json({ error: 'Stream error' });
+        }
+      });
+      fileStream.pipe(res);
       
     } catch (error) {
-      console.error('Outer error in image endpoint:', error);
-      if (!res.headersSent) {
-        res.status(500).json({ error: 'Failed to stream image file' });
-      }
+      console.error('Error streaming image file:', error);
+      res.status(500).json({ error: 'Failed to stream image file' });
     }
   });
 
@@ -302,10 +273,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Audio request for file ID: ${fileId}`);
       
       // Get file metadata to verify it's an audio file
-      const driveService = new GoogleDriveService();
       let metadata;
       try {
-        metadata = await driveService.getFile(fileId);
+        metadata = await googleDriveService.getFile(fileId);
         console.log(`File metadata:`, metadata);
       } catch (metaError) {
         console.error('Error getting file metadata:', metaError);
@@ -332,7 +302,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Stream the file using the public method
       try {
-        const fileStream = await driveService.getFileStream(fileId);
+        const fileStream = await googleDriveService.getFileStream(fileId);
         console.log(`Successfully got stream for file: ${fileId}`);
         
         fileStream.on('error', (err: Error) => {
@@ -366,13 +336,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Share URL is required' });
       }
 
-      const driveService = new GoogleDriveService();
-      const folderId = driveService.extractFolderIdFromUrl(shareUrl);
+      const folderId = await googleDriveService.extractFolderIdFromShareUrl(shareUrl);
       if (!folderId) {
         return res.status(400).json({ error: 'Invalid Google Drive share URL' });
       }
 
-      const albums = await driveService.getMusicAlbums(folderId);
+      const albums = await googleDriveService.getMusicAlbums(folderId);
       res.json(albums);
     } catch (error) {
       console.error('Drive music albums error:', error);
@@ -392,16 +361,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const driveService = new GoogleDriveService();
-      const photos = await driveService.getPublicPhotos(shareUrl);
+      const photos = await googleDriveService.getPublicPhotos(shareUrl);
       
       // Transform photos to include direct image URLs
       const transformedPhotos = photos.map(photo => ({
         ...photo,
-        directUrl: driveService.getHighQualityImageUrl(photo.id),
-        thumbnailUrl: driveService.getThumbnailFromDrive(photo, 'medium'),
-        largeUrl: driveService.getThumbnailFromDrive(photo, 'large'),
-        fallbackUrl: driveService.getDirectImageUrl(photo.id, 'medium'),
+        directUrl: googleDriveService.getHighQualityImageUrl(photo.id),
+        thumbnailUrl: googleDriveService.getThumbnailFromDrive(photo, 'medium'),
+        largeUrl: googleDriveService.getThumbnailFromDrive(photo, 'large'),
+        fallbackUrl: googleDriveService.getDirectImageUrl(photo.id, 'medium'),
       }));
       
       res.json(transformedPhotos);
@@ -540,29 +508,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false, 
         message: "Failed to delete album" 
       });
-    }
-  });
-
-  // Biography endpoint
-  app.post('/api/biography', async (req, res) => {
-    try {
-      const { shareUrl } = req.body;
-      if (!shareUrl) {
-        return res.status(400).json({ error: 'Share URL is required' });
-      }
-
-      const folderId = shareUrl.match(/\/folders\/([a-zA-Z0-9-_]+)/)?.[1];
-      if (!folderId) {
-        return res.status(400).json({ error: 'Invalid Google Drive folder URL' });
-      }
-
-      const driveService = new GoogleDriveService();
-      const content = await driveService.getBiographyContent(folderId);
-      
-      res.json({ content });
-    } catch (error) {
-      console.error('Error fetching biography:', error);
-      res.status(500).json({ error: 'Failed to fetch biography content' });
     }
   });
 
