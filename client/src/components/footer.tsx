@@ -3,10 +3,10 @@ import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-black text-white py-12">
+    <footer className="bg-black text-white pt-6 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <div className="flex justify-center space-x-6 mb-12">
+          <div className="flex justify-center space-x-6 mb-6">
             <a 
               href="https://www.facebook.com/share/19eJ712nF4/" 
               target="_blank"
