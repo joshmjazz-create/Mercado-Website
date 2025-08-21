@@ -202,14 +202,15 @@ export default function Schedule() {
               <Button
                 variant="outline"
                 onClick={() => navigateMonth('prev')}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 flex-shrink-0"
               >
                 <ChevronLeft className="w-4 h-4" />
-                Previous
+                <span className="hidden sm:inline">Previous</span>
+                <span className="sm:hidden">Prev</span>
               </Button>
               
               <h3 
-                className={`text-2xl font-bold text-purple-800 cursor-pointer transition-colors ${
+                className={`text-xl sm:text-2xl font-bold text-purple-800 cursor-pointer transition-colors mx-2 text-center ${
                   !isCurrentMonth() ? 'hover:text-purple-600' : ''
                 }`}
                 onDoubleClick={handleMonthHeaderDoubleClick}
@@ -221,9 +222,10 @@ export default function Schedule() {
               <Button
                 variant="outline"
                 onClick={() => navigateMonth('next')}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 flex-shrink-0"
               >
-                Next
+                <span className="hidden sm:inline">Next</span>
+                <span className="sm:hidden">Next</span>
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
