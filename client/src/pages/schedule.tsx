@@ -111,15 +111,35 @@ export default function Schedule() {
             {day}
           </div>
           <div className="space-y-1">
-            {dayEvents.slice(0, 2).map((event) => (
-              <div
-                key={event.id}
-                onClick={() => openEventDialog(event)}
-                className="text-xs p-1 bg-purple-100 text-purple-800 rounded truncate hover:bg-purple-200 transition-colors"
-              >
-                {event.title}
-              </div>
-            ))}
+            {dayEvents.slice(0, 2).map((event) => {
+              // Color mapping for different calendar colors - you can customize these
+              const getEventColor = (color: string) => {
+                const colorMap = {
+                  'default': 'bg-purple-100 text-purple-800 hover:bg-purple-200',
+                  'red': 'bg-red-100 text-red-800 hover:bg-red-200',
+                  'orange': 'bg-orange-100 text-orange-800 hover:bg-orange-200', 
+                  'yellow': 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+                  'green': 'bg-green-100 text-green-800 hover:bg-green-200',
+                  'blue': 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+                  'indigo': 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
+                  'purple': 'bg-purple-100 text-purple-800 hover:bg-purple-200',
+                  'pink': 'bg-pink-100 text-pink-800 hover:bg-pink-200',
+                  'teal': 'bg-teal-100 text-teal-800 hover:bg-teal-200',
+                  'cyan': 'bg-cyan-100 text-cyan-800 hover:bg-cyan-200',
+                };
+                return colorMap[color as keyof typeof colorMap] || colorMap.default;
+              };
+              
+              return (
+                <div
+                  key={event.id}
+                  onClick={() => openEventDialog(event)}
+                  className={`text-xs p-1 rounded truncate transition-colors cursor-pointer ${getEventColor(event.color || 'default')}`}
+                >
+                  {event.title}
+                </div>
+              );
+            })}
             {dayEvents.length > 2 && (
               <div className="text-xs text-gray-500 pl-1">
                 +{dayEvents.length - 2} more
@@ -228,7 +248,18 @@ export default function Schedule() {
                 
                 <div className="flex items-center gap-2 text-gray-600">
                   <MapPin className="w-4 h-4 text-purple-600" />
-                  <span>{selectedEvent.venue || 'Venue TBD'}</span>
+                  {selectedEvent.address ? (
+                    <a 
+                      href={`https://maps.google.com/maps?q=${encodeURIComponent(selectedEvent.address)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-purple-600 hover:text-purple-800 hover:underline cursor-pointer"
+                    >
+                      {selectedEvent.venue || 'Venue TBD'}
+                    </a>
+                  ) : (
+                    <span>{selectedEvent.venue || 'Venue TBD'}</span>
+                  )}
                 </div>
                 
                 {selectedEvent.ticketPrice && (

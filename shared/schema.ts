@@ -20,6 +20,7 @@ export const events = pgTable("events", {
   ticketPrice: text("ticket_price"),
   ticketUrl: text("ticket_url"),
   googleEventId: text("google_event_id"),
+  color: text("color").default("default"),
 });
 
 export const photos = pgTable("photos", {

@@ -56,10 +56,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           description: gEvent.description || "",
           startTime: new Date(gEvent.start.dateTime),
           endTime: new Date(gEvent.end.dateTime),
-          venue: gEvent.location || "TBD",
-          address: gEvent.location || "",
+          venue: gEvent.location ? gEvent.location.replace(/\\,/g, ',').replace(/\\\\/g, '\\') : "TBD",
+          address: gEvent.location ? gEvent.location.replace(/\\,/g, ',').replace(/\\\\/g, '\\') : "",
           ticketPrice: "",
           ticketUrl: "",
+          color: "default", // Color will be handled by frontend styling
         }));
         
         // Sort events by start time
