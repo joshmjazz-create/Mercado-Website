@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="bg-black text-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <div className="flex justify-center space-x-6 mb-4">
+          <div className="flex justify-center space-x-6 mb-6">
             <a 
               href="https://www.facebook.com/share/19eJ712nF4/" 
               target="_blank"
