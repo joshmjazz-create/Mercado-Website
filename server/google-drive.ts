@@ -397,6 +397,37 @@ export class GoogleDriveService {
     }
   }
 
+  // Extract folder ID from URL (synchronous method)
+  extractFolderIdFromUrl(shareUrl: string): string {
+    if (!shareUrl) {
+      throw new Error('Share URL is required');
+    }
+    
+    const folderMatch = shareUrl.match(/\/folders\/([a-zA-Z0-9-_]+)/);
+    if (folderMatch) {
+      return folderMatch[1];
+    }
+    
+    throw new Error('Invalid Google Drive folder URL');
+  }
+
+  // High quality image URL helper methods
+  getHighQualityImageUrl(fileId: string): string {
+    return `/api/image/${fileId}`;
+  }
+
+  getThumbnailFromDrive(photo: DrivePhoto, size: 'small' | 'medium' | 'large'): string {
+    if (photo.thumbnailLink) {
+      const sizeMap = { small: 's220', medium: 's512', large: 's1024' };
+      return photo.thumbnailLink.replace('s220', sizeMap[size]);
+    }
+    return `/api/image/${photo.id}`;
+  }
+
+  getDirectImageUrl(fileId: string, size: 'small' | 'medium' | 'large'): string {
+    return `/api/image/${fileId}`;
+  }
+
   // New method to get biography content
   async getBiographyContent(biographyFolderId: string): Promise<string> {
     try {

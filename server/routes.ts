@@ -238,11 +238,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/image/:fileId', async (req, res) => {
     try {
       const { fileId } = req.params;
+      console.log(`Image request for file ID: ${fileId}`);
       const driveService = new GoogleDriveService();
       
       // Get file metadata first
-      const metadata = await driveService.getFile(fileId);
+      let metadata;
+      try {
+        metadata = await driveService.getFile(fileId);
+        console.log(`Image metadata:`, metadata);
+      } catch (metaError) {
+        console.error('Error getting image metadata:', metaError);
+        return res.status(404).json({ error: 'Image file not found' });
+      }
+
       if (!metadata.mimeType?.startsWith('image/')) {
+        console.log(`File is not an image: ${metadata?.mimeType}`);
         return res.status(400).json({ error: 'File is not an image file' });
       }
       
@@ -250,23 +260,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.set({
         'Content-Type': metadata.mimeType,
         'Cache-Control': 'public, max-age=3600',
-        'Access-Control-Allow-Origin': '*',
-        'Content-Length': metadata.size
+        'Access-Control-Allow-Origin': '*'
       });
+
+      if (metadata.size) {
+        res.set('Content-Length', metadata.size.toString());
+      }
       
       // Stream the image file
-      const fileStream = await driveService.getFileStream(fileId);
-      fileStream.on('error', (err: Error) => {
-        console.error('Stream error:', err);
-        if (!res.headersSent) {
-          res.status(500).json({ error: 'Stream error' });
-        }
-      });
-      fileStream.pipe(res);
+      try {
+        const fileStream = await driveService.getFileStream(fileId);
+        console.log(`Successfully got image stream for file: ${fileId}`);
+        
+        fileStream.on('error', (err: Error) => {
+          console.error('Image stream error:', err);
+          if (!res.headersSent) {
+            res.status(500).json({ error: 'Stream error' });
+          }
+        });
+        
+        fileStream.pipe(res);
+        
+      } catch (streamError) {
+        console.error('Error getting image stream:', streamError);
+        return res.status(500).json({ error: 'Failed to stream image file' });
+      }
       
     } catch (error) {
-      console.error('Error streaming image file:', error);
-      res.status(500).json({ error: 'Failed to stream image file' });
+      console.error('Outer error in image endpoint:', error);
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Failed to stream image file' });
+      }
     }
   });
 
