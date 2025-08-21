@@ -12,14 +12,16 @@ export interface DrivePhoto {
 
 class GoogleDriveService {
   private drive: any;
+  private docs: any;
 
   constructor() {
-    // Initialize Drive service only when actually used
+    // Initialize Drive and Docs services only when actually used
     this.drive = null;
+    this.docs = null;
   }
 
   private async initializeDrive() {
-    if (this.drive) return;
+    if (this.drive && this.docs) return;
 
     if (!process.env.GOOGLE_DRIVE_CREDENTIALS) {
       throw new Error('Google Drive credentials not configured');
@@ -30,10 +32,14 @@ class GoogleDriveService {
       
       const auth = new google.auth.GoogleAuth({
         credentials,
-        scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+        scopes: [
+          'https://www.googleapis.com/auth/drive.readonly',
+          'https://www.googleapis.com/auth/documents.readonly'
+        ],
       });
 
       this.drive = google.drive({ version: 'v3', auth });
+      this.docs = google.docs({ version: 'v1', auth });
     } catch (error) {
       console.error('Failed to initialize Google Drive:', error);
       throw error;
@@ -182,22 +188,60 @@ class GoogleDriveService {
     return this.getDirectImageUrl(photo.id, size);
   }
 
-  // Get content from Google Docs
-  async getDocContent(fileId: string): Promise<string> {
+  // Get content from Google Docs with formatting
+  async getDocumentContent(fileId: string): Promise<any> {
     try {
       await this.initializeDrive();
       
-      // Export Google Doc as plain text
-      const response = await this.drive.files.export({
-        fileId: fileId,
-        mimeType: 'text/plain',
+      // Get the structured document content from Google Docs API
+      const response = await this.docs.documents.get({
+        documentId: fileId,
       });
 
-      return response.data || '';
+      return response.data;
     } catch (error) {
       console.error('Error fetching Google Doc content:', error);
       throw error;
     }
+  }
+
+  // Extract text content with formatting from Google Docs
+  extractFormattedText(document: any): string {
+    if (!document || !document.body || !document.body.content) {
+      return '';
+    }
+
+    let text = '';
+    
+    for (const element of document.body.content) {
+      if (element.paragraph) {
+        const paragraph = element.paragraph;
+        let paragraphText = '';
+        
+        if (paragraph.elements) {
+          for (const elem of paragraph.elements) {
+            if (elem.textRun && elem.textRun.content) {
+              let content = elem.textRun.content;
+              
+              // Check for italic formatting
+              if (elem.textRun.textStyle && elem.textRun.textStyle.italic) {
+                // Wrap italic text in HTML tags for processing
+                content = `<em>${content}</em>`;
+              }
+              
+              paragraphText += content;
+            }
+          }
+        }
+        
+        // Only add paragraph if it has content
+        if (paragraphText.trim()) {
+          text += paragraphText + '\n\n';
+        }
+      }
+    }
+    
+    return text.trim();
   }
 
   // Parse album metadata from Google Doc content
@@ -286,7 +330,8 @@ class GoogleDriveService {
                 if (docs.length > 0) {
                   for (const docFile of docs) {
                     try {
-                      const docContent = await this.getDocContent(docFile.id);
+                      const document = await this.getDocumentContent(docFile.id);
+            const docContent = this.extractFormattedText(document);
                       const metadata = this.parseAlbumMetadata(docContent);
                       
                       if (metadata.title) {
@@ -322,7 +367,8 @@ class GoogleDriveService {
                 
                 for (const file of files) {
                   try {
-                    const docContent = await this.getDocContent(file.id);
+                    const document = await this.getDocumentContent(file.id);
+                    const docContent = this.extractFormattedText(document);
                     const metadata = this.parseAlbumMetadata(docContent);
                     
                     if (metadata.title) {
@@ -420,6 +466,27 @@ class GoogleDriveService {
     } catch (error) {
       console.error('Error fetching Spotify album cover:', error);
       return null;
+    }
+  }
+
+  // Get biography document from folder
+  async getBiographyFromFolder(folderId: string): Promise<string> {
+    try {
+      const files = await this.getFilesFromFolder(folderId, "mimeType='application/vnd.google-apps.document'");
+      
+      if (files.length === 0) {
+        throw new Error('No Google Docs found in biography folder');
+      }
+      
+      // Get the first document (assuming it's the biography)
+      const bioDoc = files[0];
+      console.log('Found biography document:', bioDoc.name, bioDoc.id);
+      
+      const document = await this.getDocumentContent(bioDoc.id);
+      return this.extractFormattedText(document);
+    } catch (error) {
+      console.error('Error fetching biography:', error);
+      throw error;
     }
   }
 }

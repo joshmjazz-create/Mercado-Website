@@ -511,6 +511,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Endpoint for fetching Google Docs content with formatting
+  app.get('/api/drive/document/:documentId', async (req, res) => {
+    try {
+      const { documentId } = req.params;
+      const document = await googleDriveService.getDocumentContent(documentId);
+      const formattedText = googleDriveService.extractFormattedText(document);
+      res.json({ content: formattedText, document });
+    } catch (error) {
+      console.error('Error fetching document content:', error);
+      res.status(500).json({ error: 'Failed to fetch document content' });
+    }
+  });
+
+  // Endpoint for fetching biography from Google Drive folder
+  app.post('/api/drive/biography', async (req, res) => {
+    try {
+      const { shareUrl } = req.body;
+      
+      if (!shareUrl) {
+        return res.status(400).json({ error: 'Share URL is required' });
+      }
+      
+      const folderId = await googleDriveService.extractFolderIdFromShareUrl(shareUrl);
+      if (!folderId) {
+        return res.status(400).json({ error: 'Invalid Google Drive share URL' });
+      }
+      
+      const biography = await googleDriveService.getBiographyFromFolder(folderId);
+      res.json({ biography });
+    } catch (error) {
+      console.error('Error fetching biography:', error);
+      res.status(500).json({ error: 'Failed to fetch biography' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
