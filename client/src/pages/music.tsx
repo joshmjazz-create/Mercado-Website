@@ -149,7 +149,7 @@ export default function Music() {
           {/* Featured On Section */}
           {featuredAlbums.length > 0 && (
             <div>
-              <h2 className="text-3xl font-bold text-purple-800 text-center mb-8">Featured On</h2>
+              <h2 className="text-xl font-medium text-gray-500 text-left mb-6 underline">Featured On</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {featuredAlbums.map((album) => (
                   <div key={album.id} className="relative group">
@@ -184,7 +184,7 @@ export default function Music() {
           {/* Upcoming Albums Section */}
           {upcomingAlbums.length > 0 && (
             <div className="mt-16">
-              <h2 className="text-3xl font-bold text-purple-800 text-center mb-8">Upcoming</h2>
+              <h2 className="text-xl font-medium text-gray-500 text-left mb-6 underline">Upcoming</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {upcomingAlbums.map((album) => (
                   <div key={album.id} className="relative group">
