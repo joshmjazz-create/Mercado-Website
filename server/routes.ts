@@ -33,44 +33,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get events from Google Calendar and local storage
+  // Get events from Google Calendar (always fresh data)
   app.get("/api/events", async (req, res) => {
     try {
-      // Try to fetch from Google Calendar first
-      let events = await storage.getEvents();
-      
+      // Always fetch fresh data from Google Calendar
       try {
         const googleEvents = await googleApisClient.getCalendarEvents();
         
-        // Convert Google Calendar events to our schema and sync
-        for (const gEvent of googleEvents) {
-          const existingEvent = events.find(e => e.googleEventId === gEvent.id);
-          
-          if (!existingEvent) {
-            const eventData = {
-              title: gEvent.summary,
-              description: gEvent.description || "",
-              startTime: new Date(gEvent.start.dateTime),
-              endTime: new Date(gEvent.end.dateTime),
-              venue: gEvent.location || "TBD",
-              address: gEvent.location,
-              ticketPrice: "",
-              ticketUrl: "",
-            };
-            
-            const newEvent = await storage.createEvent(eventData, gEvent.id);
-            events.push(newEvent);
-          }
-        }
+        // Convert Google Calendar events to our schema
+        const events = googleEvents.map(gEvent => ({
+          id: gEvent.id,
+          googleEventId: gEvent.id,
+          title: gEvent.summary,
+          description: gEvent.description || "",
+          startTime: new Date(gEvent.start.dateTime),
+          endTime: new Date(gEvent.end.dateTime),
+          venue: gEvent.location || "TBD",
+          address: gEvent.location || "",
+          ticketPrice: "",
+          ticketUrl: "",
+        }));
+        
+        // Sort events by start time
+        events.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+        
+        res.json(events);
       } catch (googleError) {
         console.warn('Could not fetch from Google Calendar:', googleError);
-        // Continue with local events only
+        // Fallback to local events if Google Calendar fails
+        const localEvents = await storage.getEvents();
+        localEvents.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+        res.json(localEvents);
       }
-      
-      // Sort events by start time
-      events.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-      
-      res.json(events);
     } catch (error: any) {
       res.status(500).json({ 
         success: false, 
