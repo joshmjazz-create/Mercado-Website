@@ -8,7 +8,7 @@ export default function Bio() {
 
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
-            <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-6">
+            <div className="prose prose-base max-w-none text-gray-700 leading-relaxed space-y-6">
               <p>
                 Joshua Mercado is a young, up and coming trumpet player based in New Jersey. Raised in Central Florida, he earned his Bachelor's degree in Jazz Studies from the University of Central Florida and is currently pursuing a Master's degree at William Paterson University, where he studies with renowned trumpeter Jeremy Pelt.
               </p>
@@ -18,7 +18,7 @@ export default function Bio() {
               </p>
               
               <p>
-                His versatility as a musician has also led him to national touring opportunities. In 2024, he went on the road with Joey Fatone (*NSYNC) and AJ McLean (Backstreet Boys) on their A Legendary Night tour, performing at historic venues such as The Ryman, The Factory, and The MGM Grand National Harbor. Through his connection with Joey Fatone, he has shared the stage with other celebrities, including but not limited to Debbie Gibson, Lance Bass, Chris Kirkpatrick, Montell Jordan, Shawn Stockman, Wanya Morris, and even Murr from Impractical Jokers.
+                His versatility as a musician has also led him to national touring opportunities. In 2024, he went on the road with Joey Fatone (*NSYNC) and AJ McLean (Backstreet Boys) on their <em>A Legendary Night</em> tour, performing at historic venues such as The Ryman, The Factory, and The MGM Grand National Harbor. Through his connection with Joey Fatone, he has shared the stage with other celebrities, including but not limited to Debbie Gibson, Lance Bass, Chris Kirkpatrick, Montell Jordan, Shawn Stockman, Wanya Morris, and even Murr from <em>Impractical Jokers</em>.
               </p>
             </div>
           </div>
