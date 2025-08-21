@@ -170,6 +170,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get folders within a folder
+  app.post('/api/drive/folders', async (req, res) => {
+    try {
+      const { shareUrl, folderId } = req.body;
+      
+      let targetFolderId = folderId;
+      if (shareUrl && !folderId) {
+        targetFolderId = await googleDriveService.extractFolderIdFromShareUrl(shareUrl);
+      }
+      
+      if (!targetFolderId) {
+        return res.status(400).json({ error: 'Folder ID or share URL is required' });
+      }
+      
+      const folders = await googleDriveService.getFoldersInFolder(targetFolderId);
+      res.json(folders);
+    } catch (error) {
+      console.error('Drive folders error:', error);
+      res.status(500).json({ error: 'Failed to fetch folders from Google Drive' });
+    }
+  });
+
+  // Get files from a specific folder with optional filtering
+  app.post('/api/drive/files', async (req, res) => {
+    try {
+      const { folderId, mimeTypeFilter } = req.body;
+      
+      if (!folderId) {
+        return res.status(400).json({ error: 'Folder ID is required' });
+      }
+      
+      const files = await googleDriveService.getFilesFromFolder(folderId, mimeTypeFilter);
+      res.json(files);
+    } catch (error) {
+      console.error('Drive files error:', error);
+      res.status(500).json({ error: 'Failed to fetch files from Google Drive' });
+    }
+  });
+
+  // Search for folders recursively
+  app.post('/api/drive/search-folders', async (req, res) => {
+    try {
+      const { parentFolderId, searchTerm, shareUrl } = req.body;
+      
+      let targetFolderId = parentFolderId;
+      if (shareUrl && !parentFolderId) {
+        targetFolderId = await googleDriveService.extractFolderIdFromShareUrl(shareUrl);
+      }
+      
+      if (!targetFolderId || !searchTerm) {
+        return res.status(400).json({ error: 'Parent folder ID and search term are required' });
+      }
+      
+      const folders = await googleDriveService.searchFoldersRecursively(targetFolderId, searchTerm);
+      res.json(folders);
+    } catch (error) {
+      console.error('Drive folder search error:', error);
+      res.status(500).json({ error: 'Failed to search folders in Google Drive' });
+    }
+  });
+
   // Get photos from Google Drive share URL
   app.post("/api/drive/shared-photos", async (req, res) => {
     try {

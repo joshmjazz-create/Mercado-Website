@@ -58,6 +58,75 @@ class GoogleDriveService {
     }
   }
 
+  async getFoldersInFolder(folderId: string): Promise<any[]> {
+    try {
+      await this.initializeDrive();
+      
+      const response = await this.drive.files.list({
+        q: `'${folderId}' in parents and mimeType='application/vnd.google-apps.folder'`,
+        fields: 'files(id,name,createdTime)',
+        orderBy: 'name asc',
+        pageSize: 100,
+      });
+
+      return response.data.files || [];
+    } catch (error) {
+      console.error('Error fetching folders from Drive folder:', error);
+      throw error;
+    }
+  }
+
+  async getFilesFromFolder(folderId: string, mimeTypeFilter?: string): Promise<any[]> {
+    try {
+      await this.initializeDrive();
+      
+      let query = `'${folderId}' in parents`;
+      if (mimeTypeFilter) {
+        query += ` and ${mimeTypeFilter}`;
+      }
+      
+      const response = await this.drive.files.list({
+        q: query,
+        fields: 'files(id,name,mimeType,thumbnailLink,webViewLink,webContentLink,createdTime,size)',
+        orderBy: 'name asc',
+        pageSize: 100,
+      });
+
+      return response.data.files || [];
+    } catch (error) {
+      console.error('Error fetching files from Drive folder:', error);
+      throw error;
+    }
+  }
+
+  async searchFoldersRecursively(parentFolderId: string, searchTerm: string): Promise<any[]> {
+    try {
+      await this.initializeDrive();
+      
+      // Search for folders containing the search term within the parent folder
+      const response = await this.drive.files.list({
+        q: `'${parentFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and name contains '${searchTerm}'`,
+        fields: 'files(id,name,createdTime)',
+        orderBy: 'name asc',
+        pageSize: 100,
+      });
+
+      let results = response.data.files || [];
+      
+      // Also search within subfolders
+      const subfolders = await this.getFoldersInFolder(parentFolderId);
+      for (const subfolder of subfolders) {
+        const subResults = await this.searchFoldersRecursively(subfolder.id, searchTerm);
+        results = results.concat(subResults);
+      }
+
+      return results;
+    } catch (error) {
+      console.error('Error searching folders recursively:', error);
+      throw error;
+    }
+  }
+
   async extractFolderIdFromShareUrl(shareUrl: string): Promise<string | null> {
     // Extract folder ID from Google Drive share URLs
     // Format: https://drive.google.com/drive/folders/FOLDER_ID?usp=sharing
