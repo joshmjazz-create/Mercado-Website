@@ -15,6 +15,7 @@ interface DrivePhoto {
 
 export default function Gallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [imageDimensions, setImageDimensions] = useState<Record<string, { width: number; height: number }>>({});
   const queryClient = useQueryClient();
   
   // Joshua's Google Drive performance photos folder
@@ -24,6 +25,39 @@ export default function Gallery() {
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ['/api/drive/shared-photos'] });
   }, [queryClient]);
+
+  // Function to determine container class based on image aspect ratio
+  const getImageContainerClass = (photoId: string) => {
+    const dimensions = imageDimensions[photoId];
+    if (!dimensions) {
+      return "h-64"; // Default height while loading
+    }
+    
+    const aspectRatio = dimensions.width / dimensions.height;
+    
+    if (aspectRatio > 1.5) {
+      // Wide/landscape images
+      return "h-48";
+    } else if (aspectRatio < 0.7) {
+      // Tall/portrait images
+      return "h-80";
+    } else {
+      // Square-ish images
+      return "h-64";
+    }
+  };
+
+  // Function to handle image load and store dimensions
+  const handleImageLoad = (photoId: string, event: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = event.target as HTMLImageElement;
+    setImageDimensions(prev => ({
+      ...prev,
+      [photoId]: {
+        width: img.naturalWidth,
+        height: img.naturalHeight
+      }
+    }));
+  };
   
   const { data: photos = [], isLoading, error } = useQuery<DrivePhoto[]>({
     queryKey: ['/api/drive/shared-photos'],
@@ -111,7 +145,7 @@ export default function Gallery() {
             photos.map((photo) => (
               <div
                 key={photo.id}
-                className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
+                className={`group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer ${getImageContainerClass(photo.id)}`}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -122,8 +156,9 @@ export default function Gallery() {
                 <img
                   src={photo.thumbnailUrl}
                   alt={photo.name}
-                  className="w-full h-64 object-contain bg-gray-100 group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-contain bg-gray-100 group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
+                  onLoad={(e) => handleImageLoad(photo.id, e)}
                   onError={(e) => {
                     // Try fallback URLs if main thumbnail fails
                     const target = e.target as HTMLImageElement;
