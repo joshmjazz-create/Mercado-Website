@@ -109,7 +109,8 @@ export class GoogleApisClient {
             currentEvent.summary = value;
             break;
           case 'DESCRIPTION':
-            currentEvent.description = value;
+            // Decode iCal escape sequences
+            currentEvent.description = value.replace(/\\n/g, '\n').replace(/\\,/g, ',');
             break;
           case 'DTSTART':
             currentEvent.dtstart = value;

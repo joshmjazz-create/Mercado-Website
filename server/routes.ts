@@ -90,12 +90,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         });
 
-        // Filter to only show events with exactly "SHOW" in the description (case-sensitive)
-        const events = allEvents.filter(event => 
-          event.description.includes('SHOW')
-        );
+        // Filter to only show events with exactly "SHOW" in the original description (case-sensitive)
+        const events = allEvents.filter((event, index) => {
+          const originalDesc = googleEvents[index]?.description || "";
+          return originalDesc.includes('SHOW');
+        });
         
         // Log for debugging (remove in production)
+        allEvents.forEach((event, i) => {
+          const originalDesc = googleEvents[i]?.description || "";
+          console.log(`Event ${i}: "${event.title}" - Original desc: "${originalDesc}" - Contains SHOW: ${originalDesc.includes('SHOW')}`);
+        });
         console.log(`Found ${allEvents.length} total events, ${events.length} with "SHOW" in description`);
         
         // Sort events by start time
