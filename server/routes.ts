@@ -357,14 +357,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get music albums from Google Drive
-  // Simplified cached albums endpoint for better performance  
-  app.get('/api/albums', async (req, res) => {
+  app.post('/api/drive/music-albums', async (req, res) => {
     try {
-      const albums = await storage.getAlbums();
+      const { shareUrl } = req.body;
+      
+      if (!shareUrl) {
+        return res.status(400).json({ error: 'Share URL is required' });
+      }
+
+      const driveService = new GoogleDriveService();
+      const folderId = driveService.extractFolderIdFromUrl(shareUrl);
+      if (!folderId) {
+        return res.status(400).json({ error: 'Invalid Google Drive share URL' });
+      }
+
+      const albums = await driveService.getMusicAlbums(folderId);
       res.json(albums);
     } catch (error) {
-      console.error('Error fetching albums:', error);
-      res.status(500).json({ error: 'Failed to fetch albums' });
+      console.error('Drive music albums error:', error);
+      res.status(500).json({ error: 'Failed to fetch music albums from Google Drive' });
     }
   });
 
