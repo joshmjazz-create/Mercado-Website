@@ -169,20 +169,7 @@ export default function Schedule() {
   };
 
   if (isLoading) {
-    return (
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-purple-800 mb-4">Schedule</h2>
-            <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <Skeleton className="h-96 w-full rounded-lg" />
-          </div>
-        </div>
-      </section>
-    );
+    return <section className="py-20 bg-gray-50 min-h-screen"></section>;
   }
 
   return (

@@ -141,22 +141,7 @@ export default function Gallery() {
   });
 
   if (isLoading) {
-    return (
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-purple-800 mb-4">Gallery</h2>
-            <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }, (_, i) => (
-              <div key={i} className="h-64 w-full bg-gray-200 animate-pulse rounded-xl" />
-            ))}
-          </div>
-        </div>
-      </section>
-    );
+    return <section className="py-20 bg-white min-h-screen"></section>;
   }
 
   if (error) {

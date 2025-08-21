@@ -359,14 +359,7 @@ export default function Music() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white px-4 py-8 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 text-purple-800 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading music catalog...</p>
-        </div>
-      </div>
-    );
+    return <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white"></div>;
   }
 
   if (error) {

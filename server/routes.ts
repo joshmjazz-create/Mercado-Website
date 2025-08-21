@@ -271,9 +271,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { fileId } = req.params;
       
-      // Get file metadata first
-      const metadata = await googleDriveService.getFile(fileId);
-      if (!metadata.mimeType?.startsWith('audio/')) {
+      // Get file metadata first - use getFileInfo for proper metadata
+      const metadata = await googleDriveService.getFileInfo(fileId);
+      if (!metadata || !metadata.mimeType?.startsWith('audio/')) {
         return res.status(400).json({ error: 'File is not an audio file' });
       }
       
@@ -307,16 +307,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Audio range request: ${start}-${end}/${fileSize} (chunk: ${chunksize})`);
       }
       
-      // Stream the audio file with error handling
-      const fileStream = await googleDriveService.getFileStream(fileId);
-      fileStream.on('error', (err) => {
-        console.error('Audio stream error:', err);
+      // Get the audio file stream from Google Drive API properly
+      try {
+        const driveResponse = await googleDriveService.drive.files.get({
+          fileId: fileId,
+          alt: 'media'
+        }, { responseType: 'stream' });
+        
+        // Pipe the Google Drive stream directly to response
+        driveResponse.data.on('error', (err: Error) => {
+          console.error('Google Drive stream error:', err);
+          if (!res.headersSent) {
+            res.status(500).json({ error: 'Google Drive stream error' });
+          }
+        });
+        
+        driveResponse.data.pipe(res);
+      } catch (streamError) {
+        console.error('Error getting stream from Google Drive:', streamError);
         if (!res.headersSent) {
-          res.status(500).json({ error: 'Audio stream error' });
+          res.status(500).json({ error: 'Failed to get audio stream' });
         }
-      });
-      
-      fileStream.pipe(res);
+      }
       
     } catch (error) {
       console.error('Error streaming audio file:', error);
