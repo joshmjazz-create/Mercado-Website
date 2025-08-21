@@ -30,7 +30,13 @@ A professional jazz musician website for Joshua Mercado featuring:
 - Updated fonts to more serious, professional serif fonts (Libre Baskerville, Playfair Display)
 - Added actual social media links to Contact page (YouTube, Instagram, Facebook)
 - Updated all headings to purple including Joshua's name on home page for consistent branding
-- Added JM Music logo to footer alongside copyright notice
+- Removed logo from footer and "Book Private Event" button from schedule page
+- Added social media icons to footer with proper spacing
+- Updated mobile hamburger menu to center position
+- Replaced biography with authentic content about Joshua's career
+- Italicized "A Legendary Night" and "Impractical Jokers" titles
+- Removed "Subscribe to Calendar" button from schedule page
+- Set up Google Calendar API integration (credentials configured, troubleshooting 400 error)
 - Updated Bio page to single "Biography" heading with continuous narrative text
 - Added Music page with album cover gallery and three categories
 - Implemented album categories: Original (4), Featured On (2), Upcoming (2)

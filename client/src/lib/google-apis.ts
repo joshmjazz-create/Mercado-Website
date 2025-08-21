@@ -9,7 +9,7 @@ const getEnvVar = (name: string) => {
   }
 };
 
-const GOOGLE_CALENDAR_API_KEY = getEnvVar('GOOGLE_CALENDAR_API_KEY');
+const GOOGLE_CALENDAR_API_KEY = getEnvVar('GOOGLE_API_KEY');
 const GOOGLE_PHOTOS_API_KEY = getEnvVar('GOOGLE_PHOTOS_API_KEY');
 const CALENDAR_ID = getEnvVar('GOOGLE_CALENDAR_ID');
 
@@ -63,7 +63,9 @@ export class GoogleApisClient {
       const response = await fetch(url);
       
       if (!response.ok) {
-        throw new Error(`Calendar API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        console.error(`Calendar API error response:`, errorText);
+        throw new Error(`Calendar API error: ${response.status} ${response.statusText} - ${errorText}`);
       }
       
       const data = await response.json();
