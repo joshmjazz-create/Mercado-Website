@@ -27,13 +27,15 @@ A professional jazz musician website for Joshua Mercado featuring:
 - Database Schema: Albums table with platform URLs (Spotify, Apple Music, YouTube)
 
 ## Recent Changes
-- Added Music page with album cover gallery
+- Updated Bio page to single "Biography" heading with continuous narrative text
+- Added Music page with album cover gallery and three categories
+- Implemented album categories: Original (4), Featured On (2), Upcoming (2)
+- Added audio preview functionality for upcoming albums with 10-second fade in/out
+- Removed all admin controls from Music page per user request
+- Updated subcategory headings to be smaller, underlined, grey, and left-aligned
 - Implemented mobile navigation with hamburger menu
-- Created album management system with add/edit/delete functionality
 - Added platform selection modal (Spotify, Apple Music, YouTube)
-- Organized albums into "Original Music" and "Featured On" sections
-- Updated database schema from music recordings to albums
-- Added proper form validation and error handling
+- Updated database schema from music recordings to albums with category field
 
 ## Music Page Features
 - Album covers displayed in responsive grid
