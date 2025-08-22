@@ -115,7 +115,7 @@ export default function Bio() {
           </div>
 
           <div className="max-w-4xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-            <div className="bg-white bg-opacity-95 rounded-lg shadow-lg p-8">
+            <div className="bg-white bg-opacity-80 rounded-lg shadow-lg p-8">
               <div className="prose prose-base max-w-none text-gray-700 leading-relaxed space-y-6">
                 {parseBiographyContent(content)}
               </div>
