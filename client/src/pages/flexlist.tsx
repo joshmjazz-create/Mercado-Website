@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Smartphone, Download } from "lucide-react";
-// Use direct path for compatibility
-const flexListLogo = "/assets/file_00000000293061f5b6c62d71c7ed0c97_1755824354993.png";
+// Use relative path for GitHub Pages compatibility
+const flexListLogo = "./assets/file_00000000293061f5b6c62d71c7ed0c97_1755824354993.png";
 
 export default function FlexList() {
   return (
