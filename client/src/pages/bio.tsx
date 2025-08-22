@@ -1,4 +1,4 @@
-// Use relative path for GitHub Pages compatibility
+// Updated for GitHub Pages deployment - using relative asset paths
 const bioImagePath = "./assets/Headshot_2_1755873415112.jpeg";
 
 // Static biography content - matches exact original formatting

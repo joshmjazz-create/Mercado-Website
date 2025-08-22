@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Smartphone, Download } from "lucide-react";
-// Use relative path for GitHub Pages compatibility
+
+// Updated for GitHub Pages deployment - using relative asset paths
 const flexListLogo = "./assets/file_00000000293061f5b6c62d71c7ed0c97_1755824354993.png";
 
 export default function FlexList() {
@@ -49,17 +50,30 @@ export default function FlexList() {
           </div>
         </div>
 
-        {/* iOS Notice */}
-        <div className="text-center mb-16 animate-in slide-in-from-bottom-4 duration-600 delay-1300">
-          <div className="bg-slate-700 border border-slate-600 rounded-lg p-6 max-w-2xl mx-auto">
-            <h3 className="text-xl font-normal text-white mb-2">Sorry iOS Users</h3>
-            <p className="text-gray-400 font-normal">
-              Unfortunately, it's too time consuming to get FlexList working on Apple devices. The app is currently only available for Android.
-            </p>
+        {/* Features Section */}
+        <div className="text-center animate-in slide-in-from-bottom-6 duration-800 delay-1300">
+          <h2 className="text-3xl font-normal text-white mb-8">Features</h2>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            <Card className="bg-slate-700 border-slate-600">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-normal text-teal-400 mb-4">Skill-Based Organization</h3>
+                <p className="text-gray-300 font-normal leading-relaxed">
+                  Organize your music library based on your knowledge level. Perfect for musicians who want to track their learning progress.
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-slate-700 border-slate-600">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-normal text-teal-400 mb-4">Smart Categorization</h3>
+                <p className="text-gray-300 font-normal leading-relaxed">
+                  Automatically categorize songs into different skill levels to help you focus on appropriate material for your current abilities.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
-
-
       </div>
     </div>
   );

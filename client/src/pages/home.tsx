@@ -1,4 +1,4 @@
-// Use relative path for GitHub Pages compatibility
+// Updated for GitHub Pages deployment - using relative asset paths
 const bgImage = "./assets/Screenshot_20250820_160009_Gallery_1755720047192.jpg";
 
 export default function Home() {
