@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import bioImage from '@assets/Resized_20240319_004511_1710846806854 (1)_1755873128481.jpeg';
 
 // Biography Google Drive folder ID
 const BIOGRAPHY_FOLDER_URL = 'https://drive.google.com/drive/folders/1RH0mRswhyD0rXU2mAsrj3fGpevbcw1Th';
@@ -68,17 +69,55 @@ export default function Bio() {
   const content = biography || STATIC_BIOGRAPHY;
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-jazz-cream via-white to-jazz-cream">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
-          <h1 className="text-5xl font-bold text-purple-800 mb-6">Biography</h1>
-          <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
+    <section className="min-h-screen relative">
+      {/* Mobile: Background Image */}
+      <div 
+        className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${bioImage})` }}
+      >
+        <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+      </div>
+
+      {/* Desktop: Side-by-side Layout */}
+      <div className="hidden md:flex min-h-screen">
+        {/* Left Side: Bio Content */}
+        <div className="w-1/2 bg-gradient-to-br from-jazz-cream via-white to-jazz-cream flex items-center">
+          <div className="w-full px-8 py-16">
+            <div className="text-center mb-12 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
+              <h1 className="text-5xl font-bold text-purple-800 mb-6">Biography</h1>
+              <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
+            </div>
+
+            <div className="max-w-2xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+              <div className="bg-white rounded-lg shadow-lg p-8">
+                <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-4">
+                  {parseBiographyContent(content)}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="max-w-4xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-          <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
-            <div className="prose prose-base max-w-none text-gray-700 leading-relaxed space-y-6">
-              {parseBiographyContent(content)}
+        {/* Right Side: Image */}
+        <div 
+          className="w-1/2 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${bioImage})` }}
+        ></div>
+      </div>
+
+      {/* Mobile Content */}
+      <div className="md:hidden relative z-10">
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
+            <h1 className="text-5xl font-bold text-white mb-6">Biography</h1>
+            <div className="w-24 h-1 bg-white mx-auto"></div>
+          </div>
+
+          <div className="max-w-4xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+            <div className="bg-white bg-opacity-95 rounded-lg shadow-lg p-8">
+              <div className="prose prose-base max-w-none text-gray-700 leading-relaxed space-y-6">
+                {parseBiographyContent(content)}
+              </div>
             </div>
           </div>
         </div>
