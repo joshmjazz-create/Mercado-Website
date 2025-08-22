@@ -63,11 +63,8 @@ jspm_packages/
 .cache/
 .parcel-cache/
 
-# Vercel
-.vercel
-
-# Netlify
-.netlify
+# GitHub Pages
+_site/
 
 # Local development
 .replit

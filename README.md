@@ -16,50 +16,50 @@ A professional jazz musician website featuring dynamic content management, live 
 - **Frontend**: React 18, TypeScript, Tailwind CSS, shadcn/ui
 - **Backend**: Express.js, Google APIs
 - **Build Tool**: Vite
-- **Deployment**: Vercel/Netlify compatible
+- **Deployment**: GitHub Actions → GitHub Pages
 
-## Deployment Options
+## GitHub Actions Deployment
 
-### Option 1: Vercel (Recommended)
+This project is configured for automatic deployment using GitHub Actions to GitHub Pages.
+
+### Step-by-Step Deployment Process
 
 1. **Push to GitHub**:
    ```bash
-   git remote add origin https://github.com/yourusername/joshua-mercado-website.git
-   git push -u origin main
+   git add .
+   git commit -m "Add GitHub Actions deployment configuration"
+   git push newrepo main
    ```
 
-2. **Connect to Vercel**:
-   - Go to [vercel.com](https://vercel.com)
-   - Import your GitHub repository
-   - Vercel will automatically detect the configuration
+2. **Enable GitHub Pages**:
+   - Go to your repository: `Settings` → `Pages`
+   - Source: `Deploy from a branch`
+   - Branch: `gh-pages`
+   - Folder: `/ (root)`
 
-3. **Add Environment Variables** in Vercel dashboard:
-   - `GOOGLE_API_KEY`
-   - `GOOGLE_CALENDAR_ID` 
-   - `GOOGLE_DRIVE_CREDENTIALS`
+3. **Add Repository Secrets**:
+   Go to `Settings` → `Secrets and variables` → `Actions` and add:
+   - `GOOGLE_API_KEY`: Your Google API key
+   - `GOOGLE_CALENDAR_ID`: Your Google Calendar ID
+   - `GOOGLE_DRIVE_CREDENTIALS`: Your Google service account JSON
 
-4. **Deploy**: Automatic deployment on every push to main branch
+4. **Automatic Deployment**:
+   - Every push to `main` triggers automatic build and deployment
+   - Site will be available at: `https://yourusername.github.io/repository-name`
+   - Optional: Add custom domain in repository settings
 
-### Option 2: Netlify
+## How It Works
 
-1. Push to GitHub
-2. Connect repository to Netlify
-3. Build settings:
-   - Build command: `vite build`
-   - Publish directory: `dist`
-4. Add environment variables in Netlify dashboard
+### GitHub Actions Workflow
+1. **Build Process**: Fetches fresh data from Google APIs during build time
+2. **Static Generation**: Creates JSON files with biography, photos, and music data
+3. **Frontend Build**: Compiles React app with pre-built data
+4. **Deployment**: Automatically deploys to GitHub Pages
 
-### Option 3: Static Deployment
-
-For static hosting (GitHub Pages, etc.), the Google API calls need to be moved to client-side only.
-
-## Environment Variables
-
-```env
-GOOGLE_API_KEY=your_google_api_key
-GOOGLE_CALENDAR_ID=your_calendar_id
-GOOGLE_DRIVE_CREDENTIALS=your_service_account_json
-```
+### Environment Variables (GitHub Secrets)
+- `GOOGLE_API_KEY`: Google API key for calendar access
+- `GOOGLE_CALENDAR_ID`: Your Google Calendar ID
+- `GOOGLE_DRIVE_CREDENTIALS`: Service account JSON for Drive/Docs access
 
 ## Local Development
 
@@ -82,8 +82,9 @@ npm run dev
 │   └── index.ts         # Server entry point
 ├── shared/               # Shared types and schemas
 ├── attached_assets/     # Static assets
-├── vercel.json         # Vercel deployment config
-└── netlify.toml        # Netlify deployment config
+├── .github/workflows/  # GitHub Actions deployment
+├── scripts/           # Build scripts for static data generation
+└── src/lib/api-client.ts # Client-side API calls
 ```
 
 ## Features
