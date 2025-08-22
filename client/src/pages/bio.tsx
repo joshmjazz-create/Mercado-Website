@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import bioImage from '@assets/Resized_20240319_004511_1710846806854 (1)_1755873128481.jpeg';
+// Import bio image using assets alias
+import bioImagePath from '@assets/Resized_20240319_004511_1710846806854 (1)_1755873128481.jpeg';
 
 // Biography Google Drive folder ID
 const BIOGRAPHY_FOLDER_URL = 'https://drive.google.com/drive/folders/1RH0mRswhyD0rXU2mAsrj3fGpevbcw1Th';
@@ -73,7 +74,7 @@ export default function Bio() {
       {/* Mobile: Background Image */}
       <div 
         className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${bioImage})` }}
+        style={{ backgroundImage: `url(${bioImagePath})` }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-60"></div>
       </div>
@@ -101,7 +102,7 @@ export default function Bio() {
         {/* Right Side: Image */}
         <div 
           className="w-1/2 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${bioImage})` }}
+          style={{ backgroundImage: `url(${bioImagePath})` }}
         ></div>
       </div>
 
