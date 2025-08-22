@@ -115,11 +115,11 @@ export default function Bio() {
       <div className="md:hidden relative z-10 flex items-center justify-center min-h-screen">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
-            <h1 className="text-5xl font-bold text-white mb-6">Biography</h1>
-            <div className="w-24 h-1 bg-white mx-auto"></div>
+            <h1 className="text-5xl font-bold text-purple-800 mb-6">Biography</h1>
+            <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
           </div>
 
-          <div className="max-w-4xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+          <div className="max-w-4xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '1700ms' }}>
             <div className="bg-white bg-opacity-80 rounded-lg shadow-lg p-8">
               <div className="prose prose-base max-w-none text-gray-700 leading-relaxed space-y-6">
                 {parseBiographyContent(content)}
