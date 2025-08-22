@@ -12,6 +12,7 @@ import Music from "@/pages/music";
 import Schedule from "@/pages/schedule";
 import Contact from "@/pages/contact";
 import FlexList from "@/pages/flexlist";
+import Debug from "@/pages/debug";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +28,7 @@ function Router() {
           <Route path="/schedule" component={Schedule} />
           <Route path="/contact" component={Contact} />
           <Route path="/flexlist" component={FlexList} />
+          <Route path="/debug" component={Debug} />
           <Route component={NotFound} />
         </Switch>
       </main>

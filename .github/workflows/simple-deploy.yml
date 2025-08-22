@@ -33,6 +33,7 @@ jobs:
       - name: Build
         run: npx vite build
         env:
+          NODE_ENV: production
           VITE_GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           VITE_GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
           VITE_BIOGRAPHY_DOC_ID: ${{ secrets.BIOGRAPHY_DOC_ID }}
