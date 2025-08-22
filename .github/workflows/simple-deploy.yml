@@ -1,4 +1,4 @@
-name: Deploy to Pages
+name: Deploy Joshua Mercado Website
 
 on:
   push:
