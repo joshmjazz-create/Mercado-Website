@@ -63,13 +63,15 @@ This project is configured for automatic deployment using GitHub Actions to GitH
 - `GOOGLE_CALENDAR_ID`: Your Google Calendar ID
 
 ### Complete Setup Guide
-📖 **See [SETUP.md](./SETUP.md) for detailed configuration instructions**
+📖 **See [SETUP.md](./SETUP.md) for detailed configuration instructions**  
+🌐 **See [DOMAIN-SETUP.md](./DOMAIN-SETUP.md) for custom domain configuration**
 
 Quick requirements:
 1. **Google Cloud Console**: Create API key with Calendar/Drive/Docs permissions
 2. **Public Google Content**: Make calendar, biography doc, and Drive folders publicly accessible  
 3. **GitHub Secrets**: Add all API credentials and content IDs
 4. **GitHub Pages**: Enable deployment from gh-pages branch
+5. **Domain Planning**: Add both GitHub Pages and custom domain to API restrictions
 
 ## Local Development
 

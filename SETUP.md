@@ -26,9 +26,13 @@ This guide will help you deploy your Joshua Mercado website as a **completely st
    - Add these referrers:
      ```
      https://joshmjazz-create.github.io/*
-     http://localhost:*
      https://your-custom-domain.com/*
+     https://www.your-custom-domain.com/*
+     http://localhost:*
+     http://127.0.0.1:*
      ```
+   
+   **Important**: Include both GitHub Pages URL AND your planned custom domain to ensure uninterrupted service during domain transitions.
 
 3. **API restrictions**:
    - Select "Restrict key"
@@ -108,7 +112,16 @@ Add these **Repository secrets**:
 2. **Source**: `Deploy from a branch`
 3. **Branch**: `gh-pages`
 4. **Folder**: `/ (root)`
-5. Click **Save**
+5. **Custom domain** (optional): Add your domain (e.g., `joshuamercado.com`)
+6. Click **Save**
+
+### Custom Domain Setup
+If using a custom domain:
+1. Add your domain in the "Custom domain" field
+2. Configure DNS records with your domain provider:
+   - **A Records** pointing to GitHub Pages IPs, OR
+   - **CNAME Record** pointing to `joshmjazz-create.github.io`
+3. Enable "Enforce HTTPS" after DNS propagation
 
 ## 🚀 Deployment Process
 
@@ -122,7 +135,9 @@ Add these **Repository secrets**:
 2. **Automatic deployment**:
    - GitHub Actions builds your site
    - Deploys to GitHub Pages
-   - Site available at: `https://joshmjazz-create.github.io/Mercado-Website`
+   - Site available at: 
+     - GitHub Pages: `https://joshmjazz-create.github.io/Mercado-Website`
+     - Custom domain: `https://your-domain.com` (if configured)
 
 ## 🎯 How It Works
 
@@ -159,8 +174,9 @@ Add these **Repository secrets**:
 - Check document/folder IDs are correct in GitHub secrets
 
 **"API key not working"**
-- Verify domain restrictions include your GitHub Pages URL
+- Verify domain restrictions include ALL your domains (GitHub Pages + custom domain)
 - Check API restrictions include Calendar, Drive, and Docs APIs
+- Test with browser developer tools to see specific error messages
 
 ### Testing Locally:
 ```bash

@@ -59,4 +59,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist/public
-          cname: joshuamercado.com  # Optional: Add your custom domain here
+          cname: joshuamercado.com  # Replace with your actual custom domain
