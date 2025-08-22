@@ -88,7 +88,7 @@ export default function Bio() {
           </div>
 
           <div className="max-w-6xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-            <div className="flex gap-12 items-start">
+            <div className="flex gap-12 items-center">
               {/* Bio Content */}
               <div className="flex-1">
                 <div className="bg-white rounded-lg shadow-lg p-8">
@@ -103,7 +103,7 @@ export default function Bio() {
                 <img 
                   src={bioImagePath} 
                   alt="Joshua Mercado" 
-                  className="w-80 h-96 object-cover rounded-lg shadow-lg"
+                  className="w-80 object-contain rounded-lg shadow-lg"
                 />
               </div>
             </div>
