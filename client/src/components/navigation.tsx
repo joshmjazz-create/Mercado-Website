@@ -10,6 +10,7 @@ const navItems = [
   { path: "/music", label: "Music" },
   { path: "/schedule", label: "Schedule" },
   { path: "/contact", label: "Contact" },
+  { path: "/flexlist", label: "FlexList" },
 ];
 
 export default function Navigation() {
