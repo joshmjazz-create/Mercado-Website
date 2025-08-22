@@ -31,12 +31,7 @@ jobs:
         run: npm ci
         
       - name: Build
-        run: |
-          # Build the actual React app with your professional website
-          npx vite build
-          
-          # Copy static HTML as fallback if needed
-          cp client/public/index.html dist/public/fallback.html
+        run: npx vite build
         env:
           NODE_ENV: production
           VITE_GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
