@@ -44,7 +44,26 @@ export const getQueryFn: <T>(options: {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
+      queryFn: async ({ queryKey }) => {
+        const url = queryKey.join("/") as string;
+        
+        // For static deployment, skip server API calls
+        if (url.startsWith('/api/')) {
+          console.warn(`Skipping server API call for static deployment: ${url}`);
+          return null;
+        }
+        
+        const res = await fetch(url, {
+          credentials: "include",
+        });
+
+        if (res.status === 401) {
+          return null;
+        }
+
+        await throwIfResNotOk(res);
+        return await res.json();
+      },
       refetchInterval: false,
       refetchOnWindowFocus: false,
       staleTime: Infinity,

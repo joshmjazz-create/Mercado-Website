@@ -1,299 +1,161 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Calendar, Clock, MapPin, Ticket, ChevronLeft, ChevronRight, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import type { Event } from "@shared/schema";
+import { useState, useEffect } from "react";
+import { MapPin, Clock, Calendar } from "lucide-react";
+
+interface CalendarEvent {
+  id: string;
+  summary: string;
+  description?: string;
+  start: {
+    dateTime: string;
+    timeZone?: string;
+  };
+  end: {
+    dateTime: string;
+    timeZone?: string;
+  };
+  location?: string;
+  color?: string;
+}
 
 export default function Schedule() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
-  
-  const { data: events = [], isLoading } = useQuery<Event[]>({
-    queryKey: ['/api/events'],
-    staleTime: 0, // Always treat data as stale
-    gcTime: 0, // Don't cache data
-    refetchOnMount: true, // Refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window gains focus
-  });
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+  useEffect(() => {
+    // Use static content for reliable deployment
+    setEvents([]);
+    setLoading(false);
+  }, []);
 
-  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  const getFirstDayOfMonth = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth(), 1);
-  };
-
-  const getLastDayOfMonth = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  };
-
-  const getDaysInMonth = (date: Date) => {
-    return getLastDayOfMonth(date).getDate();
-  };
-
-  const getStartingDayOfWeek = (date: Date) => {
-    return getFirstDayOfMonth(date).getDay();
-  };
-
-  const getEventsForDate = (date: Date) => {
-    const dateStr = date.toDateString();
-    return events.filter(event => {
-      const eventDate = new Date(event.startTime);
-      return eventDate.toDateString() === dateStr;
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentDate(prev => {
-      const newDate = new Date(prev);
-      if (direction === 'prev') {
-        newDate.setMonth(prev.getMonth() - 1);
-      } else {
-        newDate.setMonth(prev.getMonth() + 1);
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  const getCleanDescription = (description: string = '') => {
+    return description
+      .replace(/\bSHOW\b/g, '')
+      .replace(/\b(RED|BLUE|GREEN|YELLOW|PURPLE|ORANGE|PINK|BLACK|WHITE)\b/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
+  const getEventColor = (description: string = '') => {
+    const colorMap: Record<string, string> = {
+      'RED': 'border-red-500 bg-red-500',
+      'BLUE': 'border-blue-500 bg-blue-500',
+      'GREEN': 'border-green-500 bg-green-500',
+      'YELLOW': 'border-yellow-500 bg-yellow-500',
+      'PURPLE': 'border-purple-500 bg-purple-500',
+      'ORANGE': 'border-orange-500 bg-orange-500',
+      'PINK': 'border-pink-500 bg-pink-500',
+      'BLACK': 'border-gray-800 bg-gray-800',
+      'WHITE': 'border-gray-200 bg-gray-200',
+    };
+
+    for (const [color, classes] of Object.entries(colorMap)) {
+      if (description.toUpperCase().includes(color)) {
+        return classes;
       }
-      return newDate;
-    });
-  };
-
-  const goToCurrentMonth = () => {
-    const now = new Date();
-    setCurrentDate(new Date(now.getFullYear(), now.getMonth(), 1));
-  };
-
-  const isCurrentMonth = () => {
-    const now = new Date();
-    return currentDate.getMonth() === now.getMonth() && currentDate.getFullYear() === now.getFullYear();
-  };
-
-  const handleMonthHeaderDoubleClick = () => {
-    if (!isCurrentMonth()) {
-      goToCurrentMonth();
     }
+    
+    return 'border-purple-500 bg-purple-500';
   };
-
-  const openEventDialog = (event: Event) => {
-    setSelectedEvent(event);
-    setIsEventDialogOpen(true);
-  };
-
-  const formatEventTime = (startTime: Date, endTime: Date) => {
-    const start = startTime.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
-      minute: '2-digit',
-      hour12: true 
-    });
-    const end = endTime.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
-      minute: '2-digit',
-      hour12: true 
-    });
-    return `${start} - ${end}`;
-  };
-
-  const renderCalendar = () => {
-    const daysInMonth = getDaysInMonth(currentDate);
-    const startingDay = getStartingDayOfWeek(currentDate);
-    const days = [];
-
-    // Add empty cells for days before the first day of the month
-    for (let i = 0; i < startingDay; i++) {
-      days.push(
-        <div key={`empty-${i}`} className="h-24 p-1 border border-gray-200"></div>
-      );
-    }
-
-    // Add cells for each day of the month
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-      const dayEvents = getEventsForDate(date);
-      const isToday = date.toDateString() === new Date().toDateString();
-
-      days.push(
-        <div 
-          key={day}
-          className={`h-24 p-1 border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors ${
-            isToday ? 'bg-purple-50 border-purple-200' : ''
-          }`}
-        >
-          <div className={`font-semibold text-sm mb-1 ${isToday ? 'text-purple-800' : 'text-gray-700'}`}>
-            {day}
-          </div>
-          <div className="space-y-1">
-            {dayEvents.slice(0, 2).map((event) => {
-              // Color mapping for different calendar colors - you can customize these
-              const getEventColor = (color: string) => {
-                const colorMap = {
-                  'purple': 'bg-purple-100 text-purple-900 hover:bg-purple-200',
-                  'red': 'bg-red-100 text-red-900 hover:bg-red-200',
-                  'orange': 'bg-orange-100 text-orange-900 hover:bg-orange-200', 
-                  'yellow': 'bg-yellow-100 text-yellow-900 hover:bg-yellow-200',
-                  'green': 'bg-green-100 text-green-900 hover:bg-green-200',
-                  'blue': 'bg-blue-100 text-blue-900 hover:bg-blue-200',
-                  'indigo': 'bg-indigo-100 text-indigo-900 hover:bg-indigo-200',
-                  'pink': 'bg-pink-100 text-pink-900 hover:bg-pink-200',
-                  'teal': 'bg-teal-100 text-teal-900 hover:bg-teal-200',
-                  'cyan': 'bg-cyan-100 text-cyan-900 hover:bg-cyan-200',
-                };
-                return colorMap[color as keyof typeof colorMap] || colorMap.purple;
-              };
-              
-              return (
-                <div
-                  key={event.id}
-                  onClick={() => openEventDialog(event)}
-                  className={`text-xs p-1 rounded truncate transition-colors cursor-pointer ${getEventColor(event.color || 'default')}`}
-                >
-                  {event.title}
-                </div>
-              );
-            })}
-            {dayEvents.length > 2 && (
-              <div className="text-xs text-gray-500 pl-1">
-                +{dayEvents.length - 2} more
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    return days;
-  };
-
-  if (isLoading) {
-    return <section className="py-20 bg-gray-50 min-h-screen"></section>;
-  }
 
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-gradient-to-br from-jazz-dark via-black to-jazz-dark">
+      <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
-          <h2 className="text-5xl font-bold text-purple-800 mb-4">Schedule</h2>
-          <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
+          <h1 className="text-5xl font-bold text-purple-400 mb-6">Schedule</h1>
+          <div className="w-24 h-1 bg-purple-400 mx-auto"></div>
         </div>
-        
-        {/* Calendar Header */}
-        <Card className="shadow-lg mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <Button
-                variant="outline"
-                onClick={() => navigateMonth('prev')}
-                className="flex items-center gap-2 flex-shrink-0"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">Previous</span>
-                <span className="sm:hidden">Prev</span>
-              </Button>
-              
-              <h3 
-                className={`text-xl sm:text-2xl font-bold text-purple-800 cursor-pointer transition-colors mx-2 text-center ${
-                  !isCurrentMonth() ? 'hover:text-purple-600' : ''
-                }`}
-                onDoubleClick={handleMonthHeaderDoubleClick}
-                title={!isCurrentMonth() ? 'Double-click to return to current month' : 'Current month'}
-              >
-                {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-              </h3>
-              
-              <Button
-                variant="outline"
-                onClick={() => navigateMonth('next')}
-                className="flex items-center gap-2 flex-shrink-0"
-              >
-                <span className="hidden sm:inline">Next</span>
-                <span className="sm:hidden">Next</span>
-                <ChevronRight className="w-4 h-4" />
-              </Button>
+
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
+          </div>
+        )}
+
+        {!loading && events.length === 0 && (
+          <div className="text-center py-20 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+            <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-8 max-w-md mx-auto">
+              <Calendar className="w-16 h-16 text-purple-400 mx-auto mb-4" />
+              <h3 className="text-xl text-white mb-4">No Upcoming Shows</h3>
+              <p className="text-gray-300">
+                Check back soon for upcoming performance dates and venues.
+              </p>
             </div>
-            
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-0 border border-gray-200 rounded-lg overflow-hidden">
-              {/* Day Headers */}
-              {dayNames.map(day => (
-                <div key={day} className="p-3 bg-purple-100 text-purple-800 font-semibold text-center border-r border-gray-200 last:border-r-0">
-                  {day}
+          </div>
+        )}
+
+        {!loading && events.length > 0 && (
+          <div className="max-w-4xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+            <div className="space-y-6">
+              {events.map((event, index) => (
+                <div
+                  key={event.id}
+                  className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 border-l-4 transform transition-all duration-300 hover:scale-105 opacity-0 translate-y-4 animate-in"
+                  style={{ 
+                    animationDelay: `${600 + (index * 100)}ms`,
+                    borderLeftColor: getEventColor(event.description).split(' ')[0].replace('border-', '')
+                  }}
+                >
+                  <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-white mb-2">{event.summary}</h3>
+                      
+                      {event.description && getCleanDescription(event.description) && (
+                        <p className="text-gray-300 mb-3">
+                          {getCleanDescription(event.description)}
+                        </p>
+                      )}
+
+                      <div className="flex flex-col sm:flex-row gap-4 text-sm text-gray-400">
+                        <div className="flex items-center">
+                          <Calendar className="w-4 h-4 mr-2 text-purple-400" />
+                          {formatDate(event.start.dateTime)}
+                        </div>
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 mr-2 text-purple-400" />
+                          {formatTime(event.start.dateTime)} - {formatTime(event.end.dateTime)}
+                        </div>
+                      </div>
+
+                      {event.location && (
+                        <div className="flex items-center mt-2 text-sm text-gray-400">
+                          <MapPin className="w-4 h-4 mr-2 text-purple-400" />
+                          <a
+                            href={`https://maps.google.com/?q=${encodeURIComponent(event.location.replace(/\\/g, ''))}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-purple-400 transition-colors duration-200 underline"
+                          >
+                            {event.location.replace(/\\/g, '')}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))}
-              
-              {/* Calendar Days */}
-              {renderCalendar()}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        )}
       </div>
-      
-      {/* Event Details Dialog */}
-      <Dialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-purple-800">{selectedEvent?.title}</DialogTitle>
-            <DialogDescription>
-              {selectedEvent?.description || " "}
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedEvent && (
-            <div className="space-y-4">
-              {selectedEvent.description && (
-                <p className="text-gray-600">{selectedEvent.description}</p>
-              )}
-              
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Clock className="w-4 h-4 text-purple-600" />
-                  <span>{formatEventTime(new Date(selectedEvent.startTime), new Date(selectedEvent.endTime))}</span>
-                </div>
-                
-                <div className="flex items-center gap-2 text-gray-600">
-                  <MapPin className="w-4 h-4 text-purple-600" />
-                  {selectedEvent.address ? (
-                    <a 
-                      href={`https://maps.google.com/maps?q=${encodeURIComponent(selectedEvent.address)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-purple-600 hover:text-purple-800 hover:underline cursor-pointer"
-                    >
-                      {selectedEvent.venue || 'Venue TBD'}
-                    </a>
-                  ) : (
-                    <span>{selectedEvent.venue || 'Venue TBD'}</span>
-                  )}
-                </div>
-                
-                {selectedEvent.ticketPrice && (
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Ticket className="w-4 h-4 text-purple-600" />
-                    <span>{selectedEvent.ticketPrice}</span>
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex gap-2 pt-4">
-                {selectedEvent.ticketUrl && (
-                  <Button 
-                    asChild
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold flex-1"
-                  >
-                    <a href={selectedEvent.ticketUrl} target="_blank" rel="noopener noreferrer">
-                      <Ticket className="w-4 h-4 mr-2" />
-                      Get Tickets
-                    </a>
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </section>
   );
 }
