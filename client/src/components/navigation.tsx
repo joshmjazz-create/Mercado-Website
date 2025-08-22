@@ -52,7 +52,7 @@ export default function Navigation() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 right-0 z-50 bg-black shadow-lg border-t border-gray-800 animate-in slide-in-from-top-2 duration-300">
+          <div className="md:hidden absolute top-16 left-0 right-0 z-50 bg-black shadow-lg border-t border-gray-800" style={{ animation: 'slideDown 0.3s ease-out' }}>
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navItems.map((item) => (
                 <Link
