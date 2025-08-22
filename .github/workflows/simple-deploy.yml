@@ -43,7 +43,8 @@ jobs:
           echo "Files in dist/public/assets:"
           ls -la dist/public/assets/ || echo "No dist/public/assets directory"
           # Fix asset paths for GitHub Pages subdirectory deployment
-          sed -i 's|"/assets/|"./assets/|g' dist/public/index.html
+          sed -i 's|="/assets/|="./assets/|g' dist/public/index.html
+          sed -i 's|href="/assets/|href="./assets/|g' dist/public/index.html
           cp dist/public/index.html dist/public/404.html
         env:
           NODE_ENV: production
