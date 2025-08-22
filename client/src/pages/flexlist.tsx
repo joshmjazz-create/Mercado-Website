@@ -33,7 +33,7 @@ export default function FlexList() {
                 <div className="mb-6">
                   <Smartphone className="w-16 h-16 text-teal-400 mx-auto mb-4" />
                   <h3 className="text-xl font-normal text-white mb-2">Android</h3>
-                  <p className="text-gray-400 font-normal">Available on Google Play</p>
+                  <p className="text-gray-400 font-normal">App under development</p>
                 </div>
                 <Button 
                   className="w-full bg-teal-600 hover:bg-teal-700 text-white font-normal"
@@ -57,15 +57,7 @@ export default function FlexList() {
           </div>
         </div>
 
-        {/* Coming Soon Notice */}
-        <div className="text-center animate-in slide-in-from-bottom-4 duration-600 delay-1500">
-          <div className="bg-slate-700 border border-slate-600 rounded-lg p-6 max-w-2xl mx-auto">
-            <h3 className="text-xl font-normal text-white mb-2">Coming Soon</h3>
-            <p className="text-gray-400 font-normal">
-              FlexList is currently in development. The Android download link will be available soon.
-            </p>
-          </div>
-        </div>
+
       </div>
     </div>
   );
