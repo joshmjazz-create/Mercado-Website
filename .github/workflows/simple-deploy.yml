@@ -32,14 +32,11 @@ jobs:
         
       - name: Build
         run: |
-          # Create directories if they don't exist
-          mkdir -p dist/public
+          # Build the actual React app with your professional website
+          npx vite build
           
-          # Copy the static HTML directly to final destination
-          cp client/public/index.html dist/public/index.html
-          
-          # Skip Vite build entirely - use only the static HTML
-          echo "Using static HTML fallback for bulletproof deployment"
+          # Copy static HTML as fallback if needed
+          cp client/public/index.html dist/public/fallback.html
         env:
           NODE_ENV: production
           VITE_GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
