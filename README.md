@@ -39,9 +39,8 @@ This project is configured for automatic deployment using GitHub Actions to GitH
 
 3. **Add Repository Secrets**:
    Go to `Settings` → `Secrets and variables` → `Actions` and add:
-   - `GOOGLE_API_KEY`: Your Google API key
+   - `GOOGLE_API_KEY`: Your Google API key (for client-side calls)
    - `GOOGLE_CALENDAR_ID`: Your Google Calendar ID
-   - `GOOGLE_DRIVE_CREDENTIALS`: Your Google service account JSON
 
 4. **Automatic Deployment**:
    - Every push to `main` triggers automatic build and deployment
@@ -57,9 +56,14 @@ This project is configured for automatic deployment using GitHub Actions to GitH
 4. **Deployment**: Automatically deploys to GitHub Pages
 
 ### Environment Variables (GitHub Secrets)
-- `GOOGLE_API_KEY`: Google API key for calendar access
+- `GOOGLE_API_KEY`: Google API key with Calendar, Drive, and Docs permissions
 - `GOOGLE_CALENDAR_ID`: Your Google Calendar ID
-- `GOOGLE_DRIVE_CREDENTIALS`: Service account JSON for Drive/Docs access
+
+### API Configuration Required
+For Google Drive content (Biography, Photos, Music), you'll need to:
+1. **Make documents/folders publicly accessible**, OR
+2. **Use OAuth authentication** for private content access
+3. **Configure CORS settings** in Google Cloud Console
 
 ## Local Development
 

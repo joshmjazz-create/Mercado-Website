@@ -27,9 +27,8 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
-          GOOGLE_DRIVE_CREDENTIALS: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
+          VITE_GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          VITE_GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
           
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

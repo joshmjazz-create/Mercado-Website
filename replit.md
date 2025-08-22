@@ -19,14 +19,21 @@ A professional jazz musician website for Joshua Mercado featuring:
 
 ## Project Architecture
 - Frontend: React with TypeScript, Vite, shadcn/ui, Tailwind CSS
-- Backend: Express.js with TypeScript
+- Backend: Express.js with TypeScript (development only)
+- Deployment: GitHub Actions → GitHub Pages (static hosting)
+- API Integration: Client-side Google APIs (Calendar, Drive, Docs)
 - Routing: Wouter for client-side navigation
 - State Management: TanStack Query for data fetching
-- Storage: In-memory storage (MemStorage)
+- Storage: In-memory storage (MemStorage) for development
 - Styling: Custom color scheme with deep purple and darker yellow
 - Database Schema: Albums table with platform URLs (Spotify, Apple Music, YouTube)
 
 ## Recent Changes
+- **August 2025**: Restructured for GitHub Actions deployment with pure client-side Google API calls
+- Removed all third-party service dependencies (Vercel, Netlify)
+- Implemented client-side Google Calendar API for real-time event fetching
+- Updated Google Drive API calls to work directly from browser with CORS support
+- Added GitHub Actions workflow for automated static site deployment to GitHub Pages
 - Updated fonts to more serious, professional serif fonts (Libre Baskerville, Playfair Display)
 - Added actual social media links to Contact page (YouTube, Instagram, Facebook)
 - Updated all headings to purple including Joshua's name on home page for consistent branding
