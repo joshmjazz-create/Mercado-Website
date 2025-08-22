@@ -11,10 +11,9 @@ export default function Home() {
       />
       
       <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-800 mb-8 drop-shadow-lg opacity-0 scale-95 animate-in" style={{ 
+        <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-400 mb-8 drop-shadow-lg opacity-0 scale-95 animate-in" style={{ 
           animationDelay: '500ms',
-          animationDuration: '1200ms',
-          textShadow: '0 0 20px rgba(147, 51, 234, 0.4), 0 0 40px rgba(147, 51, 234, 0.2), 0 0 60px rgba(147, 51, 234, 0.1)'
+          animationDuration: '1200ms'
         }}>
           Joshua Mercado
         </h1>
