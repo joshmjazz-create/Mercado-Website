@@ -61,7 +61,8 @@ export default function Music() {
       }
       
       const data: AlbumCategories = await response.json();
-      return data.original || [];
+      const albums = data.original || [];
+      return albums.sort((a, b) => a.title.localeCompare(b.title));
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
@@ -81,7 +82,8 @@ export default function Music() {
       }
       
       const data: AlbumCategories = await response.json();
-      return data.featured || [];
+      const albums = data.featured || [];
+      return albums.sort((a, b) => a.title.localeCompare(b.title));
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
@@ -101,7 +103,8 @@ export default function Music() {
       }
       
       const data: AlbumCategories = await response.json();
-      return data.upcoming || [];
+      const albums = data.upcoming || [];
+      return albums.sort((a, b) => a.title.localeCompare(b.title));
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
