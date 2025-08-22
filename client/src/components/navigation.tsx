@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { useHashLocation } from "wouter/use-hash-location";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +14,7 @@ const navItems = [
 ];
 
 export default function Navigation() {
-  const [location] = useHashLocation();
+  const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (

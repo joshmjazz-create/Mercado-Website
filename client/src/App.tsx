@@ -1,5 +1,4 @@
 import { Switch, Route } from "wouter";
-import { useHashLocation } from "wouter/use-hash-location";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -20,7 +19,7 @@ function Router() {
     <div className="min-h-screen flex flex-col">
       <Navigation />
       <main className="flex-1">
-        <Switch location={useHashLocation()}>
+        <Switch>
           <Route path="/" component={Home} />
           <Route path="/bio" component={Bio} />
           <Route path="/gallery" component={Gallery} />
