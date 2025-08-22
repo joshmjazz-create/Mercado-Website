@@ -51,28 +51,27 @@ export default function Navigation() {
         </div>
 
         {/* Mobile menu */}
-        <div className={cn(
-          "md:hidden absolute top-16 left-0 right-0 z-50 bg-black shadow-lg border-t border-gray-800 transition-transform duration-300 ease-out",
-          mobileMenuOpen ? "translate-y-0" : "-translate-y-full"
-        )}>
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                href={item.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className={cn(
-                  "block px-3 py-2 rounded-md text-base font-medium transition-colors",
-                  location === item.path
-                    ? "text-jazz-blue-light bg-gray-900"
-                    : "text-white hover:text-jazz-blue-light hover:bg-gray-800"
-                )}
-              >
-                {item.label}
-              </Link>
-            ))}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-16 left-0 right-0 z-50 bg-black shadow-lg border-t border-gray-800 animate-in slide-in-from-top-2 duration-300">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    "block px-3 py-2 rounded-md text-base font-medium transition-colors",
+                    location === item.path
+                      ? "text-jazz-blue-light bg-gray-900"
+                      : "text-white hover:text-jazz-blue-light hover:bg-gray-800"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </nav>
   );
