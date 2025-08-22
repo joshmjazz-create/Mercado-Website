@@ -18,34 +18,34 @@ A professional jazz musician website featuring dynamic content management, live 
 - **Build Tool**: Vite
 - **Deployment**: GitHub Actions → GitHub Pages
 
-## GitHub Actions Deployment
+## Vercel Deployment (Recommended)
 
-This project is configured for automatic deployment using GitHub Actions to GitHub Pages.
+This project works perfectly with Vercel's full-stack hosting.
 
 ### Step-by-Step Deployment Process
 
 1. **Push to GitHub**:
    ```bash
    git add .
-   git commit -m "Add GitHub Actions deployment configuration"
+   git commit -m "Add Vercel deployment configuration"
    git push newrepo main
    ```
 
-2. **Enable GitHub Pages**:
-   - Go to your repository: `Settings` → `Pages`
-   - Source: `Deploy from a branch`
-   - Branch: `gh-pages`
-   - Folder: `/ (root)`
+2. **Deploy to Vercel**:
+   - Go to [vercel.com](https://vercel.com)
+   - Click "Import Project" 
+   - Connect your GitHub repository: `joshmjazz-create/Mercado-Website`
+   - Vercel auto-detects the configuration
 
-3. **Add Repository Secrets**:
-   Go to `Settings` → `Secrets and variables` → `Actions` and add:
-   - `GOOGLE_API_KEY`: Your Google API key (for client-side calls)
-   - `GOOGLE_CALENDAR_ID`: Your Google Calendar ID
+3. **Add Environment Variables** in Vercel dashboard:
+   - `GOOGLE_API_KEY`: Your Google API key
+   - `GOOGLE_CALENDAR_ID`: Your Google Calendar ID  
+   - `GOOGLE_DRIVE_CREDENTIALS`: Your service account JSON
 
 4. **Automatic Deployment**:
-   - Every push to `main` triggers automatic build and deployment
-   - Site will be available at: `https://yourusername.github.io/repository-name`
-   - Optional: Add custom domain in repository settings
+   - Every push to `main` triggers automatic deployment
+   - Site will be available at: `https://your-project.vercel.app`
+   - Custom domain setup available in project settings
 
 ## How It Works
 

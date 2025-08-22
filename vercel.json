@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server/index.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "client/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server/index.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/client/index.html"
+    }
+  ],
+  "env": {
+    "GOOGLE_API_KEY": "@google-api-key",
+    "GOOGLE_CALENDAR_ID": "@google-calendar-id",
+    "GOOGLE_DRIVE_CREDENTIALS": "@google-drive-credentials"
+  }
+}
