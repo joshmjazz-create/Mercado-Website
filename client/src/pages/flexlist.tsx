@@ -18,7 +18,8 @@ export default function FlexList() {
           </div>
           <h1 className="text-5xl font-normal text-blue-400 mb-4 animate-in slide-in-from-bottom-4 duration-700 delay-500" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>FlexList</h1>
           <p className="text-xl text-gray-300 mb-8 font-normal animate-in slide-in-from-bottom-4 duration-700 delay-700">
-            I made an app that's been helping me to organize tunes based on my knowledge level of them. Check it out!
+            FlexList is an app that I made to help organize music based on knowledge level.<br />
+            Check it out if you're interested!
           </p>
         </div>
 
