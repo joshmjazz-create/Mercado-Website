@@ -52,8 +52,8 @@ export default function Navigation() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-black">
+          <div className="md:hidden absolute top-16 left-0 right-0 z-50">
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-black shadow-lg border-t border-gray-800">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
