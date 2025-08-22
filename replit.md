@@ -78,6 +78,7 @@ A professional jazz musician website for Joshua Mercado featuring:
 - **Performance Optimization**: Music page sections load independently with skeleton loading states for faster perceived performance
 - **Deployment Fix (August 22, 2025)**: Added comprehensive error handling and diagnostics to resolve blank screen issues in both development and production deployments
 - **Debug Infrastructure**: Added debug page and error recovery mechanisms for deployment troubleshooting
+- **Image Loading Fix (August 22, 2025)**: Updated GitHub Actions workflow to properly copy images from attached_assets to build output, ensuring all images load correctly on GitHub Pages deployment
 
 ## Music Page Features
 - Album covers displayed in responsive grid
