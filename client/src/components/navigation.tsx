@@ -11,7 +11,6 @@ const navItems = [
   { path: "/schedule", label: "Schedule" },
   { path: "/contact", label: "Contact" },
   { path: "/flexlist", label: "FlexList" },
-  { path: "/debug", label: "Debug" },
 ];
 
 export default function Navigation() {
