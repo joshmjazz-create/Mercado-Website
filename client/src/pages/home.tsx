@@ -11,18 +11,18 @@ export default function Home() {
       />
       
       <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-5xl md:text-7xl font-bold font-display text-purple-400 mb-6 drop-shadow-lg opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
-          Joshua <span className="text-purple-400">Mercado</span>
+        <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-400 mb-8 drop-shadow-lg opacity-0 scale-95 animate-in" style={{ 
+          animationDelay: '200ms',
+          animationDuration: '800ms'
+        }}>
+          Joshua Mercado
         </h1>
-        <h2 className="text-2xl md:text-3xl text-white font-light mb-8 drop-shadow-lg opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-          Professional Jazz Musician & Composer
+        <h2 className="text-3xl md:text-4xl text-white font-light drop-shadow-lg opacity-0 translate-y-4 animate-in" style={{ 
+          animationDelay: '800ms',
+          animationDuration: '600ms'
+        }}>
+          Trumpet & Composition
         </h2>
-        <p className="text-xl text-white mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-lg opacity-0 translate-y-4 animate-in" style={{ animationDelay: '600ms' }}>
-          Bringing soulful jazz performances to life through trumpet and piano. 
-          Experience the rich harmonies and improvisational magic of contemporary jazz.
-        </p>
-        
-
       </div>
     </section>
   );
