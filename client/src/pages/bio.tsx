@@ -27,7 +27,7 @@ function parseBiographyContent(content: string) {
       <p 
         key={index}
         className="opacity-0 translate-y-4 animate-in" 
-        style={{ animationDelay: `${600 + (index * 200)}ms` }}
+        style={{ animationDelay: `${700 + (index * 200)}ms` }}
         dangerouslySetInnerHTML={{ __html: processedText }}
       />
     );
@@ -56,7 +56,7 @@ export default function Bio() {
             <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
           </div>
 
-          <div className="max-w-6xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+          <div className="max-w-6xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '700ms' }}>
             <div className="flex gap-12 items-center">
               {/* Bio Content */}
               <div className="flex-1">
@@ -87,7 +87,7 @@ export default function Bio() {
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
 
-        <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+        <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '700ms' }}>
           <div className="bg-black bg-opacity-70 rounded-lg p-6 backdrop-blur-sm">
             <div className="prose prose-base max-w-none text-white leading-relaxed space-y-6">
               {parseBiographyContent(content)}
