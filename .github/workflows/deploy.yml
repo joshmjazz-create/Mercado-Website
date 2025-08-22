@@ -3,12 +3,11 @@ name: Build and Deploy
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     
     steps:
       - name: Checkout code
@@ -24,9 +23,7 @@ jobs:
         run: npm ci
         
       - name: Build static site
-        run: |
-          # Build only the frontend (skip server build for static deployment)
-          npx vite build
+        run: npx vite build
         env:
           NODE_ENV: production
           VITE_GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -35,30 +32,8 @@ jobs:
           VITE_PHOTOS_FOLDER_ID: ${{ secrets.PHOTOS_FOLDER_ID }}
           VITE_MUSIC_FOLDER_ID: ${{ secrets.MUSIC_FOLDER_ID }}
           
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: website-build
-          path: dist/
-          
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: website-build
-          path: dist/
-          
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist/public
-          # cname: joshuamercado.com  # Uncomment and replace with your custom domain when ready
