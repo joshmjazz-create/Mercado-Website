@@ -13,10 +13,16 @@
     
     <script>
       // GitHub Pages SPA redirect script
-      const path = window.location.pathname;
-      if (path !== '/') {
-        window.location.href = '/#' + path;
-      }
+      (function() {
+        const path = window.location.pathname;
+        const base = window.location.pathname.split('/').slice(0, -1).join('/') || '';
+        
+        // If not on root, redirect to hash-based routing
+        if (path !== '/' && path !== base + '/' && !path.endsWith('/index.html')) {
+          const redirect = base + '/#' + path.replace(base, '');
+          window.location.href = redirect;
+        }
+      })();
     </script>
   </head>
   <body>
