@@ -143,26 +143,21 @@ function renderFallbackSite() {
   }
 }
 
-// Try React first, fall back to manual rendering
-try {
-  const root = document.getElementById("root");
-  if (!root) {
-    throw new Error("Root element not found");
-  }
-  
-  createRoot(root).render(<App />);
-  console.log("Full app rendered successfully");
-  
-  // Check if React actually rendered content
-  setTimeout(() => {
-    const rootContent = root.innerHTML;
-    if (!rootContent || rootContent.trim().length < 100) {
-      console.warn("React rendered but content appears empty, falling back to manual rendering");
-      renderFallbackSite();
-    }
-  }, 1000);
-  
-} catch (error) {
-  console.error("Failed to render app:", error);
+// Force immediate fallback rendering for reliable display
+const root = document.getElementById("root");
+if (!root) {
+  document.body.innerHTML = '<div style="color: red; padding: 20px;">Error: Root element not found</div>';
+} else {
+  console.log("Forcing fallback rendering for immediate display");
   renderFallbackSite();
+  
+  // Attempt React render in background without blocking display
+  setTimeout(() => {
+    try {
+      console.log("Attempting React render in background");
+      createRoot(root).render(<App />);
+    } catch (error) {
+      console.warn("React render failed, keeping fallback:", error);
+    }
+  }, 100);
 }
