@@ -39,9 +39,6 @@ jobs:
           VITE_BIOGRAPHY_DOC_ID: ${{ secrets.BIOGRAPHY_DOC_ID }}
           VITE_PHOTOS_FOLDER_ID: ${{ secrets.PHOTOS_FOLDER_ID }}
           VITE_MUSIC_FOLDER_ID: ${{ secrets.MUSIC_FOLDER_ID }}
-        
-      - name: Add .nojekyll for GitHub Pages
-        run: touch ./dist/public/.nojekyll
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
