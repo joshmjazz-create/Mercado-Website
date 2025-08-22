@@ -23,8 +23,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
-      - name: Build project
-        run: npm run build
+      - name: Build static site
+        run: |
+          # Build only the frontend (skip server build for static deployment)
+          npx vite build
         env:
           NODE_ENV: production
           VITE_GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -59,4 +61,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist/public
-          cname: joshuamercado.com  # Replace with your actual custom domain
+          # cname: joshuamercado.com  # Uncomment and replace with your custom domain when ready
