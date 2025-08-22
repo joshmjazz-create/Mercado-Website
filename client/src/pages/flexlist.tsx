@@ -26,27 +26,9 @@ export default function FlexList() {
         <div className="text-center mb-16 animate-in slide-in-from-bottom-6 duration-800 delay-900">
           <h2 className="text-3xl font-normal text-white mb-8">Download FlexList</h2>
           
-          <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-            {/* iOS Download */}
-            <Card className="bg-slate-700 border-slate-600 animate-in slide-in-from-left-6 duration-700 delay-1100">
-              <CardContent className="p-8 text-center">
-                <div className="mb-6">
-                  <Smartphone className="w-16 h-16 text-teal-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-normal text-white mb-2">iOS</h3>
-                  <p className="text-gray-400 font-normal">Available on the App Store</p>
-                </div>
-                <Button 
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-normal"
-                  disabled
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download for iOS
-                </Button>
-              </CardContent>
-            </Card>
-
+          <div className="max-w-md mx-auto">
             {/* Android Download */}
-            <Card className="bg-slate-700 border-slate-600 animate-in slide-in-from-right-6 duration-700 delay-1300">
+            <Card className="bg-slate-700 border-slate-600 animate-in slide-in-from-bottom-6 duration-700 delay-1100">
               <CardContent className="p-8 text-center">
                 <div className="mb-6">
                   <Smartphone className="w-16 h-16 text-teal-400 mx-auto mb-4" />
@@ -65,12 +47,22 @@ export default function FlexList() {
           </div>
         </div>
 
+        {/* iOS Notice */}
+        <div className="text-center mb-16 animate-in slide-in-from-bottom-4 duration-600 delay-1300">
+          <div className="bg-slate-700 border border-slate-600 rounded-lg p-6 max-w-2xl mx-auto">
+            <h3 className="text-xl font-normal text-white mb-2">Sorry iOS Users</h3>
+            <p className="text-gray-400 font-normal">
+              Unfortunately, it's too difficult to get FlexList working on Apple devices. The app is currently only available for Android.
+            </p>
+          </div>
+        </div>
+
         {/* Coming Soon Notice */}
         <div className="text-center animate-in slide-in-from-bottom-4 duration-600 delay-1500">
           <div className="bg-slate-700 border border-slate-600 rounded-lg p-6 max-w-2xl mx-auto">
             <h3 className="text-xl font-normal text-white mb-2">Coming Soon</h3>
             <p className="text-gray-400 font-normal">
-              FlexList is currently in development. Download links will be available soon for both iOS and Android platforms.
+              FlexList is currently in development. The Android download link will be available soon.
             </p>
           </div>
         </div>
