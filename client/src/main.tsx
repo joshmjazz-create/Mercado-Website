@@ -115,7 +115,7 @@ function renderFallbackSite() {
     `;
 
     // Add navigation functionality
-    window.showPage = function(pageId) {
+    (window as any).showPage = function(pageId: string) {
       // Hide all pages
       const pages = ['home', 'bio', 'debug', 'gallery', 'music', 'schedule', 'contact'];
       pages.forEach(page => {
@@ -130,14 +130,14 @@ function renderFallbackSite() {
       // Update navigation styling
       const navLinks = document.querySelectorAll('nav a');
       navLinks.forEach(link => {
-        link.style.color = 'white';
-        link.style.borderBottom = '2px solid transparent';
+        (link as HTMLElement).style.color = 'white';
+        (link as HTMLElement).style.borderBottom = '2px solid transparent';
       });
       
       const activeLink = document.querySelector('nav a[href="#' + pageId + '"]');
       if (activeLink) {
-        activeLink.style.color = '#daa520';
-        activeLink.style.borderBottom = '2px solid #daa520';
+        (activeLink as HTMLElement).style.color = '#daa520';
+        (activeLink as HTMLElement).style.borderBottom = '2px solid #daa520';
       }
     };
   }
