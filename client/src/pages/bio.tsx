@@ -82,7 +82,7 @@ export default function Bio() {
       {/* Desktop: Side-by-side Layout */}
       <div className="hidden md:flex min-h-screen">
         {/* Left Side: Bio Content */}
-        <div className="w-1/2 bg-gradient-to-br from-jazz-cream via-white to-jazz-cream flex items-center">
+        <div className="w-1/2 bg-gradient-to-br from-jazz-cream via-white to-jazz-cream overflow-y-auto">
           <div className="w-full px-8 py-16">
             <div className="text-center mb-12 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
               <h1 className="text-5xl font-bold text-purple-800 mb-6">Biography</h1>
@@ -99,15 +99,17 @@ export default function Bio() {
           </div>
         </div>
 
-        {/* Right Side: Image */}
-        <div 
-          className="w-1/2 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${bioImagePath})` }}
-        ></div>
+        {/* Right Side: Image - Always centered */}
+        <div className="w-1/2 flex items-center justify-center bg-gray-100">
+          <div 
+            className="w-full h-screen bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${bioImagePath})` }}
+          ></div>
+        </div>
       </div>
 
-      {/* Mobile Content */}
-      <div className="md:hidden relative z-10">
+      {/* Mobile Content - Image always centered behind text */}
+      <div className="md:hidden relative z-10 flex items-center justify-center min-h-screen">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
             <h1 className="text-5xl font-bold text-white mb-6">Biography</h1>
