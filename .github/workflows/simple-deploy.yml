@@ -32,18 +32,16 @@ jobs:
         
       - name: Build
         run: |
-          # Copy images to public directory before build
-          mkdir -p public/assets
-          cp attached_assets/*.{jpg,jpeg,png} public/assets/ 2>/dev/null || true
+          # Copy images to client/public directory for Vite
+          mkdir -p client/public/assets
+          cp attached_assets/*.{jpg,jpeg,png} client/public/assets/ 2>/dev/null || true
           # List files to debug
-          echo "Files in public/assets:"
-          ls -la public/assets/
+          echo "Files in client/public/assets:"
+          ls -la client/public/assets/
           npx vite build
-          # Copy images to build output ensuring proper paths
-          mkdir -p dist/public/assets
-          cp public/assets/* dist/public/assets/ 2>/dev/null || true
+          # Vite automatically copies from client/public to dist/public
           echo "Files in dist/public/assets:"
-          ls -la dist/public/assets/
+          ls -la dist/public/assets/ || echo "No dist/public/assets directory"
           # Fix asset paths for GitHub Pages subdirectory deployment
           sed -i 's|"/assets/|"./assets/|g' dist/public/index.html
           cp dist/public/index.html dist/public/404.html
