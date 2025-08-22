@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 // Import bio image using assets alias
-import bioImagePath from '@assets/Resized_20240319_004511_1710846806854 (1)_1755873128481.jpeg';
+import bioImagePath from '@assets/Headshot_2_1755873415112.jpeg';
 
 // Biography Google Drive folder ID
 const BIOGRAPHY_FOLDER_URL = 'https://drive.google.com/drive/folders/1RH0mRswhyD0rXU2mAsrj3fGpevbcw1Th';
