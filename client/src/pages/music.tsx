@@ -33,14 +33,14 @@ export default function Music() {
     setShowPlatforms(false);
   };
 
-  const renderAlbumSection = (title: string, albums: StaticAlbum[], delay: number) => {
+  const renderAlbumSection = (title: string, albums: StaticAlbum[], delay: number, showTitle: boolean = true) => {
     if (albums.length === 0) {
       return (
         <div 
           className="opacity-0 translate-y-4 animate-in mb-16" 
           style={{ animationDelay: `${delay}ms` }}
         >
-          <h2 className="text-3xl font-bold text-purple-800 mb-8 text-center">{title}</h2>
+          {showTitle && <h2 className="text-2xl font-semibold text-gray-600 mb-8 text-left">{title}</h2>}
           <div className="bg-gray-100 rounded-lg p-8 text-center">
             <p className="text-gray-600">
               Music catalog will display albums when available.
@@ -55,7 +55,7 @@ export default function Music() {
         className="opacity-0 translate-y-4 animate-in mb-16" 
         style={{ animationDelay: `${delay}ms` }}
       >
-        <h2 className="text-3xl font-bold text-purple-800 mb-8 text-center">{title}</h2>
+        {showTitle && <h2 className="text-2xl font-semibold text-gray-600 mb-8 text-left">{title}</h2>}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {albums.map((album, index) => (
             <div
@@ -87,7 +87,7 @@ export default function Music() {
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
 
-        {renderAlbumSection("My Music", originalAlbums, 400)}
+        {renderAlbumSection("My Music", originalAlbums, 400, false)}
         {renderAlbumSection("Featured On", featuredAlbums, 600)}
         {renderAlbumSection("Upcoming", upcomingAlbums, 800)}
 
