@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+// import MinimalApp from "./App-minimal";
 import App from "./App";
 import "./index.css";
 
@@ -18,15 +19,16 @@ try {
   }
   
   createRoot(root).render(<App />);
-  console.log("App rendered successfully");
+  console.log("Full app rendered successfully");
 } catch (error) {
   console.error("Failed to render app:", error);
   // Fallback content
   document.body.innerHTML = `
-    <div style="padding: 40px; font-family: Arial, sans-serif; text-align: center;">
-      <h1>Joshua Mercado</h1>
-      <p>Website is loading...</p>
+    <div style="padding: 40px; font-family: Arial, sans-serif; text-align: center; background: #1a1a2e; color: white; min-height: 100vh;">
+      <h1 style="color: #daa520;">Joshua Mercado</h1>
+      <p>Website failed to load</p>
       <p style="color: red; font-size: 12px;">Error: ${error}</p>
+      <p style="font-size: 12px;">This error fallback shows the app completely failed to initialize</p>
     </div>
   `;
 }
