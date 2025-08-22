@@ -143,21 +143,37 @@ function renderFallbackSite() {
   }
 }
 
-// Force immediate fallback rendering for reliable display
-const root = document.getElementById("root");
-if (!root) {
-  document.body.innerHTML = '<div style="color: red; padding: 20px;">Error: Root element not found</div>';
+// Direct DOM rendering - bypasses all React complexity
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("DOM loaded, forcing immediate content display");
+  const root = document.getElementById("root");
+  if (root) {
+    renderFallbackSite();
+  }
+});
+
+// Also render immediately if DOM is already loaded
+if (document.readyState === 'loading') {
+  // DOM still loading, wait for DOMContentLoaded
 } else {
-  console.log("Forcing fallback rendering for immediate display");
-  renderFallbackSite();
-  
-  // Attempt React render in background without blocking display
-  setTimeout(() => {
-    try {
-      console.log("Attempting React render in background");
-      createRoot(root).render(<App />);
-    } catch (error) {
-      console.warn("React render failed, keeping fallback:", error);
-    }
-  }, 100);
+  // DOM already loaded
+  console.log("DOM already loaded, rendering immediately");
+  const root = document.getElementById("root");
+  if (root) {
+    renderFallbackSite();
+  } else {
+    // Fallback if root element issues
+    document.body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)';
+    document.body.style.color = 'white';
+    document.body.style.fontFamily = 'Arial, sans-serif';
+    document.body.style.padding = '40px';
+    document.body.style.minHeight = '100vh';
+    document.body.innerHTML = `
+      <h1 style="color: #8B5CF6; font-size: 4rem; text-align: center; margin-bottom: 1rem;">Joshua Mercado</h1>
+      <p style="color: #daa520; font-size: 1.5rem; text-align: center;">Jazz Trumpet & Composition</p>
+      <div style="text-align: center; margin-top: 2rem;">
+        <p>Professional website loading...</p>
+      </div>
+    `;
+  }
 }
