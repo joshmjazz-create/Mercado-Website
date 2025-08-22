@@ -22,9 +22,28 @@ export default function Schedule() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Use static content for reliable deployment
-    setEvents([]);
-    setLoading(false);
+    const fetchEvents = async () => {
+      try {
+        const CALENDAR_ID = 'joshm.jazz@gmail.com';
+        const response = await fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?key=${import.meta.env.VITE_GOOGLE_API_KEY}&timeMin=${new Date().toISOString()}&singleEvents=true&orderBy=startTime&maxResults=50`
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          const filteredEvents = data.items?.filter((event: any) => 
+            event.description?.includes('SHOW')
+          ) || [];
+          setEvents(filteredEvents);
+        }
+      } catch (error) {
+        console.log('Using offline mode for schedule');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
   }, []);
 
   const formatDate = (dateString: string) => {

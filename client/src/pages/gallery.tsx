@@ -14,10 +14,32 @@ export default function Gallery() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Use static content for reliable deployment
-  const photos: any[] = [];
-  const isLoading = false;
-  const error = null;
+  // Try to load photos from Google Drive API, fallback to static
+  const [photos, setPhotos] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      try {
+        const PHOTOS_FOLDER_ID = '1M5TFWy3JkQRJkGjYQqVqG4b4sLzEQNvP';
+        const response = await fetch(
+          `https://www.googleapis.com/drive/v3/files?q='${PHOTOS_FOLDER_ID}'+in+parents+and+mimeType+contains+'image'&key=${import.meta.env.VITE_GOOGLE_API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          setPhotos(data.files || []);
+        }
+      } catch (error) {
+        console.log('Using offline mode for gallery');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPhotos();
+  }, []);
 
   return (
     <section className="min-h-screen bg-white">
