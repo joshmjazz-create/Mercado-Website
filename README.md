@@ -41,6 +41,9 @@ This project is configured for automatic deployment using GitHub Actions to GitH
    Go to `Settings` → `Secrets and variables` → `Actions` and add:
    - `GOOGLE_API_KEY`: Your Google API key (for client-side calls)
    - `GOOGLE_CALENDAR_ID`: Your Google Calendar ID
+   - `BIOGRAPHY_DOC_ID`: Your biography Google Doc ID
+   - `PHOTOS_FOLDER_ID`: Your photos Google Drive folder ID  
+   - `MUSIC_FOLDER_ID`: Your music Google Drive folder ID
 
 4. **Automatic Deployment**:
    - Every push to `main` triggers automatic build and deployment
@@ -59,11 +62,14 @@ This project is configured for automatic deployment using GitHub Actions to GitH
 - `GOOGLE_API_KEY`: Google API key with Calendar, Drive, and Docs permissions
 - `GOOGLE_CALENDAR_ID`: Your Google Calendar ID
 
-### API Configuration Required
-For Google Drive content (Biography, Photos, Music), you'll need to:
-1. **Make documents/folders publicly accessible**, OR
-2. **Use OAuth authentication** for private content access
-3. **Configure CORS settings** in Google Cloud Console
+### Complete Setup Guide
+📖 **See [SETUP.md](./SETUP.md) for detailed configuration instructions**
+
+Quick requirements:
+1. **Google Cloud Console**: Create API key with Calendar/Drive/Docs permissions
+2. **Public Google Content**: Make calendar, biography doc, and Drive folders publicly accessible  
+3. **GitHub Secrets**: Add all API credentials and content IDs
+4. **GitHub Pages**: Enable deployment from gh-pages branch
 
 ## Local Development
 

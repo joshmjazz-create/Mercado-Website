@@ -29,6 +29,9 @@ jobs:
           NODE_ENV: production
           VITE_GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           VITE_GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
+          VITE_BIOGRAPHY_DOC_ID: ${{ secrets.BIOGRAPHY_DOC_ID }}
+          VITE_PHOTOS_FOLDER_ID: ${{ secrets.PHOTOS_FOLDER_ID }}
+          VITE_MUSIC_FOLDER_ID: ${{ secrets.MUSIC_FOLDER_ID }}
           
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
