@@ -1,4 +1,5 @@
-import bgImage from "@assets/Screenshot_20250820_160009_Gallery_1755720047192.jpg";
+// Use direct path for compatibility
+const bgImage = "/assets/Screenshot_20250820_160009_Gallery_1755720047192.jpg";
 
 export default function Home() {
   return (

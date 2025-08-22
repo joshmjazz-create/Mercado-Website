@@ -1,5 +1,5 @@
-// Import bio image using assets alias
-import bioImagePath from '@assets/Headshot_2_1755873415112.jpeg';
+// Use direct path for compatibility
+const bioImagePath = "/assets/Headshot_2_1755873415112.jpeg";
 
 // Static biography content - matches exact original formatting
 const STATIC_BIOGRAPHY = `Joshua Mercado is a young, up and coming trumpet player based in New Jersey. Raised in Central Florida, he earned his Bachelor's degree in Jazz Studies from the University of Central Florida and is currently pursuing a Master's degree at William Paterson University, where he studies with renowned trumpeter Jeremy Pelt.
