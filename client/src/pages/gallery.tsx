@@ -20,30 +20,30 @@ export default function Gallery() {
   const error = null;
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-jazz-dark via-black to-jazz-dark">
+    <section className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
-          <h1 className="text-5xl font-bold text-purple-400 mb-6">Gallery</h1>
-          <div className="w-24 h-1 bg-purple-400 mx-auto"></div>
+          <h1 className="text-5xl font-bold text-purple-800 mb-6">Gallery</h1>
+          <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
 
         {isLoading && (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-800"></div>
           </div>
         )}
 
         {error && (
           <div className="text-center py-20">
-            <p className="text-red-400 text-lg">Error loading photos</p>
+            <p className="text-red-600 text-lg">Error loading photos</p>
           </div>
         )}
 
         {!isLoading && !error && photos.length === 0 && (
           <div className="text-center py-20 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-            <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-8 max-w-md mx-auto">
-              <h3 className="text-xl text-white mb-4">Performance Gallery</h3>
-              <p className="text-gray-300">
+            <div className="bg-gray-100 rounded-lg p-8 max-w-md mx-auto">
+              <h3 className="text-xl text-gray-800 mb-4">Performance Gallery</h3>
+              <p className="text-gray-600">
                 Photo gallery will display performance photos when available.
               </p>
             </div>
