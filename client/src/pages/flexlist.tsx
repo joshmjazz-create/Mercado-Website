@@ -53,7 +53,7 @@ export default function FlexList() {
           <div className="bg-slate-700 border border-slate-600 rounded-lg p-6 max-w-2xl mx-auto">
             <h3 className="text-xl font-normal text-white mb-2">Sorry iOS Users</h3>
             <p className="text-gray-400 font-normal">
-              Unfortunately, it's too difficult to get FlexList working on Apple devices. The app is currently only available for Android.
+              Unfortunately, it's too time consuming to get FlexList working on Apple devices. The app is currently only available for Android.
             </p>
           </div>
         </div>
