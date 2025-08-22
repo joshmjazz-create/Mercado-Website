@@ -79,32 +79,35 @@ export default function Bio() {
         <div className="absolute inset-0 bg-black bg-opacity-60"></div>
       </div>
 
-      {/* Desktop: Side-by-side Layout */}
-      <div className="hidden md:flex min-h-screen">
-        {/* Left Side: Bio Content */}
-        <div className="w-1/2 bg-gradient-to-br from-jazz-cream via-white to-jazz-cream overflow-y-auto">
-          <div className="w-full px-8 py-16">
-            <div className="text-center mb-12 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
-              <h1 className="text-5xl font-bold text-purple-800 mb-6">Biography</h1>
-              <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
-            </div>
+      {/* Desktop: Content with side image */}
+      <div className="hidden md:block min-h-screen bg-gradient-to-br from-jazz-cream via-white to-jazz-cream">
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
+            <h1 className="text-5xl font-bold text-purple-800 mb-6">Biography</h1>
+            <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
+          </div>
 
-            <div className="max-w-2xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-4">
-                  {parseBiographyContent(content)}
+          <div className="max-w-6xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+            <div className="flex gap-12 items-start">
+              {/* Bio Content */}
+              <div className="flex-1">
+                <div className="bg-white rounded-lg shadow-lg p-8">
+                  <div className="prose prose-base max-w-none text-gray-700 leading-relaxed space-y-6">
+                    {parseBiographyContent(content)}
+                  </div>
                 </div>
+              </div>
+
+              {/* Image */}
+              <div className="flex-shrink-0">
+                <img 
+                  src={bioImagePath} 
+                  alt="Joshua Mercado" 
+                  className="w-80 h-96 object-cover rounded-lg shadow-lg"
+                />
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Right Side: Image - Always centered */}
-        <div className="w-1/2 flex items-center justify-center bg-gray-100">
-          <div 
-            className="w-full h-screen bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${bioImagePath})` }}
-          ></div>
         </div>
       </div>
 
