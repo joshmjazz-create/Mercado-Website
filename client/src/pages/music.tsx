@@ -130,7 +130,7 @@ export default function Music() {
           const audioFile = files.find((file: any) => file.mimeType?.startsWith('audio/'));
           
           if (imageFile) {
-            imageFileUrl = `https://drive.google.com/uc?id=${imageFile.id}&export=view`;
+            imageFileUrl = `https://lh3.googleusercontent.com/d/${imageFile.id}`;
           }
           if (audioFile) {
             audioPreviewUrl = `https://drive.google.com/uc?id=${audioFile.id}&export=download`;
@@ -181,20 +181,31 @@ export default function Music() {
           links: {}
         };
         
+        let currentSection = '';
         lines.forEach(line => {
           const trimmedLine = line.trim();
+          
+          // Handle main metadata fields
           if (trimmedLine.startsWith('TITLE:')) {
             metadata.title = trimmedLine.replace('TITLE:', '').trim();
           } else if (trimmedLine.startsWith('ARTIST:')) {
             metadata.artist = trimmedLine.replace('ARTIST:', '').trim();
           } else if (trimmedLine.startsWith('YEAR:')) {
             metadata.year = trimmedLine.replace('YEAR:', '').trim();
-          } else if (trimmedLine.startsWith('SPOTIFY:')) {
-            metadata.links.spotify = trimmedLine.replace('SPOTIFY:', '').trim();
-          } else if (trimmedLine.startsWith('APPLE:')) {
-            metadata.links.applemusic = trimmedLine.replace('APPLE:', '').trim();
-          } else if (trimmedLine.startsWith('YOUTUBE:')) {
-            metadata.links.youtube = trimmedLine.replace('YOUTUBE:', '').trim();
+          } else if (trimmedLine === 'LINKS:') {
+            currentSection = 'links';
+          } else if (currentSection === 'links' && trimmedLine.includes(' - ')) {
+            // Parse link lines like "Spotify - https://..."
+            const [platform, url] = trimmedLine.split(' - ');
+            const platformKey = platform.trim().toLowerCase();
+            
+            if (platformKey === 'spotify') {
+              metadata.links.spotify = url.trim();
+            } else if (platformKey === 'apple music') {
+              metadata.links.applemusic = url.trim();
+            } else if (platformKey === 'youtube') {
+              metadata.links.youtube = url.trim();
+            }
           }
         });
         

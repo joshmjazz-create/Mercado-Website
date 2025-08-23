@@ -29,7 +29,8 @@ A professional jazz musician website for Joshua Mercado featuring:
 - Database Schema: Albums table with platform URLs (Spotify, Apple Music, YouTube)
 
 ## Recent Changes
-- **August 23, 2025**: Fixed API integration with correct Google Drive folder IDs (Music: 1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6, Gallery: 1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd, Bio Doc: 1SzKc4cHnSkNuinePKMlV1vAC9AZLC3iNUYzJNkUppQg)
+- **August 23, 2025**: Fixed image loading using Google Drive direct links and updated music parsing for exact user format (TITLE:, ARTIST:, YEAR:, LINKS: with platform - URL structure)
+- **August 23, 2025**: Fixed API integration with correct Google Drive folder IDs (Music: 1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6, Gallery: 1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd, Bio: 1RH0mRswhyD0rXU2mAsrj3fGpevbcw1Th)
 - **August 23, 2025**: Updated all API calls to use hardcoded credentials for static deployment (API Key: AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI, Google Drive/Docs/Calendar integration)
 - **August 23, 2025**: Enhanced Schedule page with calendar grid view, event detail modals, and double-tap functionality without text highlighting
 - **August 23, 2025**: Redesigned Music page layout with 2x4 responsive grid (mobile/desktop), "My Music" section without title at top, proper audio preview system with loading states for Upcoming albums

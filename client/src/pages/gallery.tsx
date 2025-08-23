@@ -34,7 +34,7 @@ export default function Gallery() {
           console.log('Gallery API Response:', data);
           const photosWithDimensions = await Promise.all(
             (data.files || []).map(async (photo: any) => {
-              const imageUrl = `https://drive.google.com/uc?id=${photo.id}&export=view`;
+              const imageUrl = `https://lh3.googleusercontent.com/d/${photo.id}`;
               const dimensions = await getImageDimensions(imageUrl);
               return {
                 ...photo,
