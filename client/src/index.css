@@ -9,7 +9,7 @@
     transform: translateX(2rem);
   }
   to {
-    opacity: 0.4;
+    opacity: 1;
     transform: translateX(0);
   }
 }
