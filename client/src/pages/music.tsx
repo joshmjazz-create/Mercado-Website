@@ -337,20 +337,14 @@ export default function Music() {
   };
 
   const renderAlbumSection = (title: string, albums: Album[], delay: number, showTitle: boolean = true) => {
-    if (albums.length === 0) {
-      return (
-        <div 
-          className="opacity-0 translate-y-4 animate-in mb-8" 
-          style={{ animationDelay: `${delay}ms` }}
-        >
-          {showTitle && <h2 className="text-2xl font-semibold text-gray-400 mb-8 text-left underline">{title}</h2>}
-          <div className="bg-gray-300 rounded-lg p-8 text-center">
-            <p className="text-gray-800">
-              Music catalog will display albums when available.
-            </p>
-          </div>
-        </div>
-      );
+    // Don't render anything if no albums and still loading
+    if (albums.length === 0 && isLoading) {
+      return null;
+    }
+    
+    // Don't render anything if no albums and not loading (no content to show)
+    if (albums.length === 0 && !isLoading) {
+      return null;
     }
 
     return (

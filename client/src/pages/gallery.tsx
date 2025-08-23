@@ -62,14 +62,8 @@ export default function Gallery() {
         )}
 
         {!isLoading && !error && photos.length === 0 && (
-          <div className="text-center py-20 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-            <div className="bg-jazz-grey rounded-lg p-8 max-w-md mx-auto">
-              <h3 className="text-xl text-gray-800 mb-4">Performance Gallery</h3>
-              <p className="text-gray-600">
-                Photo gallery will display performance photos when available.
-              </p>
-            </div>
-          </div>
+          // Don't show placeholder - just empty space when no photos
+          <div></div>
         )}
 
         {/* Photo grid would go here when photos are available */}

@@ -1,27 +1,19 @@
+import { useState, useEffect } from "react";
+
 // Updated for GitHub Pages deployment - using relative asset paths
 const bioImagePath = "./assets/Headshot_2_1755873415112.jpeg";
 
-// Static biography content - matches exact original formatting
-const STATIC_BIOGRAPHY = `Joshua Mercado is a young, up and coming trumpet player based in New Jersey. Raised in Central Florida, he earned his Bachelor's degree in Jazz Studies from the University of Central Florida and is currently pursuing a Master's degree at William Paterson University, where he studies with renowned trumpeter Jeremy Pelt.
-
-Mercado moved into the New York City area in 2024 where he quickly started getting his name out and onto the scene. He regularly performs with Winard Harper and the Jeli Posse, having played at venues such as The Bean Runner and Martha's Vineyard in Massachusetts. Other notable musicians he's played with throughout his young career are Joy Brown, Rodney Green, Mike Lee, and Clarence Penn, performing at some of the top clubs in the city such as Smalls and Dizzy's Jazz Club.
-
-His versatility as a musician has also led him to national touring opportunities. In 2024, he went on the road with Joey Fatone (NSYNC) and AJ McLean (Backstreet Boys) on their A Legendary Night tour, performing at historic venues such as The Ryman, The Factory, and The MGM Grand National Harbor. Through his connection with Joey Fatone, he has shared the stage with other celebrities, including but not limited to Debbie Gibson, Lance Bass, Chris Kirkpatrick, Montell Jordan, Shawn Stockman, Wanya Morris, and even Murr from Impractical Jokers.`;
-
-// Function to parse biography content with exact formatting
+// Function to parse biography content with exact formatting and preserve all italics
 function parseBiographyContent(content: string) {
   const paragraphs = content.split('\n\n').filter(p => p.trim());
   
   return paragraphs.map((paragraph, index) => {
-    // Create JSX with specific italicization, removing any asterisks first
+    // Process text to preserve Google Docs formatting
     let processedText = paragraph;
     
-    // Remove any asterisks around text that might be leftover
-    processedText = processedText.replace(/\*([^*]+)\*/g, '$1');
-    
-    // Then italicize only the specific titles mentioned in replit.md
-    processedText = processedText.replace(/A Legendary Night/g, '<em>A Legendary Night</em>');
-    processedText = processedText.replace(/Impractical Jokers/g, '<em>Impractical Jokers</em>');
+    // Convert any markdown-style italics to HTML
+    processedText = processedText.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    processedText = processedText.replace(/_([^_]+)_/g, '<em>$1</em>');
     
     return (
       <p 
@@ -35,8 +27,76 @@ function parseBiographyContent(content: string) {
 }
 
 export default function Bio() {
-  // Use static biography content for reliable deployment
-  const content = STATIC_BIOGRAPHY;
+  const [content, setContent] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBioContent = async () => {
+      try {
+        const BIO_FOLDER_ID = 'your-bio-folder-id'; // Replace with actual Bio folder ID
+        
+        // Get files in Bio folder
+        const response = await fetch(
+          `https://www.googleapis.com/drive/v3/files?q='${BIO_FOLDER_ID}'+in+parents+and+mimeType='application/vnd.google-apps.document'&key=${import.meta.env.VITE_GOOGLE_API_KEY}&fields=files(id,name)`
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          const docFile = data.files?.[0]; // Get first document
+          
+          if (docFile) {
+            const docContent = await fetchDocumentContent(docFile.id);
+            setContent(docContent);
+          }
+        }
+      } catch (error) {
+        console.log('Using offline mode for bio');
+        // Fallback to empty content - page will show loading until data is available
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBioContent();
+  }, []);
+
+  const fetchDocumentContent = async (docId: string): Promise<string> => {
+    try {
+      const response = await fetch(
+        `https://docs.googleapis.com/v1/documents/${docId}?key=${import.meta.env.VITE_GOOGLE_API_KEY}`
+      );
+      
+      if (response.ok) {
+        const docData = await response.json();
+        const content = docData.body?.content || [];
+        
+        let text = '';
+        content.forEach((element: any) => {
+          if (element.paragraph) {
+            element.paragraph.elements?.forEach((elem: any) => {
+              if (elem.textRun) {
+                const textContent = elem.textRun.content;
+                const textStyle = elem.textRun.textStyle || {};
+                
+                // Preserve italics from Google Docs
+                if (textStyle.italic) {
+                  text += `*${textContent}*`;
+                } else {
+                  text += textContent;
+                }
+              }
+            });
+          }
+        });
+        
+        return text.trim();
+      }
+    } catch (error) {
+      console.error('Error fetching document content:', error);
+    }
+    
+    return '';
+  };
 
   return (
     <section className="min-h-screen relative">
@@ -67,27 +127,35 @@ export default function Bio() {
             <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
           </div>
 
-          <div className="max-w-6xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-            <div className="flex gap-12 items-center">
-              {/* Bio Content */}
-              <div className="flex-1">
-                <div className="bg-jazz-grey rounded-lg shadow-lg p-8">
-                  <div className="prose prose-base max-w-none text-gray-700 leading-relaxed space-y-6">
-                    {parseBiographyContent(content)}
+          {isLoading && (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+            </div>
+          )}
+
+          {!isLoading && content && (
+            <div className="max-w-6xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+              <div className="flex gap-12 items-center">
+                {/* Bio Content */}
+                <div className="flex-1">
+                  <div className="bg-jazz-grey rounded-lg shadow-lg p-8">
+                    <div className="prose prose-base max-w-none text-gray-700 leading-relaxed space-y-6">
+                      {parseBiographyContent(content)}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Image */}
-              <div className="flex-shrink-0">
-                <img 
-                  src={bioImagePath} 
-                  alt="Joshua Mercado" 
-                  className="w-80 object-contain rounded-lg shadow-lg"
-                />
+                {/* Image */}
+                <div className="flex-shrink-0">
+                  <img 
+                    src={bioImagePath} 
+                    alt="Joshua Mercado" 
+                    className="w-80 object-contain rounded-lg shadow-lg"
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -98,13 +166,21 @@ export default function Bio() {
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
 
-        <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '2700ms' }}>
-          <div className="bg-black bg-opacity-70 rounded-lg p-6 backdrop-blur-sm">
-            <div className="prose prose-base max-w-none text-white leading-relaxed space-y-6">
-              {parseBiographyContent(content)}
+        {isLoading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+          </div>
+        )}
+
+        {!isLoading && content && (
+          <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '2700ms' }}>
+            <div className="bg-black bg-opacity-70 rounded-lg p-6 backdrop-blur-sm">
+              <div className="prose prose-base max-w-none text-white leading-relaxed space-y-6">
+                {parseBiographyContent(content)}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
