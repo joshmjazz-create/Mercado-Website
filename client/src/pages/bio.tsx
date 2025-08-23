@@ -39,11 +39,14 @@ export default function Bio() {
   const content = STATIC_BIOGRAPHY;
 
   return (
-    <section className="min-h-screen relative">
+    <section className="h-screen relative overflow-y-auto">
       {/* Mobile: Background Image */}
       <div 
-        className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${bioImagePath})` }}
+        className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 animate-[slide-in-left_0.8s_ease-out_forwards]"
+        style={{ 
+          backgroundImage: `url(${bioImagePath})`,
+          animationDelay: '0ms'
+        }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-60"></div>
       </div>
@@ -81,13 +84,13 @@ export default function Bio() {
       </div>
 
       {/* Mobile: Content overlay */}
-      <div className="md:hidden relative z-10 min-h-screen flex flex-col justify-center px-4 py-16">
-        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
+      <div className="md:hidden relative z-10 h-screen flex flex-col justify-center px-4 py-8">
+        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '1500ms' }}>
           <h1 className="text-5xl font-bold text-purple-800 mb-6">Biography</h1>
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
 
-        <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '1200ms' }}>
+        <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '2700ms' }}>
           <div className="bg-black bg-opacity-70 rounded-lg p-6 backdrop-blur-sm">
             <div className="prose prose-base max-w-none text-white leading-relaxed space-y-6">
               {parseBiographyContent(content)}

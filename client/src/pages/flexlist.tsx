@@ -57,11 +57,11 @@ export default function FlexList() {
               <CardContent className="p-8">
                 <h3 className="text-xl font-normal text-gray-300 mb-6">Currently Developing Android Only</h3>
                 <p className="text-gray-300 font-normal leading-relaxed mb-4">
-                  Flexzlist will be available only on Android. While I would love to bring it to iOS, 
+                  FlexList will be available only on Android. While I would love to bring it to iOS, 
                   rewriting the entire application for iOS would be extremely time-consuming.
                 </p>
                 <p className="text-gray-300 font-normal leading-relaxed">
-                  For now, the app will be Android-exclusive for the foreseeable future. Thank you for your understanding!
+                  The app will be Android-exclusive for the foreseeable future. Thank you for your understanding!
                 </p>
               </CardContent>
             </Card>
