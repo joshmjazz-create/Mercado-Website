@@ -48,15 +48,12 @@ export default function Bio() {
           const docFile = data.files?.[0]; // Get first document
           
           if (docFile) {
-            // Try to export as plain text
-            const exportResponse = await fetch(
-              `https://docs.google.com/document/d/${docFile.id}/export?format=txt`
-            );
+            // Use Google Docs API to preserve formatting
+            const docContent = await fetchDocumentContent(docFile.id);
             
-            if (exportResponse.ok) {
-              const textContent = await exportResponse.text();
-              console.log('Bio content loaded from Google Docs folder');
-              setContent(textContent);
+            if (docContent) {
+              console.log('Bio content loaded from Google Docs with formatting');
+              setContent(docContent);
             } else {
               console.log('Using fallback bio content');
               setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
@@ -111,8 +108,13 @@ Joshua continues to perform regularly and is dedicated to sharing his love of ja
         const content = docData.body?.content || [];
         
         let text = '';
+        let currentParagraph = '';
+        
         content.forEach((element: any) => {
           if (element.paragraph) {
+            // Start a new paragraph
+            currentParagraph = '';
+            
             element.paragraph.elements?.forEach((elem: any) => {
               if (elem.textRun) {
                 const textContent = elem.textRun.content;
@@ -120,12 +122,21 @@ Joshua continues to perform regularly and is dedicated to sharing his love of ja
                 
                 // Preserve italics from Google Docs
                 if (textStyle.italic) {
-                  text += `*${textContent}*`;
+                  currentParagraph += `*${textContent.replace(/\n/g, '')}*`;
                 } else {
-                  text += textContent;
+                  currentParagraph += textContent.replace(/\n/g, '');
                 }
               }
             });
+            
+            // Add paragraph to text with proper spacing
+            if (currentParagraph.trim()) {
+              if (text) {
+                text += '\n\n' + currentParagraph.trim();
+              } else {
+                text = currentParagraph.trim();
+              }
+            }
           }
         });
         
