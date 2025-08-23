@@ -9,8 +9,8 @@ export default function Home() {
         style={{
           backgroundImage: `url(${bgImage})`,
           animationDelay: '0ms',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
+          backgroundSize: 'contain',
+          backgroundPosition: 'center top',
           backgroundRepeat: 'no-repeat'
         }}
       />
