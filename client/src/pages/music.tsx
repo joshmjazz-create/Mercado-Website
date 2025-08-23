@@ -481,9 +481,9 @@ export default function Music() {
                       className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
                       onClick={() => handleAlbumClick(album)}
                     >
-                      <div className="bg-gray-300 rounded-lg shadow-lg overflow-hidden border aspect-square flex flex-col">
+                      <div className="bg-white rounded-lg shadow-lg overflow-hidden border">
                         {/* Album Cover */}
-                        <div className="flex-1 relative">
+                        <div className="aspect-square relative">
                           {album.coverImageUrl ? (
                             <img 
                               src={album.coverImageUrl} 
@@ -498,10 +498,10 @@ export default function Music() {
                         </div>
                         
                         {/* Album Info */}
-                        <div className="p-3 bg-gray-300">
-                          <h3 className="text-sm font-bold text-gray-800 mb-1 truncate">{album.title}</h3>
-                          <p className="text-gray-700 text-xs truncate">{album.artist}</p>
-                          <p className="text-gray-600 text-xs">{album.year}</p>
+                        <div className="p-4 bg-white border-t">
+                          <h3 className="text-base font-semibold text-gray-900 mb-1 truncate">{album.title}</h3>
+                          <p className="text-gray-600 text-sm truncate">{album.artist}</p>
+                          <p className="text-gray-500 text-sm">{album.year}</p>
                         </div>
                       </div>
                     </div>
@@ -521,9 +521,9 @@ export default function Music() {
                       className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
                       onClick={() => handleAlbumClick(album)}
                     >
-                      <div className="bg-gray-300 rounded-lg shadow-lg overflow-hidden border aspect-square flex flex-col">
+                      <div className="bg-white rounded-lg shadow-lg overflow-hidden border">
                         {/* Album Cover */}
-                        <div className="flex-1 relative">
+                        <div className="aspect-square relative">
                           {album.coverImageUrl ? (
                             <img 
                               src={album.coverImageUrl} 
@@ -538,10 +538,10 @@ export default function Music() {
                         </div>
                         
                         {/* Album Info */}
-                        <div className="p-3 bg-gray-300">
-                          <h3 className="text-sm font-bold text-gray-800 mb-1 truncate">{album.title}</h3>
-                          <p className="text-gray-700 text-xs truncate">{album.artist}</p>
-                          <p className="text-gray-600 text-xs">{album.year}</p>
+                        <div className="p-4 bg-white border-t">
+                          <h3 className="text-base font-semibold text-gray-900 mb-1 truncate">{album.title}</h3>
+                          <p className="text-gray-600 text-sm truncate">{album.artist}</p>
+                          <p className="text-gray-500 text-sm">{album.year}</p>
                         </div>
                       </div>
                     </div>
@@ -561,9 +561,9 @@ export default function Music() {
                       className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
                       onClick={() => handlePlayPreview(album)}
                     >
-                      <div className="bg-gray-300 rounded-lg shadow-lg overflow-hidden border aspect-square flex flex-col">
+                      <div className="bg-white rounded-lg shadow-lg overflow-hidden border">
                         {/* Album Cover */}
-                        <div className="flex-1 relative">
+                        <div className="aspect-square relative">
                           {album.imageFileUrl ? (
                             <img 
                               src={album.imageFileUrl} 
@@ -593,12 +593,12 @@ export default function Music() {
                         </div>
                         
                         {/* Album Info */}
-                        <div className="p-3 bg-gray-300">
-                          <h3 className="text-sm font-bold text-gray-800 mb-1 truncate">{album.title}</h3>
-                          <p className="text-gray-700 text-xs truncate">{album.artist}</p>
-                          <p className="text-gray-600 text-xs mb-1">{album.year}</p>
+                        <div className="p-4 bg-white border-t">
+                          <h3 className="text-base font-semibold text-gray-900 mb-1 truncate">{album.title}</h3>
+                          <p className="text-gray-600 text-sm truncate">{album.artist}</p>
+                          <p className="text-gray-500 text-sm mb-1">{album.year}</p>
                           {album.audioPreviewUrl && (
-                            <p className="text-purple-600 text-xs font-medium">Preview Available</p>
+                            <p className="text-purple-600 text-sm font-medium">Preview Available</p>
                           )}
                         </div>
                       </div>
