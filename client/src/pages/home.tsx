@@ -3,9 +3,9 @@ const bgImage = "/assets/Screenshot_20250820_160009_Gallery_1755720047192.jpg";
 
 export default function Home() {
   return (
-    <section className="relative min-h-screen md:h-full flex items-center justify-center bg-gray-800 md:bg-gray-700">
+    <section className="relative min-h-screen md:h-full flex items-center justify-center" style={{ backgroundColor: '#101010' }}>
       <div 
-        className="absolute inset-0 opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards] bg-cover md:bg-[length:125%] bg-[center_top] bg-no-repeat"
+        className="absolute inset-0 opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards] bg-cover md:bg-contain bg-[center_top] bg-no-repeat"
         style={{
           backgroundImage: `url(${bgImage})`,
           animationDelay: '0ms'
@@ -13,7 +13,10 @@ export default function Home() {
       />
       
       {/* Desktop gradient overlay */}
-      <div className="hidden md:block absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-700 opacity-60"></div>
+      <div className="hidden md:block absolute inset-0 opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards]" style={{ 
+        background: 'linear-gradient(to bottom, transparent 0%, transparent 60%, #101010 100%)',
+        animationDelay: '0ms' 
+      }}></div>
       
       <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-400 mb-8 drop-shadow-lg opacity-0 scale-95 animate-in" style={{ 
