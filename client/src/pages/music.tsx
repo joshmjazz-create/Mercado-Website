@@ -133,7 +133,10 @@ export default function Music() {
             imageFileUrl = `https://lh3.googleusercontent.com/d/${imageFile.id}`;
           }
           if (audioFile) {
-            audioPreviewUrl = `https://drive.google.com/uc?id=${audioFile.id}&export=download`;
+            console.log('Found audio file:', audioFile.name, audioFile.id);
+            // Try direct Google Drive streaming URL
+            audioPreviewUrl = `https://drive.google.com/uc?id=${audioFile.id}&export=media`;
+            console.log('Audio preview URL:', audioPreviewUrl);
           }
         } else {
           // For other categories, get Spotify cover art
@@ -288,7 +291,11 @@ export default function Music() {
   };
 
   const handlePlayPreview = async (album: Album) => {
-    if (!album.audioPreviewUrl) return;
+    console.log('Playing preview for album:', album.title, 'URL:', album.audioPreviewUrl);
+    if (!album.audioPreviewUrl) {
+      console.log('No audio preview URL available for:', album.title);
+      return;
+    }
     
     if (playingAudio === album.id) {
       // Stop current audio
@@ -311,11 +318,23 @@ export default function Music() {
     
     let audio = audioElements.get(album.id);
     if (!audio) {
+      console.log('Creating new audio element for:', album.title);
       audio = new Audio(album.audioPreviewUrl);
       setAudioElements(prev => new Map(prev.set(album.id, audio!)));
       
+      // Add error handling
+      audio.addEventListener('error', (e) => {
+        console.error('Audio error for', album.title, ':', e);
+        console.error('Audio error details:', audio?.error);
+      });
+      
+      audio.addEventListener('canplay', () => {
+        console.log('Audio can play for:', album.title);
+      });
+      
       // Set up audio event listeners
       audio.addEventListener('loadedmetadata', () => {
+        console.log('Audio metadata loaded for:', album.title, 'Duration:', audio?.duration);
         const startTime = audio!.duration / 3;
         audio!.currentTime = startTime;
         
@@ -613,9 +632,14 @@ export default function Music() {
         {/* Platform Selection Dialog */}
         <Dialog open={showPlatforms} onOpenChange={setShowPlatforms}>
           <DialogContent className="bg-white border-purple-800">
-            <DialogTitle className="text-gray-800 text-center text-xl mb-6">
+            <DialogTitle className="text-gray-800 text-center text-xl mb-4">
               {selectedAlbum?.title}
             </DialogTitle>
+            {/* Album Info in Dialog */}
+            <div className="text-center mb-6 pb-4 border-b border-gray-200">
+              <p className="text-gray-600 text-lg">{selectedAlbum?.artist}</p>
+              <p className="text-gray-500 text-base">{selectedAlbum?.year}</p>
+            </div>
             <div className="grid grid-cols-1 gap-4">
               {selectedAlbum?.links.spotify && (
                 <Button
