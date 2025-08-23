@@ -45,7 +45,7 @@ export default function Bio() {
           section { background-color: #101010; }
         }
         @media (min-width: 768px) {
-          section { background-color: white; }
+          section { background-color: #e5e5e5; }
         }
       `}</style>
       {/* Mobile: Background Image */}
