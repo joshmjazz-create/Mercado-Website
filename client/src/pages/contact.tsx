@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 export default function Contact() {
   return (
     <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto md:flex md:items-center">
-      <div className="container mx-auto px-4 py-8 w-full" style={{ transform: 'translateY(-2in)' }}>
+      <div className="container mx-auto px-4 py-8 w-full md:transform md:translate-y-[-2in]">
         <div className="text-center mb-12 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Contact</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
