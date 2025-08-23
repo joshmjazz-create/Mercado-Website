@@ -25,7 +25,7 @@ export default function Contact() {
                   </a>
                   <div className="text-center">
                     <p className="font-semibold text-purple-400">Email</p>
-                    <p className="text-gray-700 text-lg">joshm.jazz@gmail.com</p>
+                    <p className="text-gray-800 text-lg">joshm.jazz@gmail.com</p>
                   </div>
                 </div>
                 
@@ -38,7 +38,7 @@ export default function Contact() {
                   </a>
                   <div className="text-center">
                     <p className="font-semibold text-purple-400">Phone</p>
-                    <p className="text-gray-700 text-lg">(407) 276-0739</p>
+                    <p className="text-gray-800 text-lg">(407) 276-0739</p>
                   </div>
                 </div>
               </div>
@@ -48,7 +48,7 @@ export default function Contact() {
         
         {/* Social Media Icons at Bottom */}
         <div className="text-center pt-8 border-t border-gray-200 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '600ms' }}>
-          <p className="text-gray-700 mb-6">Follow me on social media</p>
+          <p className="text-gray-800 mb-6">Follow me on social media</p>
           <div className="flex justify-center space-x-8">
             <a 
               href="https://www.facebook.com/share/19eJ712nF4/" 

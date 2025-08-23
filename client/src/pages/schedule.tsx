@@ -114,7 +114,7 @@ export default function Schedule() {
             <div className="bg-gray-100 rounded-lg p-8 max-w-md mx-auto">
               <Calendar className="w-16 h-16 text-purple-400 mx-auto mb-4" />
               <h3 className="text-xl text-gray-800 mb-4">No Upcoming Shows</h3>
-              <p className="text-gray-700">
+              <p className="text-gray-800">
                 Check back soon for upcoming performance dates and venues.
               </p>
             </div>
