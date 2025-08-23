@@ -56,6 +56,7 @@ export default {
         'jazz-green': "var(--jazz-green)",
         'jazz-green-light': "var(--jazz-green-light)",
         'jazz-dark': "var(--jazz-dark)",
+        'jazz-cream': "var(--jazz-cream)",
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
