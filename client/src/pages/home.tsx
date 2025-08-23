@@ -3,19 +3,35 @@ const bgImage = "/assets/Screenshot_20250820_160009_Gallery_1755720047192.jpg";
 
 export default function Home() {
   return (
-    <section className="relative min-h-screen md:h-full flex items-center justify-center" style={{ backgroundColor: '#101010' }}>
+    <section className="relative min-h-screen md:h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: '#101010' }}>
+      {/* Mobile: Background Image */}
       <div 
-        className="absolute inset-0 opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards] bg-cover md:bg-[length:120%] bg-center md:bg-right bg-no-repeat"
+        className="md:hidden absolute inset-0 opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards] bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url(${bgImage})`,
           animationDelay: '0ms'
         }}
       />
       
+      {/* Desktop: Actual Image Element */}
+      <img 
+        src={bgImage}
+        alt="Background"
+        className="hidden md:block absolute opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards] object-cover"
+        style={{
+          animationDelay: '0ms',
+          height: 'calc(100vh + 2in)',
+          width: 'auto',
+          right: '0',
+          top: '-1in',
+          zIndex: 1
+        }}
+      />
+      
 
       
-      <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-400 mb-8 drop-shadow-lg opacity-0 scale-95 animate-in" style={{ 
+      <div className="relative text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
+        <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-800 mb-8 drop-shadow-lg opacity-0 scale-95 animate-in border border-purple-400 border-opacity-40 px-4 py-2 rounded-lg" style={{ 
           animationDelay: '1500ms',
           animationDuration: '1200ms'
         }}>
