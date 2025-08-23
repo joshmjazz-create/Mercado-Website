@@ -48,61 +48,22 @@ export default function Bio() {
           const docFile = data.files?.[0]; // Get first document
           
           if (docFile) {
-            // Use Google Docs API to preserve formatting
             console.log('Attempting to fetch document content for:', docFile.id);
             const docContent = await fetchDocumentContent(docFile.id);
-            
-            if (docContent) {
-              console.log('Bio content loaded from Google Docs with formatting');
-              setContent(docContent);
-            } else {
-              console.log('Failed to load from Google Docs API, trying HTML export to preserve formatting');
-              // Try HTML export to preserve formatting
-              const exportResponse = await fetch(
-                `https://docs.google.com/document/d/${docFile.id}/export?format=html`
-              );
-              
-              if (exportResponse.ok) {
-                const htmlContent = await exportResponse.text();
-                console.log('Bio content loaded from HTML export');
-                // Convert HTML to formatted text
-                const formattedText = convertHtmlToFormattedText(htmlContent);
-                setContent(formattedText);
-              } else {
-                console.log('Using fallback bio content');
-                setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
-
-Throughout his career, Joshua has performed with numerous acclaimed artists and has been featured on *A Legendary Night* and *Impractical Jokers*. His unique style blends traditional jazz elements with contemporary influences, creating a sound that resonates with audiences worldwide.
-
-Joshua continues to perform regularly and is dedicated to sharing his love of jazz with new generations of music enthusiasts.`);
-              }
-            }
+            console.log('Bio content loaded from Google Docs with formatting preserved');
+            setContent(docContent);
           } else {
-            console.log('No documents found in Bio folder, using fallback');
-            setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
-
-Throughout his career, Joshua has performed with numerous acclaimed artists and has been featured on *A Legendary Night* and *Impractical Jokers*. His unique style blends traditional jazz elements with contemporary influences, creating a sound that resonates with audiences worldwide.
-
-Joshua continues to perform regularly and is dedicated to sharing his love of jazz with new generations of music enthusiasts.`);
+            throw new Error('No documents found in Bio folder');
           }
         } else {
           const errorData = await response.json();
           console.error('Bio folder API Error Response:', errorData);
-          console.log('Using fallback bio content');
-          setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
-
-Throughout his career, Joshua has performed with numerous acclaimed artists and has been featured on *A Legendary Night* and *Impractical Jokers*. His unique style blends traditional jazz elements with contemporary influences, creating a sound that resonates with audiences worldwide.
-
-Joshua continues to perform regularly and is dedicated to sharing his love of jazz with new generations of music enthusiasts.`);
+          throw new Error('Failed to access Bio folder');
         }
       } catch (error) {
         console.error('Bio API Error:', error);
-        console.log('Using fallback bio content');
-        setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
-
-Throughout his career, Joshua has performed with numerous acclaimed artists and has been featured on *A Legendary Night* and *Impractical Jokers*. His unique style blends traditional jazz elements with contemporary influences, creating a sound that resonates with audiences worldwide.
-
-Joshua continues to perform regularly and is dedicated to sharing his love of jazz with new generations of music enthusiasts.`);
+        // Don't set any content on error - keep it empty so nothing renders
+        setContent('');
       } finally {
         setIsLoading(false);
       }
@@ -113,65 +74,28 @@ Joshua continues to perform regularly and is dedicated to sharing his love of ja
 
   const fetchDocumentContent = async (docId: string): Promise<string> => {
     try {
-      const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
       console.log('Fetching document with ID:', docId);
+      // Use the public HTML export since the document is publicly accessible
       const response = await fetch(
-        `https://docs.googleapis.com/v1/documents/${docId}?key=${API_KEY}`
+        `https://docs.google.com/document/d/${docId}/export?format=html`
       );
       
-      console.log('Google Docs API response status:', response.status);
+      console.log('Google Docs export response status:', response.status);
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Google Docs API error:', errorText);
-        return '';
+        console.error('Google Docs export error:', errorText);
+        throw new Error('Failed to fetch document');
       }
       
-      const docData = await response.json();
-      console.log('Google Docs structure:', JSON.stringify(docData, null, 2));
-      const content = docData.body?.content || [];
+      const htmlContent = await response.text();
+      console.log('HTML content received, length:', htmlContent.length);
       
-      let text = '';
-      let currentParagraph = '';
-      
-      content.forEach((element: any) => {
-        if (element.paragraph) {
-          // Start a new paragraph
-          currentParagraph = '';
-          
-          element.paragraph.elements?.forEach((elem: any) => {
-            if (elem.textRun) {
-              const textContent = elem.textRun.content;
-              const textStyle = elem.textRun.textStyle || {};
-              
-              console.log('Text content:', textContent, 'Style:', textStyle);
-              
-              // Preserve italics from Google Docs
-              if (textStyle.italic) {
-                currentParagraph += `*${textContent.replace(/\n/g, '')}*`;
-              } else {
-                currentParagraph += textContent.replace(/\n/g, '');
-              }
-            }
-          });
-          
-          // Add paragraph to text with proper spacing
-          if (currentParagraph.trim()) {
-            if (text) {
-              text += '\n\n' + currentParagraph.trim();
-            } else {
-              text = currentParagraph.trim();
-            }
-          }
-        }
-      });
-      
-      console.log('Final processed text:', text);
-      return text.trim();
+      // Convert HTML to formatted text with proper paragraph breaks and italics
+      return convertHtmlToFormattedText(htmlContent);
     } catch (error) {
       console.error('Error fetching document content:', error);
+      throw error; // Re-throw to handle in the calling function
     }
-    
-    return '';
   };
 
   const convertHtmlToFormattedText = (html: string): string => {
@@ -241,16 +165,14 @@ Joshua continues to perform regularly and is dedicated to sharing his love of ja
       {/* Desktop: Content with side image */}
       <div className="hidden md:block h-full bg-jazz-grey overflow-y-auto">
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
-            <h1 className="text-5xl font-bold text-purple-500 mb-6">Biography</h1>
-            <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
-          </div>
-
-          {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+          {!isLoading && content && (
+            <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
+              <h1 className="text-5xl font-bold text-purple-500 mb-6">Biography</h1>
+              <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
             </div>
-          ) : content ? (
+          )}
+
+          {!isLoading && content ? (
             <div className="max-w-6xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
               <div className="flex gap-12 items-center">
                 {/* Bio Content */}
@@ -278,17 +200,15 @@ Joshua continues to perform regularly and is dedicated to sharing his love of ja
 
       {/* Mobile: Content overlay */}
       <div className="md:hidden relative z-10 min-h-screen flex flex-col px-4 py-8">
-        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '1500ms' }}>
-          <h1 className="text-5xl font-bold text-purple-500 mb-6">Biography</h1>
-          <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
-        </div>
+        {!isLoading && content && (
+          <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '1500ms' }}>
+            <h1 className="text-5xl font-bold text-purple-500 mb-6">Biography</h1>
+            <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
+          </div>
+        )}
 
         <div className="flex-1 flex flex-col">
-          {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-            </div>
-          ) : content ? (
+          {!isLoading && content ? (
             <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '2700ms' }}>
               <div className="bg-black bg-opacity-70 rounded-lg p-6 backdrop-blur-sm">
                 <div className="prose prose-base max-w-none text-white leading-relaxed space-y-6">
