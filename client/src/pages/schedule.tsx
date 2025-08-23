@@ -158,6 +158,32 @@ export default function Schedule() {
     cleaned = cleaned.replace(/\s+/g, ' ').trim();
     
     return cleaned;
+  }
+
+  const renderDescriptionWithLinks = (description: string) => {
+    const cleaned = cleanDescription(description);
+    if (!cleaned) return null;
+    
+    // URL regex pattern
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = cleaned.split(urlRegex);
+    
+    return parts.map((part, index) => {
+      if (urlRegex.test(part)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-purple-600 hover:text-purple-800 underline break-all"
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
   };
 
   return (
@@ -289,7 +315,7 @@ export default function Schedule() {
                 
                 {selectedEvent.description && cleanDescription(selectedEvent.description) && (
                   <div className="mt-4 p-3 bg-gray-50 rounded">
-                    <p className="text-gray-700">{cleanDescription(selectedEvent.description)}</p>
+                    <p className="text-gray-700">{renderDescriptionWithLinks(selectedEvent.description)}</p>
                   </div>
                 )}
               </div>
