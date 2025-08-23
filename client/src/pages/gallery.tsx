@@ -154,77 +154,21 @@ export default function Gallery() {
           <div></div>
         )}
 
-        {/* Organized photo layout */}
-        {!isLoading && processedPhotos.length > 0 && (
-          <div className="opacity-0 translate-y-4 animate-in space-y-4" style={{ animationDelay: '400ms' }}>
-            {processedPhotos.map((group, groupIndex) => (
-              <div key={groupIndex} className="mb-4">
-                {group.type === 'group' ? (
-                  <div className="grid grid-cols-2 gap-4 h-80">
-                    {group.items.length === 3 ? (
-                      // 2 horizontal + 1 vertical layout
-                      <>
-                        <div className="space-y-4">
-                          {group.items.filter((item: any) => item.position.includes('left')).map((item: any, idx: number) => (
-                            <div 
-                              key={idx}
-                              className="h-36 cursor-pointer rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
-                              onClick={() => setSelectedPhoto(item.imageUrl)}
-                            >
-                              <img
-                                src={item.imageUrl}
-                                alt={item.name}
-                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                        <div className="h-full">
-                          {group.items.filter((item: any) => item.position === 'right').map((item: any, idx: number) => (
-                            <div 
-                              key={idx}
-                              className="h-full cursor-pointer rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
-                              onClick={() => setSelectedPhoto(item.imageUrl)}
-                            >
-                              <img
-                                src={item.imageUrl}
-                                alt={item.name}
-                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </>
-                    ) : (
-                      // 2 squares side by side
-                      group.items.map((item: any, idx: number) => (
-                        <div 
-                          key={idx}
-                          className="h-full cursor-pointer rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
-                          onClick={() => setSelectedPhoto(item.imageUrl)}
-                        >
-                          <img
-                            src={item.imageUrl}
-                            alt={item.name}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                      ))
-                    )}
-                  </div>
-                ) : (
-                  // Single image
-                  <div 
-                    className="w-full h-64 cursor-pointer rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow mx-auto max-w-md"
-                    onClick={() => setSelectedPhoto(group.item.imageUrl)}
-                  >
-                    <img
-                      src={group.item.imageUrl}
-                      alt={group.item.name}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                )}
+        {/* Simple masonry layout */}
+        {!isLoading && photos.length > 0 && (
+          <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+            {photos.map((photo, index) => (
+              <div 
+                key={photo.id}
+                className="break-inside-avoid mb-4 cursor-pointer rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group"
+                onClick={() => setSelectedPhoto(photo.imageUrl)}
+              >
+                <img
+                  src={photo.imageUrl}
+                  alt={photo.name}
+                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
               </div>
             ))}
           </div>
@@ -238,8 +182,11 @@ export default function Gallery() {
           >
             <div className="relative max-w-4xl max-h-4xl p-4">
               <button
-                onClick={() => setSelectedPhoto(null)}
-                className="absolute -top-2 -right-2 text-white hover:text-purple-500 text-3xl font-bold bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPhoto(null);
+                }}
+                className="absolute top-4 right-4 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center z-10 transition-colors"
               >
                 ×
               </button>
