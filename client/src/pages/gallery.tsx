@@ -23,9 +23,10 @@ export default function Gallery() {
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
-        const PHOTOS_FOLDER_ID = 'your-gallery-folder-id'; // Replace with actual Gallery folder ID
+        const PHOTOS_FOLDER_ID = '1OLyT13wSRVAsUSI0rCFxwiLSQ_0MrmHz';
+        const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
         const response = await fetch(
-          `https://www.googleapis.com/drive/v3/files?q='${PHOTOS_FOLDER_ID}'+in+parents+and+mimeType+contains+'image'&key=${import.meta.env.VITE_GOOGLE_API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
+          `https://www.googleapis.com/drive/v3/files?q='${PHOTOS_FOLDER_ID}'+in+parents+and+mimeType+contains+'image'&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
         );
         
         if (response.ok) {
@@ -159,7 +160,7 @@ export default function Gallery() {
                       // 2 horizontal + 1 vertical layout
                       <>
                         <div className="space-y-4">
-                          {group.items.filter(item => item.position.includes('left')).map((item, idx) => (
+                          {group.items.filter((item: any) => item.position.includes('left')).map((item: any, idx: number) => (
                             <div 
                               key={idx}
                               className="h-36 cursor-pointer rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
@@ -174,7 +175,7 @@ export default function Gallery() {
                           ))}
                         </div>
                         <div className="h-full">
-                          {group.items.filter(item => item.position === 'right').map((item, idx) => (
+                          {group.items.filter((item: any) => item.position === 'right').map((item: any, idx: number) => (
                             <div 
                               key={idx}
                               className="h-full cursor-pointer rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
@@ -191,7 +192,7 @@ export default function Gallery() {
                       </>
                     ) : (
                       // 2 squares side by side
-                      group.items.map((item, idx) => (
+                      group.items.map((item: any, idx: number) => (
                         <div 
                           key={idx}
                           className="h-full cursor-pointer rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"

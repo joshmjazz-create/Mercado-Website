@@ -33,11 +33,12 @@ export default function Bio() {
   useEffect(() => {
     const fetchBioContent = async () => {
       try {
-        const BIO_FOLDER_ID = 'your-bio-folder-id'; // Replace with actual Bio folder ID
+        const BIO_FOLDER_ID = '1OLyT13wSRVAsUSI0rCFxwiLSQ_0MrmHz';
+        const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
         
         // Get files in Bio folder
         const response = await fetch(
-          `https://www.googleapis.com/drive/v3/files?q='${BIO_FOLDER_ID}'+in+parents+and+mimeType='application/vnd.google-apps.document'&key=${import.meta.env.VITE_GOOGLE_API_KEY}&fields=files(id,name)`
+          `https://www.googleapis.com/drive/v3/files?q='${BIO_FOLDER_ID}'+in+parents+and+mimeType='application/vnd.google-apps.document'&key=${API_KEY}&fields=files(id,name)`
         );
         
         if (response.ok) {
@@ -62,8 +63,9 @@ export default function Bio() {
 
   const fetchDocumentContent = async (docId: string): Promise<string> => {
     try {
+      const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
       const response = await fetch(
-        `https://docs.googleapis.com/v1/documents/${docId}?key=${import.meta.env.VITE_GOOGLE_API_KEY}`
+        `https://docs.googleapis.com/v1/documents/${docId}?key=${API_KEY}`
       );
       
       if (response.ok) {

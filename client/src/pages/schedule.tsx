@@ -29,8 +29,9 @@ export default function Schedule() {
     const fetchEvents = async () => {
       try {
         const CALENDAR_ID = 'joshm.jazz@gmail.com';
+        const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
         const response = await fetch(
-          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?key=${import.meta.env.VITE_GOOGLE_API_KEY}&timeMin=${new Date().toISOString()}&singleEvents=true&orderBy=startTime&maxResults=50`
+          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?key=${API_KEY}&timeMin=${new Date().toISOString()}&singleEvents=true&orderBy=startTime&maxResults=50`
         );
         
         if (response.ok) {

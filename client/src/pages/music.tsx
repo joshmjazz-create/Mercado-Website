@@ -31,9 +31,10 @@ export default function Music() {
   useEffect(() => {
     const fetchMusicData = async () => {
       try {
-        const MUSIC_FOLDER_ID = 'your-music-folder-id'; // Replace with actual Music folder ID
+        const MUSIC_FOLDER_ID = '1OLyT13wSRVAsUSI0rCFxwiLSQ_0MrmHz';
+        const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
         const response = await fetch(
-          `https://www.googleapis.com/drive/v3/files?q='${MUSIC_FOLDER_ID}'+in+parents+and+mimeType='application/vnd.google-apps.folder'&key=${import.meta.env.VITE_GOOGLE_API_KEY}&fields=files(id,name)`
+          `https://www.googleapis.com/drive/v3/files?q='${MUSIC_FOLDER_ID}'+in+parents+and+mimeType='application/vnd.google-apps.folder'&key=${API_KEY}&fields=files(id,name)`
         );
         
         if (response.ok) {
@@ -62,8 +63,9 @@ export default function Music() {
 
   const fetchAlbumsInCategory = async (categoryFolderId: string, categoryName: string): Promise<Album[]> => {
     try {
+      const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
       const response = await fetch(
-        `https://www.googleapis.com/drive/v3/files?q='${categoryFolderId}'+in+parents+and+mimeType='application/vnd.google-apps.folder'&key=${import.meta.env.VITE_GOOGLE_API_KEY}&fields=files(id,name)`
+        `https://www.googleapis.com/drive/v3/files?q='${categoryFolderId}'+in+parents+and+mimeType='application/vnd.google-apps.folder'&key=${API_KEY}&fields=files(id,name)`
       );
       
       if (response.ok) {
@@ -90,8 +92,9 @@ export default function Music() {
 
   const fetchAlbumData = async (albumFolderId: string, folderName: string, categoryName: string): Promise<Album | null> => {
     try {
+      const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
       const filesResponse = await fetch(
-        `https://www.googleapis.com/drive/v3/files?q='${albumFolderId}'+in+parents&key=${import.meta.env.VITE_GOOGLE_API_KEY}&fields=files(id,name,mimeType,webViewLink)`
+        `https://www.googleapis.com/drive/v3/files?q='${albumFolderId}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink)`
       );
       
       if (filesResponse.ok) {
@@ -155,8 +158,9 @@ export default function Music() {
 
   const fetchDocumentContent = async (docId: string): Promise<any> => {
     try {
+      const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
       const response = await fetch(
-        `https://docs.googleapis.com/v1/documents/${docId}?key=${import.meta.env.VITE_GOOGLE_API_KEY}`
+        `https://docs.googleapis.com/v1/documents/${docId}?key=${API_KEY}`
       );
       
       if (response.ok) {

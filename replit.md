@@ -29,6 +29,7 @@ A professional jazz musician website for Joshua Mercado featuring:
 - Database Schema: Albums table with platform URLs (Spotify, Apple Music, YouTube)
 
 ## Recent Changes
+- **August 23, 2025**: Updated all API calls to use hardcoded credentials for static deployment (API Key: AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI, Google Drive/Docs/Calendar integration)
 - **August 23, 2025**: Enhanced Schedule page with calendar grid view, event detail modals, and double-tap functionality without text highlighting
 - **August 23, 2025**: Redesigned Music page layout with 2x4 responsive grid (mobile/desktop), "My Music" section without title at top, proper audio preview system with loading states for Upcoming albums
 - **August 22, 2025**: Fixed blank screen deployment issues with comprehensive error handling and diagnostics
