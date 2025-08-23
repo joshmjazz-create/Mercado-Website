@@ -96,9 +96,9 @@ export default function Schedule() {
   };
 
   return (
-    <section className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
+    <section className="h-screen bg-white overflow-y-auto">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-800 mb-6">Schedule</h1>
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>

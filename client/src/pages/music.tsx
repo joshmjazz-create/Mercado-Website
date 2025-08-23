@@ -37,7 +37,7 @@ export default function Music() {
     if (albums.length === 0) {
       return (
         <div 
-          className="opacity-0 translate-y-4 animate-in mb-16" 
+          className="opacity-0 translate-y-4 animate-in mb-8" 
           style={{ animationDelay: `${delay}ms` }}
         >
           {showTitle && <h2 className="text-2xl font-semibold text-gray-400 mb-8 text-left underline">{title}</h2>}
@@ -52,7 +52,7 @@ export default function Music() {
 
     return (
       <div 
-        className="opacity-0 translate-y-4 animate-in mb-16" 
+        className="opacity-0 translate-y-4 animate-in mb-8" 
         style={{ animationDelay: `${delay}ms` }}
       >
         {showTitle && <h2 className="text-2xl font-semibold text-gray-400 mb-8 text-left underline">{title}</h2>}
@@ -80,9 +80,9 @@ export default function Music() {
   const upcomingAlbums = staticAlbums.filter(album => album.category === 'upcoming');
 
   return (
-    <section className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
+    <section className="h-screen bg-white overflow-y-auto">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-800 mb-6">Music</h1>
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>

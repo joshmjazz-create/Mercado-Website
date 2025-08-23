@@ -49,9 +49,9 @@ export default function Bio() {
       </div>
 
       {/* Desktop: Content with side image */}
-      <div className="hidden md:block min-h-screen bg-gradient-to-br from-jazz-cream via-white to-jazz-cream">
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
+      <div className="hidden md:block h-screen bg-gradient-to-br from-jazz-cream via-white to-jazz-cream overflow-y-auto">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
             <h1 className="text-5xl font-bold text-purple-800 mb-6">Biography</h1>
             <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
           </div>

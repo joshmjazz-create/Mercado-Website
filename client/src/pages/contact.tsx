@@ -4,16 +4,16 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function Contact() {
   return (
-    <section className="min-h-screen bg-gradient-to-br from-jazz-cream via-white to-jazz-cream">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
+    <section className="h-screen bg-gradient-to-br from-jazz-cream via-white to-jazz-cream overflow-y-auto">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-800 mb-6">Contact</h1>
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
 
         <div className="max-w-2xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
           {/* Contact Information */}
-          <Card className="shadow-xl border-0 overflow-hidden mb-16">
+          <Card className="shadow-xl border-0 overflow-hidden mb-8">
             <CardContent className="p-8">
               <div className="space-y-8">
                 <div className="flex flex-col sm:flex-row items-center justify-center">

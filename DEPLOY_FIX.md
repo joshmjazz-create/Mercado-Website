@@ -24,5 +24,11 @@ Images not loading on GitHub Pages deployment due to absolute vs relative path c
 2. Deploy via GitHub Actions
 3. Verify images load correctly on live site
 
-Date: August 22, 2025
-Status: Ready for deployment
+## Additional Updates (August 23, 2025)
+1. Fixed home page background image positioning (bg-top instead of bg-center)
+2. Replaced FlexList Features section with iOS notice explaining Android-only availability
+3. Updated all desktop pages to use h-screen with overflow-y-auto for proper viewport fitting
+4. Reduced padding and margins across all pages to eliminate unnecessary scrolling
+
+Date: August 22-23, 2025
+Status: Fully optimized and ready for deployment

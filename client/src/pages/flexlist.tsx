@@ -7,8 +7,8 @@ const flexListLogo = "./assets/file_00000000293061f5b6c62d71c7ed0c97_17558243549
 
 export default function FlexList() {
   return (
-    <div className="min-h-screen bg-slate-800 text-white" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-      <div className="container mx-auto px-4 py-16 max-w-4xl">
+    <div className="h-screen bg-slate-800 text-white overflow-y-auto" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header Section */}
         <div className="text-center mb-16 animate-in slide-in-from-bottom-8 duration-1000">
           <div className="mb-8 flex justify-center animate-in fade-in duration-1000 delay-300">
@@ -50,25 +50,20 @@ export default function FlexList() {
           </div>
         </div>
 
-        {/* Features Section */}
+        {/* iOS Notice Section */}
         <div className="text-center animate-in slide-in-from-bottom-6 duration-800 delay-1300">
-          <h2 className="text-3xl font-normal text-white mb-8">Features</h2>
+          <h2 className="text-3xl font-normal text-white mb-8">iOS Users</h2>
           
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="max-w-2xl mx-auto">
             <Card className="bg-slate-700 border-slate-600">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-normal text-teal-400 mb-4">Skill-Based Organization</h3>
-                <p className="text-gray-300 font-normal leading-relaxed">
-                  Organize your music library based on your knowledge level. Perfect for musicians who want to track their learning progress.
+              <CardContent className="p-8">
+                <h3 className="text-xl font-normal text-yellow-400 mb-6">Currently Android Only</h3>
+                <p className="text-gray-300 font-normal leading-relaxed mb-4">
+                  FlexList is currently available only on Android. While I would love to bring it to iOS, 
+                  rewriting the entire application for iOS would be extremely time-consuming.
                 </p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-slate-700 border-slate-600">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-normal text-teal-400 mb-4">Smart Categorization</h3>
                 <p className="text-gray-300 font-normal leading-relaxed">
-                  Automatically categorize songs into different skill levels to help you focus on appropriate material for your current abilities.
+                  For now, the app remains Android-exclusive. Thank you for your understanding!
                 </p>
               </CardContent>
             </Card>
