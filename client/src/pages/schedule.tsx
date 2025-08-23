@@ -110,15 +110,8 @@ export default function Schedule() {
         )}
 
         {!loading && events.length === 0 && (
-          <div className="text-center py-20 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-            <div className="bg-jazz-grey rounded-lg p-8 max-w-md mx-auto">
-              <Calendar className="w-16 h-16 text-purple-500 mx-auto mb-4" />
-              <h3 className="text-xl text-gray-800 mb-4">No Upcoming Shows</h3>
-              <p className="text-gray-800">
-                Check back soon for upcoming performance dates and venues.
-              </p>
-            </div>
-          </div>
+          // Don't show placeholder - just empty space when no events
+          <div></div>
         )}
 
         {!loading && events.length > 0 && (
