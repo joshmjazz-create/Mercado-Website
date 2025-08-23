@@ -671,11 +671,10 @@ export default function Music() {
         {/* Platform Selection Dialog */}
         <Dialog open={showPlatforms} onOpenChange={setShowPlatforms}>
           <DialogContent className="bg-white border-purple-800">
-            <DialogTitle className="text-gray-800 text-center text-xl mb-4">
-              {selectedAlbum?.title}
-            </DialogTitle>
-            {/* Album Info in Dialog */}
             <div className="text-center mb-6 pb-4 border-b border-gray-200">
+              <DialogTitle className="text-gray-800 text-xl mb-2">
+                {selectedAlbum?.title}
+              </DialogTitle>
               <p className="text-gray-600 text-lg mb-1">{selectedAlbum?.artist}</p>
               <p className="text-gray-500 text-base">{selectedAlbum?.year}</p>
             </div>
