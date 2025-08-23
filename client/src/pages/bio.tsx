@@ -63,8 +63,8 @@ export default function Bio() {
       <div className="hidden md:block h-full bg-gradient-to-br from-jazz-cream via-white to-jazz-cream overflow-y-auto">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
-            <h1 className="text-5xl font-bold text-purple-800 mb-6">Biography</h1>
-            <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
+            <h1 className="text-5xl font-bold text-purple-400 mb-6">Biography</h1>
+            <div className="w-24 h-1 bg-purple-400 mx-auto"></div>
           </div>
 
           <div className="max-w-6xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
@@ -94,8 +94,8 @@ export default function Bio() {
       {/* Mobile: Content overlay */}
       <div className="md:hidden relative z-10 min-h-screen flex flex-col justify-center px-4 py-16">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '1500ms' }}>
-          <h1 className="text-5xl font-bold text-purple-800 mb-6">Biography</h1>
-          <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
+          <h1 className="text-5xl font-bold text-purple-400 mb-6">Biography</h1>
+          <div className="w-24 h-1 bg-purple-400 mx-auto"></div>
         </div>
 
         <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '2700ms' }}>
