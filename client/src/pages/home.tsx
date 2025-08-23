@@ -32,12 +32,11 @@ export default function Home() {
 
       
       <div className="relative text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
-        <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-800 mb-8 drop-shadow-lg opacity-0 scale-95 animate-in" style={{ 
+        <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-400 mb-8 drop-shadow-lg opacity-0 scale-95 animate-in" style={{ 
           animationDelay: '1500ms',
           animationDuration: '1200ms',
-          WebkitTextStroke: '1px rgba(147, 51, 234, 0.4)',
-          textStroke: '1px rgba(147, 51, 234, 0.4)'
-        }}>
+          WebkitTextStroke: '1px rgba(147, 51, 234, 0.4)'
+        } as React.CSSProperties}>
           Joshua Mercado
         </h1>
         <h2 className="text-3xl md:text-4xl text-white font-light drop-shadow-lg opacity-0 translate-y-4 animate-in" style={{ 
