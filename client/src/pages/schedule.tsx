@@ -256,7 +256,7 @@ export default function Schedule() {
 
         {/* Event Detail Modal */}
         <Dialog open={showEventModal} onOpenChange={setShowEventModal}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md bg-white">
             <DialogTitle className="text-xl font-bold text-gray-800 mb-4">
               {selectedEvent?.summary}
             </DialogTitle>
