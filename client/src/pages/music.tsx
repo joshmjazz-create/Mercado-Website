@@ -263,6 +263,7 @@ export default function Music() {
       const currentAudio = audioElements.get(playingAudio);
       if (currentAudio) {
         currentAudio.pause();
+        setPlayingAudio(null);
       }
     }
     
@@ -271,7 +272,7 @@ export default function Music() {
       audio = new Audio(album.audioPreviewUrl);
       setAudioElements(prev => new Map(prev.set(album.id, audio!)));
       
-      // Set up audio for preview (start at 1/3, play for 15 seconds with fade)
+      // Set up audio event listeners
       audio.addEventListener('loadedmetadata', () => {
         const startTime = audio!.duration / 3;
         audio!.currentTime = startTime;
@@ -300,6 +301,11 @@ export default function Music() {
             }
           }, 100);
         }, 15000);
+      });
+
+      // Reset state when audio ends
+      audio.addEventListener('ended', () => {
+        setPlayingAudio(null);
       });
     } else {
       const startTime = audio.duration / 3;
@@ -423,9 +429,142 @@ export default function Music() {
 
         {!isLoading && (
           <>
-            {renderAlbumSection("My Music", originalAlbums, 400, false)}
-            {renderAlbumSection("Featured On", featuredAlbums, 600)}
-            {renderAlbumSection("Upcoming", upcomingAlbums, 800)}
+            {/* My Music Section - No title, displayed first */}
+            {originalAlbums.length > 0 && (
+              <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '400ms' }}>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {originalAlbums.map((album, index) => (
+                    <div
+                      key={`${album.title}-${index}`}
+                      className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                      onClick={() => handleAlbumClick(album)}
+                    >
+                      <div className="bg-gray-300 rounded-lg shadow-lg overflow-hidden border aspect-square flex flex-col">
+                        {/* Album Cover */}
+                        <div className="flex-1 relative">
+                          {album.coverImageUrl ? (
+                            <img 
+                              src={album.coverImageUrl} 
+                              alt={album.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-400 flex items-center justify-center">
+                              <span className="text-gray-600 text-sm">No Cover</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Album Info */}
+                        <div className="p-3 bg-gray-300">
+                          <h3 className="text-sm font-bold text-gray-800 mb-1 truncate">{album.title}</h3>
+                          <p className="text-gray-700 text-xs truncate">{album.artist}</p>
+                          <p className="text-gray-600 text-xs">{album.year}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Featured On Section */}
+            {featuredAlbums.length > 0 && (
+              <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '600ms' }}>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-8 text-left underline decoration-purple-500">Featured On</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {featuredAlbums.map((album, index) => (
+                    <div
+                      key={`${album.title}-${index}`}
+                      className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                      onClick={() => handleAlbumClick(album)}
+                    >
+                      <div className="bg-gray-300 rounded-lg shadow-lg overflow-hidden border aspect-square flex flex-col">
+                        {/* Album Cover */}
+                        <div className="flex-1 relative">
+                          {album.coverImageUrl ? (
+                            <img 
+                              src={album.coverImageUrl} 
+                              alt={album.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-400 flex items-center justify-center">
+                              <span className="text-gray-600 text-sm">No Cover</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Album Info */}
+                        <div className="p-3 bg-gray-300">
+                          <h3 className="text-sm font-bold text-gray-800 mb-1 truncate">{album.title}</h3>
+                          <p className="text-gray-700 text-xs truncate">{album.artist}</p>
+                          <p className="text-gray-600 text-xs">{album.year}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Upcoming Section */}
+            {upcomingAlbums.length > 0 && (
+              <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '800ms' }}>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-8 text-left underline decoration-purple-500">Upcoming</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {upcomingAlbums.map((album, index) => (
+                    <div
+                      key={`${album.title}-${index}`}
+                      className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                      onClick={() => handlePlayPreview(album)}
+                    >
+                      <div className="bg-gray-300 rounded-lg shadow-lg overflow-hidden border aspect-square flex flex-col">
+                        {/* Album Cover */}
+                        <div className="flex-1 relative">
+                          {album.imageFileUrl ? (
+                            <img 
+                              src={album.imageFileUrl} 
+                              alt={album.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-400 flex items-center justify-center">
+                              <span className="text-gray-600 text-sm">No Cover</span>
+                            </div>
+                          )}
+                          
+                          {/* Loading/Play/Pause overlay for audio preview */}
+                          {album.audioPreviewUrl && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              {playingAudio === album.id ? (
+                                <div className="bg-black bg-opacity-50 rounded-full p-3">
+                                  <Pause className="w-8 h-8 text-white" />
+                                </div>
+                              ) : (
+                                <div className="bg-black bg-opacity-50 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Play className="w-8 h-8 text-white" />
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Album Info */}
+                        <div className="p-3 bg-gray-300">
+                          <h3 className="text-sm font-bold text-gray-800 mb-1 truncate">{album.title}</h3>
+                          <p className="text-gray-700 text-xs truncate">{album.artist}</p>
+                          <p className="text-gray-600 text-xs mb-1">{album.year}</p>
+                          {album.audioPreviewUrl && (
+                            <p className="text-purple-600 text-xs font-medium">Preview Available</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         )}
 

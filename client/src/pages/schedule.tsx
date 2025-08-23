@@ -185,8 +185,9 @@ export default function Schedule() {
               </button>
               
               <h2 
-                className="text-2xl font-bold text-purple-500 cursor-pointer text-center flex-1"
+                className="text-2xl font-bold text-purple-500 cursor-pointer text-center flex-1 select-none hover:text-purple-400 active:text-purple-600 transition-colors"
                 onDoubleClick={goToCurrentMonth}
+                style={{ userSelect: 'none' }}
               >
                 {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
               </h2>

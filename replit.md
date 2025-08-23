@@ -29,6 +29,8 @@ A professional jazz musician website for Joshua Mercado featuring:
 - Database Schema: Albums table with platform URLs (Spotify, Apple Music, YouTube)
 
 ## Recent Changes
+- **August 23, 2025**: Enhanced Schedule page with calendar grid view, event detail modals, and double-tap functionality without text highlighting
+- **August 23, 2025**: Redesigned Music page layout with 2x4 responsive grid (mobile/desktop), "My Music" section without title at top, proper audio preview system with loading states for Upcoming albums
 - **August 22, 2025**: Fixed blank screen deployment issues with comprehensive error handling and diagnostics
 - **August 2025**: Restructured for GitHub Actions deployment with pure client-side Google API calls
 - Removed all third-party service dependencies (Vercel, Netlify)
