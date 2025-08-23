@@ -671,6 +671,22 @@ export default function Music() {
         {/* Platform Selection Dialog */}
         <Dialog open={showPlatforms} onOpenChange={setShowPlatforms}>
           <DialogContent className="bg-white border-purple-800">
+            {/* Album Cover */}
+            <div className="flex justify-center mb-6">
+              {selectedAlbum?.coverImageUrl || selectedAlbum?.imageFileUrl ? (
+                <img 
+                  src={selectedAlbum.coverImageUrl || selectedAlbum.imageFileUrl} 
+                  alt={selectedAlbum.title}
+                  className="w-48 h-48 object-cover rounded-lg shadow-lg"
+                />
+              ) : (
+                <div className="w-48 h-48 bg-gray-400 flex items-center justify-center rounded-lg shadow-lg">
+                  <span className="text-gray-600">No Cover</span>
+                </div>
+              )}
+            </div>
+            
+            {/* Album Info */}
             <div className="text-center mb-6 pb-4 border-b border-gray-200">
               <DialogTitle className="text-gray-800 text-xl mb-2">
                 {selectedAlbum?.title}
