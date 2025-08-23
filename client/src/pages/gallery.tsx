@@ -130,7 +130,7 @@ export default function Gallery() {
   };
 
   return (
-    <section className="min-h-screen h-screen bg-jazz-grey overflow-y-auto">
+    <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Gallery</h1>
