@@ -5,10 +5,13 @@ export default function Home() {
   return (
     <section className="relative min-h-screen md:h-full flex items-center justify-center bg-black">
       <div 
-        className="absolute inset-0 bg-cover bg-top opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards]" 
+        className="absolute inset-0 opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards]" 
         style={{
           backgroundImage: `url(${bgImage})`,
-          animationDelay: '0ms'
+          animationDelay: '0ms',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat'
         }}
       />
       
