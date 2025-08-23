@@ -42,7 +42,7 @@ export default function Music() {
         >
           {showTitle && <h2 className="text-2xl font-semibold text-gray-400 mb-8 text-left underline">{title}</h2>}
           <div className="bg-gray-100 rounded-lg p-8 text-center">
-            <p className="text-gray-600">
+            <p className="text-gray-700">
               Music catalog will display albums when available.
             </p>
           </div>
@@ -65,8 +65,8 @@ export default function Music() {
             >
               <div className="bg-white rounded-lg shadow-lg p-6 text-center h-64 flex flex-col justify-center border">
                 <h3 className="text-xl font-bold text-gray-800 mb-2">{album.title}</h3>
-                <p className="text-gray-600 mb-1">{album.artist}</p>
-                <p className="text-gray-500 text-sm">{album.year}</p>
+                <p className="text-gray-700 mb-1">{album.artist}</p>
+                <p className="text-gray-600 text-sm">{album.year}</p>
               </div>
             </div>
           ))}
@@ -80,7 +80,7 @@ export default function Music() {
   const upcomingAlbums = staticAlbums.filter(album => album.category === 'upcoming');
 
   return (
-    <section className="min-h-screen md:h-full bg-jazz-cream md:overflow-y-auto">
+    <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-400 mb-6">Music</h1>

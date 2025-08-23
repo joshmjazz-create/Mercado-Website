@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function Contact() {
   return (
-    <section className="min-h-screen md:h-full bg-gradient-to-br from-jazz-cream via-white to-jazz-cream md:overflow-y-auto md:flex md:items-center">
+    <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto md:flex md:items-center">
       <div className="container mx-auto px-4 py-8 w-full" style={{ transform: 'translateY(-2in)' }}>
         <div className="text-center mb-12 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-400 mb-6">Contact</h1>
@@ -25,7 +25,7 @@ export default function Contact() {
                   </a>
                   <div className="text-center">
                     <p className="font-semibold text-purple-400">Email</p>
-                    <p className="text-gray-600 text-lg">joshm.jazz@gmail.com</p>
+                    <p className="text-gray-700 text-lg">joshm.jazz@gmail.com</p>
                   </div>
                 </div>
                 
@@ -38,7 +38,7 @@ export default function Contact() {
                   </a>
                   <div className="text-center">
                     <p className="font-semibold text-purple-400">Phone</p>
-                    <p className="text-gray-600 text-lg">(407) 276-0739</p>
+                    <p className="text-gray-700 text-lg">(407) 276-0739</p>
                   </div>
                 </div>
               </div>
@@ -48,7 +48,7 @@ export default function Contact() {
         
         {/* Social Media Icons at Bottom */}
         <div className="text-center pt-8 border-t border-gray-200 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '600ms' }}>
-          <p className="text-gray-600 mb-6">Follow me on social media</p>
+          <p className="text-gray-700 mb-6">Follow me on social media</p>
           <div className="flex justify-center space-x-8">
             <a 
               href="https://www.facebook.com/share/19eJ712nF4/" 

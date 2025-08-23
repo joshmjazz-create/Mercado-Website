@@ -96,7 +96,7 @@ export default function Schedule() {
   };
 
   return (
-    <section className="min-h-screen md:h-full bg-jazz-cream md:overflow-y-auto">
+    <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-400 mb-6">Schedule</h1>
@@ -114,7 +114,7 @@ export default function Schedule() {
             <div className="bg-gray-100 rounded-lg p-8 max-w-md mx-auto">
               <Calendar className="w-16 h-16 text-purple-400 mx-auto mb-4" />
               <h3 className="text-xl text-gray-800 mb-4">No Upcoming Shows</h3>
-              <p className="text-gray-600">
+              <p className="text-gray-700">
                 Check back soon for upcoming performance dates and venues.
               </p>
             </div>
