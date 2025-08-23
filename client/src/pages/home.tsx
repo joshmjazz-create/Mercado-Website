@@ -12,11 +12,7 @@ export default function Home() {
         }}
       />
       
-      {/* Desktop gradient overlay */}
-      <div className="hidden md:block absolute inset-0 opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards]" style={{ 
-        background: 'linear-gradient(to bottom, transparent 0%, transparent 60%, #101010 100%)',
-        animationDelay: '0ms' 
-      }}></div>
+
       
       <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-400 mb-8 drop-shadow-lg opacity-0 scale-95 animate-in" style={{ 
