@@ -52,18 +52,16 @@ export default function FlexList() {
 
         {/* iOS Notice Section */}
         <div className="text-center animate-in slide-in-from-bottom-6 duration-800 delay-1300">
-          <h2 className="text-3xl font-normal text-white mb-8">iOS Users</h2>
-          
           <div className="max-w-2xl mx-auto">
             <Card className="bg-slate-700 border-slate-600">
               <CardContent className="p-8">
-                <h3 className="text-xl font-normal text-yellow-400 mb-6">Currently Android Only</h3>
+                <h3 className="text-xl font-normal text-gray-300 mb-6">Currently Developing Android Only</h3>
                 <p className="text-gray-300 font-normal leading-relaxed mb-4">
-                  FlexList is currently available only on Android. While I would love to bring it to iOS, 
+                  Flexzlist will be available only on Android. While I would love to bring it to iOS, 
                   rewriting the entire application for iOS would be extremely time-consuming.
                 </p>
                 <p className="text-gray-300 font-normal leading-relaxed">
-                  For now, the app remains Android-exclusive. Thank you for your understanding!
+                  For now, the app will be Android-exclusive for the foreseeable future. Thank you for your understanding!
                 </p>
               </CardContent>
             </Card>

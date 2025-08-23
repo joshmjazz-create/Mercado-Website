@@ -3,6 +3,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(2rem);
+  }
+  to {
+    opacity: 0.4;
+    transform: translateX(0);
+  }
+}
+
 @keyframes animate-in {
   from {
     opacity: 0;
