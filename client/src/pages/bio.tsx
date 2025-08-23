@@ -49,18 +49,31 @@ export default function Bio() {
           
           if (docFile) {
             // Use Google Docs API to preserve formatting
+            console.log('Attempting to fetch document content for:', docFile.id);
             const docContent = await fetchDocumentContent(docFile.id);
             
             if (docContent) {
               console.log('Bio content loaded from Google Docs with formatting');
               setContent(docContent);
             } else {
-              console.log('Using fallback bio content');
-              setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
+              console.log('Failed to load from Google Docs API, trying plain text export');
+              // Fallback to plain text export
+              const exportResponse = await fetch(
+                `https://docs.google.com/document/d/${docFile.id}/export?format=txt`
+              );
+              
+              if (exportResponse.ok) {
+                const textContent = await exportResponse.text();
+                console.log('Bio content loaded from plain text export');
+                setContent(textContent);
+              } else {
+                console.log('Using fallback bio content');
+                setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
 
 Throughout his career, Joshua has performed with numerous acclaimed artists and has been featured on *A Legendary Night* and *Impractical Jokers*. His unique style blends traditional jazz elements with contemporary influences, creating a sound that resonates with audiences worldwide.
 
 Joshua continues to perform regularly and is dedicated to sharing his love of jazz with new generations of music enthusiasts.`);
+              }
             }
           } else {
             console.log('No documents found in Bio folder, using fallback');
