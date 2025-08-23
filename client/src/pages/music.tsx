@@ -26,6 +26,7 @@ export default function Music() {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
+  const [loadingAudio, setLoadingAudio] = useState<string | null>(null);
   const [audioElements, setAudioElements] = useState<Map<string, HTMLAudioElement>>(new Map());
 
   useEffect(() => {
@@ -134,8 +135,8 @@ export default function Music() {
           }
           if (audioFile) {
             console.log('Found audio file:', audioFile.name, audioFile.id);
-            // Try direct Google Drive streaming URL
-            audioPreviewUrl = `https://drive.google.com/uc?id=${audioFile.id}&export=media`;
+            // Use Google Drive API download endpoint with authentication
+            audioPreviewUrl = `https://www.googleapis.com/drive/v3/files/${audioFile.id}?alt=media&key=AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI`;
             console.log('Audio preview URL:', audioPreviewUrl);
           }
         } else {
@@ -297,6 +298,8 @@ export default function Music() {
       return;
     }
     
+    setLoadingAudio(album.id);
+    
     if (playingAudio === album.id) {
       // Stop current audio
       const audio = audioElements.get(album.id);
@@ -326,10 +329,13 @@ export default function Music() {
       audio.addEventListener('error', (e) => {
         console.error('Audio error for', album.title, ':', e);
         console.error('Audio error details:', audio?.error);
+        setLoadingAudio(null);
+        setPlayingAudio(null);
       });
       
       audio.addEventListener('canplay', () => {
         console.log('Audio can play for:', album.title);
+        setLoadingAudio(null);
       });
       
       // Set up audio event listeners
@@ -598,7 +604,11 @@ export default function Music() {
                           {/* Loading/Play/Pause overlay for audio preview */}
                           {album.audioPreviewUrl && (
                             <div className="absolute inset-0 flex items-center justify-center">
-                              {playingAudio === album.id ? (
+                              {loadingAudio === album.id ? (
+                                <div className="bg-black bg-opacity-50 rounded-full p-3">
+                                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                                </div>
+                              ) : playingAudio === album.id ? (
                                 <div className="bg-black bg-opacity-50 rounded-full p-3">
                                   <Pause className="w-8 h-8 text-white" />
                                 </div>
@@ -637,7 +647,7 @@ export default function Music() {
             </DialogTitle>
             {/* Album Info in Dialog */}
             <div className="text-center mb-6 pb-4 border-b border-gray-200">
-              <p className="text-gray-600 text-lg">{selectedAlbum?.artist}</p>
+              <p className="text-gray-600 text-lg mb-1">{selectedAlbum?.artist}</p>
               <p className="text-gray-500 text-base">{selectedAlbum?.year}</p>
             </div>
             <div className="grid grid-cols-1 gap-4">
