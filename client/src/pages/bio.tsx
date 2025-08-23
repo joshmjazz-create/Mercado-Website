@@ -127,13 +127,11 @@ export default function Bio() {
             <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
           </div>
 
-          {isLoading && (
+          {isLoading ? (
             <div className="flex justify-center items-center py-20">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
             </div>
-          )}
-
-          {!isLoading && content && (
+          ) : content ? (
             <div className="max-w-6xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
               <div className="flex gap-12 items-center">
                 {/* Bio Content */}
@@ -155,7 +153,7 @@ export default function Bio() {
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -166,13 +164,11 @@ export default function Bio() {
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
 
-        {isLoading && (
+        {isLoading ? (
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
           </div>
-        )}
-
-        {!isLoading && content && (
+        ) : content ? (
           <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '2700ms' }}>
             <div className="bg-black bg-opacity-70 rounded-lg p-6 backdrop-blur-sm">
               <div className="prose prose-base max-w-none text-white leading-relaxed space-y-6">
@@ -180,7 +176,7 @@ export default function Bio() {
               </div>
             </div>
           </div>
-        )}
+        ) : null}
       </div>
     </section>
   );

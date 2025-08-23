@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { MapPin, Clock, Calendar } from "lucide-react";
+import { MapPin, Clock, Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 interface CalendarEvent {
   id: string;
@@ -20,6 +21,9 @@ interface CalendarEvent {
 export default function Schedule() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [showEventModal, setShowEventModal] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -65,34 +69,89 @@ export default function Schedule() {
     });
   };
 
-  const getCleanDescription = (description: string = '') => {
-    return description
-      .replace(/\bSHOW\b/g, '')
-      .replace(/\b(RED|BLUE|GREEN|YELLOW|PURPLE|ORANGE|PINK|BLACK|WHITE)\b/gi, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+
+
+  const cleanLocation = (location?: string) => {
+    if (!location) return '';
+    return location.replace(/\\/g, '');
   };
 
-  const getEventColor = (description: string = '') => {
-    const colorMap: Record<string, string> = {
-      'RED': 'border-red-500 bg-red-500',
-      'BLUE': 'border-blue-500 bg-blue-500',
-      'GREEN': 'border-green-500 bg-green-500',
-      'YELLOW': 'border-yellow-500 bg-yellow-500',
-      'PURPLE': 'border-purple-500 bg-purple-500',
-      'ORANGE': 'border-orange-500 bg-orange-500',
-      'PINK': 'border-pink-500 bg-pink-500',
-      'BLACK': 'border-gray-800 bg-gray-800',
-      'WHITE': 'border-gray-200 bg-gray-200',
-    };
-
-    for (const [color, classes] of Object.entries(colorMap)) {
-      if (description.toUpperCase().includes(color)) {
-        return classes;
-      }
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startDayOfWeek = firstDay.getDay();
+    
+    const days = [];
+    
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < startDayOfWeek; i++) {
+      days.push(null);
     }
     
-    return 'border-purple-500 bg-purple-500';
+    // Add all days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(day);
+    }
+    
+    return days;
+  };
+
+  const getEventsForDay = (day: number) => {
+    const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    return events.filter(event => {
+      const eventDate = new Date(event.start.dateTime);
+      return eventDate.toDateString() === dayDate.toDateString();
+    });
+  };
+
+  const goToPreviousMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const goToCurrentMonth = () => {
+    setCurrentDate(new Date());
+  };
+
+  const handleEventClick = (event: CalendarEvent) => {
+    setSelectedEvent(event);
+    setShowEventModal(true);
+  };
+
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  const getEventColor = (description?: string) => {
+    if (!description) return 'bg-purple-400';
+    
+    const upperDesc = description.toUpperCase();
+    if (upperDesc.includes('RED')) return 'bg-red-400';
+    if (upperDesc.includes('GREEN')) return 'bg-green-400';
+    if (upperDesc.includes('YELLOW')) return 'bg-yellow-400';
+    if (upperDesc.includes('ORANGE')) return 'bg-orange-400';
+    if (upperDesc.includes('BLUE')) return 'bg-blue-400';
+    
+    return 'bg-purple-400';
+  };
+
+  const cleanDescription = (description?: string) => {
+    if (!description) return '';
+    
+    let cleaned = description.replace(/SHOW/g, '').trim();
+    cleaned = cleaned.replace(/\b(RED|GREEN|YELLOW|ORANGE|BLUE)\b/g, '').trim();
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    
+    return cleaned;
   };
 
   return (
@@ -114,59 +173,122 @@ export default function Schedule() {
           <div></div>
         )}
 
-        {!loading && events.length > 0 && (
-          <div className="max-w-4xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-            <div className="space-y-6">
-              {events.map((event, index) => (
-                <div
-                  key={event.id}
-                  className="bg-gray-700 bg-opacity-80 backdrop-blur-sm rounded-lg p-6 border-l-4 transform transition-all duration-300 hover:scale-105 opacity-0 translate-y-4 animate-in"
-                  style={{ 
-                    animationDelay: `${600 + (index * 100)}ms`,
-                    borderLeftColor: getEventColor(event.description).split(' ')[0].replace('border-', '')
-                  }}
-                >
-                  <div className="flex flex-col md:flex-row md:items-center gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-white mb-2">{event.summary}</h3>
-                      
-                      {event.description && getCleanDescription(event.description) && (
-                        <p className="text-gray-300 mb-3">
-                          {getCleanDescription(event.description)}
-                        </p>
-                      )}
+        {!loading && (
+          <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+            {/* Calendar Header */}
+            <div className="flex items-center justify-between mb-6">
+              <button 
+                onClick={goToPreviousMonth}
+                className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <ChevronLeft className="w-6 h-6 text-gray-600" />
+              </button>
+              
+              <h2 
+                className="text-2xl font-bold text-purple-500 cursor-pointer text-center flex-1"
+                onDoubleClick={goToCurrentMonth}
+              >
+                {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+              </h2>
+              
+              <button 
+                onClick={goToNextMonth}
+                className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <ChevronRight className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
 
-                      <div className="flex flex-col sm:flex-row gap-4 text-sm text-gray-400">
-                        <div className="flex items-center">
-                          <Calendar className="w-4 h-4 mr-2 text-purple-400" />
-                          {formatDate(event.start.dateTime)}
-                        </div>
-                        <div className="flex items-center">
-                          <Clock className="w-4 h-4 mr-2 text-purple-400" />
-                          {formatTime(event.start.dateTime)} - {formatTime(event.end.dateTime)}
-                        </div>
-                      </div>
+            {/* Calendar Grid */}
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              {/* Day Headers */}
+              <div className="grid grid-cols-7 bg-gray-100">
+                {dayNames.map(day => (
+                  <div key={day} className="p-4 text-center font-semibold text-gray-700">
+                    {day}
+                  </div>
+                ))}
+              </div>
 
-                      {event.location && (
-                        <div className="flex items-center mt-2 text-sm text-gray-400">
-                          <MapPin className="w-4 h-4 mr-2 text-purple-400" />
-                          <a
-                            href={`https://maps.google.com/?q=${encodeURIComponent(event.location.replace(/\\/g, ''))}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:text-purple-400 transition-colors duration-200 underline"
-                          >
-                            {event.location.replace(/\\/g, '')}
-                          </a>
-                        </div>
+              {/* Calendar Days */}
+              <div className="grid grid-cols-7">
+                {getDaysInMonth(currentDate).map((day, index) => {
+                  const dayEvents = day ? getEventsForDay(day) : [];
+                  
+                  return (
+                    <div 
+                      key={index} 
+                      className={`min-h-[120px] p-2 border-r border-b border-gray-200 ${
+                        day ? 'bg-white hover:bg-gray-50' : 'bg-gray-50'
+                      }`}
+                    >
+                      {day && (
+                        <>
+                          <div className="font-semibold text-gray-800 mb-2">{day}</div>
+                          <div className="space-y-1">
+                            {dayEvents.map(event => (
+                              <div
+                                key={event.id}
+                                onClick={() => handleEventClick(event)}
+                                className={`text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${getEventColor(event.description)} text-white`}
+                              >
+                                <div className="truncate font-medium">{event.summary}</div>
+                                <div className="truncate">{formatTime(event.start.dateTime)}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </>
                       )}
                     </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
+
+        {/* Event Detail Modal */}
+        <Dialog open={showEventModal} onOpenChange={setShowEventModal}>
+          <DialogContent className="max-w-md">
+            <DialogTitle className="text-xl font-bold text-gray-800 mb-4">
+              {selectedEvent?.summary}
+            </DialogTitle>
+            
+            {selectedEvent && (
+              <div className="space-y-4">
+                <div className="flex items-center text-gray-600">
+                  <Calendar className="w-5 h-5 mr-3 text-purple-500" />
+                  <span>{formatDate(selectedEvent.start.dateTime)}</span>
+                </div>
+                
+                <div className="flex items-center text-gray-600">
+                  <Clock className="w-5 h-5 mr-3 text-purple-500" />
+                  <span>{formatTime(selectedEvent.start.dateTime)} - {formatTime(selectedEvent.end.dateTime)}</span>
+                </div>
+                
+                {selectedEvent.location && (
+                  <div className="flex items-start text-gray-600">
+                    <MapPin className="w-5 h-5 mr-3 text-purple-500 mt-0.5" />
+                    <a 
+                      href={`https://maps.google.com/?q=${encodeURIComponent(cleanLocation(selectedEvent.location))}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-purple-600 hover:text-purple-800 underline"
+                    >
+                      {cleanLocation(selectedEvent.location)}
+                    </a>
+                  </div>
+                )}
+                
+                {selectedEvent.description && cleanDescription(selectedEvent.description) && (
+                  <div className="mt-4 p-3 bg-gray-50 rounded">
+                    <p className="text-gray-700">{cleanDescription(selectedEvent.description)}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );
