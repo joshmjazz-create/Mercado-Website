@@ -71,7 +71,7 @@ export default function Bio() {
             <div className="flex gap-12 items-center">
               {/* Bio Content */}
               <div className="flex-1">
-                <div className="bg-white rounded-lg shadow-lg p-8">
+                <div className="bg-jazz-grey rounded-lg shadow-lg p-8">
                   <div className="prose prose-base max-w-none text-gray-700 leading-relaxed space-y-6">
                     {parseBiographyContent(content)}
                   </div>

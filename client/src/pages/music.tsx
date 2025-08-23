@@ -41,7 +41,7 @@ export default function Music() {
           style={{ animationDelay: `${delay}ms` }}
         >
           {showTitle && <h2 className="text-2xl font-semibold text-gray-400 mb-8 text-left underline">{title}</h2>}
-          <div className="bg-gray-100 rounded-lg p-8 text-center">
+          <div className="bg-jazz-grey rounded-lg p-8 text-center">
             <p className="text-gray-800">
               Music catalog will display albums when available.
             </p>
@@ -63,7 +63,7 @@ export default function Music() {
               className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
               onClick={() => handleAlbumClick(album)}
             >
-              <div className="bg-white rounded-lg shadow-lg p-6 text-center h-64 flex flex-col justify-center border">
+              <div className="bg-jazz-grey rounded-lg shadow-lg p-6 text-center h-64 flex flex-col justify-center border">
                 <h3 className="text-xl font-bold text-gray-800 mb-2">{album.title}</h3>
                 <p className="text-gray-800 mb-1">{album.artist}</p>
                 <p className="text-gray-700 text-sm">{album.year}</p>
