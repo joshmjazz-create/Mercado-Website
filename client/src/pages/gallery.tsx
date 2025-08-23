@@ -31,6 +31,7 @@ export default function Gallery() {
         
         if (response.ok) {
           const data = await response.json();
+          console.log('Gallery API Response:', data);
           const photosWithDimensions = await Promise.all(
             (data.files || []).map(async (photo: any) => {
               const imageUrl = `https://drive.google.com/uc?id=${photo.id}`;
@@ -44,8 +45,12 @@ export default function Gallery() {
           );
           setPhotos(photosWithDimensions);
           setProcessedPhotos(organizePhotosForLayout(photosWithDimensions));
+        } else {
+          const errorData = await response.json();
+          console.error('Gallery API Error Response:', errorData);
         }
       } catch (error) {
+        console.error('Gallery API Error:', error);
         console.log('Using offline mode for gallery');
       } finally {
         setIsLoading(false);

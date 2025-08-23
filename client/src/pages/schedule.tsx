@@ -36,12 +36,17 @@ export default function Schedule() {
         
         if (response.ok) {
           const data = await response.json();
+          console.log('Calendar API Response:', data);
           const filteredEvents = data.items?.filter((event: any) => 
             event.description?.includes('SHOW')
           ) || [];
           setEvents(filteredEvents);
+        } else {
+          const errorData = await response.json();
+          console.error('Calendar API Error Response:', errorData);
         }
       } catch (error) {
+        console.error('Schedule API Error:', error);
         console.log('Using offline mode for schedule');
       } finally {
         setLoading(false);

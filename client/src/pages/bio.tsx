@@ -43,14 +43,19 @@ export default function Bio() {
         
         if (response.ok) {
           const data = await response.json();
+          console.log('Bio API Response:', data);
           const docFile = data.files?.[0]; // Get first document
           
           if (docFile) {
             const docContent = await fetchDocumentContent(docFile.id);
             setContent(docContent);
           }
+        } else {
+          const errorData = await response.json();
+          console.error('Bio API Error Response:', errorData);
         }
       } catch (error) {
+        console.error('Bio API Error:', error);
         console.log('Using offline mode for bio');
         // Fallback to empty content - page will show loading until data is available
       } finally {

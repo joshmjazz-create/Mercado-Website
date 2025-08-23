@@ -39,6 +39,7 @@ export default function Music() {
         
         if (response.ok) {
           const data = await response.json();
+          console.log('Music API Response:', data);
           const categoryFolders = data.files || [];
           
           const allAlbums: Album[] = [];
@@ -50,8 +51,12 @@ export default function Music() {
           }
           
           setAlbums(allAlbums);
+        } else {
+          const errorData = await response.json();
+          console.error('Music API Error Response:', errorData);
         }
       } catch (error) {
+        console.error('Music API Error:', error);
         console.log('Using offline mode for music');
       } finally {
         setIsLoading(false);
