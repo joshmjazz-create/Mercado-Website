@@ -323,6 +323,7 @@ export default function Music() {
     if (!audio) {
       console.log('Creating new audio element for:', album.title);
       audio = new Audio(album.audioPreviewUrl);
+      audio.preload = 'auto'; // Preload the entire audio file
       setAudioElements(prev => new Map(prev.set(album.id, audio!)));
       
       // Add error handling
@@ -333,41 +334,57 @@ export default function Music() {
         setPlayingAudio(null);
       });
       
-      audio.addEventListener('canplay', () => {
-        console.log('Audio can play for:', album.title);
+      audio.addEventListener('canplaythrough', () => {
+        console.log('Audio fully loaded for:', album.title);
         setLoadingAudio(null);
       });
       
-      // Set up audio event listeners
-      audio.addEventListener('loadedmetadata', () => {
-        console.log('Audio metadata loaded for:', album.title, 'Duration:', audio?.duration);
-        const startTime = audio!.duration / 3;
-        audio!.currentTime = startTime;
+      audio.addEventListener('loadstart', () => {
+        console.log('Audio loading started for:', album.title);
+      });
+      
+      // Set up audio event listeners - wait for full loading
+      audio.addEventListener('canplaythrough', () => {
+        console.log('Audio can play through for:', album.title, 'Duration:', audio?.duration);
         
-        // Fade in
-        audio!.volume = 0;
-        audio!.play();
-        
-        const fadeInInterval = setInterval(() => {
-          if (audio!.volume < 1) {
-            audio!.volume = Math.min(1, audio!.volume + 0.1);
-          } else {
-            clearInterval(fadeInInterval);
-          }
-        }, 100);
-        
-        // Set timeout for fade out and stop after 15 seconds
-        setTimeout(() => {
-          const fadeOutInterval = setInterval(() => {
-            if (audio!.volume > 0) {
-              audio!.volume = Math.max(0, audio!.volume - 0.1);
-            } else {
-              clearInterval(fadeOutInterval);
-              audio!.pause();
-              setPlayingAudio(null);
-            }
-          }, 100);
-        }, 15000);
+        // Only start playing when audio is fully buffered
+        if (loadingAudio === album.id) {
+          const startTime = audio!.duration / 3;
+          audio!.currentTime = startTime;
+          
+          // Fade in
+          audio!.volume = 0;
+          audio!.play().then(() => {
+            console.log('Audio started playing for:', album.title);
+            setPlayingAudio(album.id);
+            setLoadingAudio(null);
+            
+            const fadeInInterval = setInterval(() => {
+              if (audio!.volume < 1) {
+                audio!.volume = Math.min(1, audio!.volume + 0.05);
+              } else {
+                clearInterval(fadeInInterval);
+              }
+            }, 50);
+            
+            // Set timeout for fade out and stop after 15 seconds
+            setTimeout(() => {
+              const fadeOutInterval = setInterval(() => {
+                if (audio!.volume > 0) {
+                  audio!.volume = Math.max(0, audio!.volume - 0.05);
+                } else {
+                  clearInterval(fadeOutInterval);
+                  audio!.pause();
+                  setPlayingAudio(null);
+                }
+              }, 50);
+            }, 15000);
+          }).catch((error) => {
+            console.error('Audio play failed:', error);
+            setLoadingAudio(null);
+            setPlayingAudio(null);
+          });
+        }
       });
 
       // Reset state when audio ends
@@ -375,33 +392,45 @@ export default function Music() {
         setPlayingAudio(null);
       });
     } else {
-      const startTime = audio.duration / 3;
-      audio.currentTime = startTime;
-      audio.volume = 0;
-      audio.play();
-      
-      const fadeInInterval = setInterval(() => {
-        if (audio!.volume < 1) {
-          audio!.volume = Math.min(1, audio!.volume + 0.1);
-        } else {
-          clearInterval(fadeInInterval);
-        }
-      }, 100);
-      
-      setTimeout(() => {
-        const fadeOutInterval = setInterval(() => {
-          if (audio!.volume > 0) {
-            audio!.volume = Math.max(0, audio!.volume - 0.1);
-          } else {
-            clearInterval(fadeOutInterval);
-            audio!.pause();
-            setPlayingAudio(null);
-          }
-        }, 100);
-      }, 15000);
+      // For existing audio element, check if it's ready to play
+      if (audio.readyState >= 4) { // HAVE_ENOUGH_DATA
+        const startTime = audio.duration / 3;
+        audio.currentTime = startTime;
+        audio.volume = 0;
+        
+        audio.play().then(() => {
+          setPlayingAudio(album.id);
+          setLoadingAudio(null);
+          
+          const fadeInInterval = setInterval(() => {
+            if (audio!.volume < 1) {
+              audio!.volume = Math.min(1, audio!.volume + 0.05);
+            } else {
+              clearInterval(fadeInInterval);
+            }
+          }, 50);
+          
+          setTimeout(() => {
+            const fadeOutInterval = setInterval(() => {
+              if (audio!.volume > 0) {
+                audio!.volume = Math.max(0, audio!.volume - 0.05);
+              } else {
+                clearInterval(fadeOutInterval);
+                audio!.pause();
+                setPlayingAudio(null);
+              }
+            }, 50);
+          }, 15000);
+        }).catch((error) => {
+          console.error('Audio play failed:', error);
+          setLoadingAudio(null);
+          setPlayingAudio(null);
+        });
+      } else {
+        // Audio not ready, wait for it to load
+        console.log('Audio not ready, waiting for loading...');
+      }
     }
-    
-    setPlayingAudio(album.id);
   };
 
   const handlePlatformClick = (url: string) => {
