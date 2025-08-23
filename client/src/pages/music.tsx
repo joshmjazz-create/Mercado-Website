@@ -130,10 +130,10 @@ export default function Music() {
           const audioFile = files.find((file: any) => file.mimeType?.startsWith('audio/'));
           
           if (imageFile) {
-            imageFileUrl = `https://drive.google.com/uc?id=${imageFile.id}`;
+            imageFileUrl = `https://drive.google.com/uc?id=${imageFile.id}&export=view`;
           }
           if (audioFile) {
-            audioPreviewUrl = `https://drive.google.com/uc?id=${audioFile.id}`;
+            audioPreviewUrl = `https://drive.google.com/uc?id=${audioFile.id}&export=download`;
           }
         } else {
           // For other categories, get Spotify cover art
@@ -163,33 +163,55 @@ export default function Music() {
 
   const fetchDocumentContent = async (docId: string): Promise<any> => {
     try {
-      const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
+      // Use the export endpoint to get plain text content
       const response = await fetch(
-        `https://docs.googleapis.com/v1/documents/${docId}?key=${API_KEY}`
+        `https://docs.google.com/document/d/${docId}/export?format=txt`
       );
       
       if (response.ok) {
-        const docData = await response.json();
-        const content = docData.body?.content || [];
+        const text = await response.text();
+        console.log('Document content loaded:', text.substring(0, 200));
         
-        let text = '';
-        content.forEach((element: any) => {
-          if (element.paragraph) {
-            element.paragraph.elements?.forEach((elem: any) => {
-              if (elem.textRun) {
-                text += elem.textRun.content;
-              }
-            });
+        // Parse the text to extract album metadata
+        const lines = text.split('\n').filter(line => line.trim());
+        const metadata: any = {
+          title: '',
+          artist: 'Joshua Mercado',
+          year: new Date().getFullYear().toString(),
+          links: {}
+        };
+        
+        lines.forEach(line => {
+          const trimmedLine = line.trim();
+          if (trimmedLine.startsWith('TITLE:')) {
+            metadata.title = trimmedLine.replace('TITLE:', '').trim();
+          } else if (trimmedLine.startsWith('ARTIST:')) {
+            metadata.artist = trimmedLine.replace('ARTIST:', '').trim();
+          } else if (trimmedLine.startsWith('YEAR:')) {
+            metadata.year = trimmedLine.replace('YEAR:', '').trim();
+          } else if (trimmedLine.startsWith('SPOTIFY:')) {
+            metadata.links.spotify = trimmedLine.replace('SPOTIFY:', '').trim();
+          } else if (trimmedLine.startsWith('APPLE:')) {
+            metadata.links.applemusic = trimmedLine.replace('APPLE:', '').trim();
+          } else if (trimmedLine.startsWith('YOUTUBE:')) {
+            metadata.links.youtube = trimmedLine.replace('YOUTUBE:', '').trim();
           }
         });
         
-        return parseDocumentMetadata(text);
+        return metadata;
+      } else {
+        console.error('Failed to export document as text:', response.status);
       }
     } catch (error) {
       console.error('Error fetching document content:', error);
     }
     
-    return {};
+    return {
+      title: '',
+      artist: 'Joshua Mercado',
+      year: new Date().getFullYear().toString(),
+      links: {}
+    };
   };
 
   const parseDocumentMetadata = (text: string): any => {

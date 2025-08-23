@@ -33,38 +33,59 @@ export default function Bio() {
   useEffect(() => {
     const fetchBioContent = async () => {
       try {
-        // Use the Google Docs ID directly - convert to plain text via export
-        const BIO_DOC_ID = '1SzKc4cHnSkNuinePKMlV1vAC9AZLC3iNUYzJNkUppQg';
+        // Use the Bio folder to find Google Docs
+        const BIO_FOLDER_ID = '1RH0mRswhyD0rXU2mAsrj3fGpevbcw1Th';
         const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
         
-        // Export Google Doc as plain text
+        // Get Google Docs from Bio folder
         const response = await fetch(
-          `https://docs.google.com/document/d/${BIO_DOC_ID}/export?format=txt&key=${API_KEY}`
+          `https://www.googleapis.com/drive/v3/files?q='${BIO_FOLDER_ID}'+in+parents+and+mimeType='application/vnd.google-apps.document'&key=${API_KEY}&fields=files(id,name)`
         );
         
         if (response.ok) {
-          const textContent = await response.text();
-          console.log('Bio content loaded from Google Docs');
-          setContent(textContent);
-        } else {
-          const errorText = await response.text();
-          console.error('Bio API Error Response:', errorText);
+          const data = await response.json();
+          console.log('Bio folder API Response:', data);
+          const docFile = data.files?.[0]; // Get first document
           
-          // Fallback: try to load as public document
-          const publicResponse = await fetch(
-            `https://docs.google.com/document/d/${BIO_DOC_ID}/export?format=txt`
-          );
-          
-          if (publicResponse.ok) {
-            const textContent = await publicResponse.text();
-            console.log('Bio content loaded from public Google Docs');
-            setContent(textContent);
+          if (docFile) {
+            // Try to export as plain text
+            const exportResponse = await fetch(
+              `https://docs.google.com/document/d/${docFile.id}/export?format=txt`
+            );
+            
+            if (exportResponse.ok) {
+              const textContent = await exportResponse.text();
+              console.log('Bio content loaded from Google Docs folder');
+              setContent(textContent);
+            } else {
+              console.log('Using fallback bio content');
+              setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
+
+Throughout his career, Joshua has performed with numerous acclaimed artists and has been featured on *A Legendary Night* and *Impractical Jokers*. His unique style blends traditional jazz elements with contemporary influences, creating a sound that resonates with audiences worldwide.
+
+Joshua continues to perform regularly and is dedicated to sharing his love of jazz with new generations of music enthusiasts.`);
+            }
+          } else {
+            console.log('No documents found in Bio folder, using fallback');
+            setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
+
+Throughout his career, Joshua has performed with numerous acclaimed artists and has been featured on *A Legendary Night* and *Impractical Jokers*. His unique style blends traditional jazz elements with contemporary influences, creating a sound that resonates with audiences worldwide.
+
+Joshua continues to perform regularly and is dedicated to sharing his love of jazz with new generations of music enthusiasts.`);
           }
+        } else {
+          const errorData = await response.json();
+          console.error('Bio folder API Error Response:', errorData);
+          console.log('Using fallback bio content');
+          setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
+
+Throughout his career, Joshua has performed with numerous acclaimed artists and has been featured on *A Legendary Night* and *Impractical Jokers*. His unique style blends traditional jazz elements with contemporary influences, creating a sound that resonates with audiences worldwide.
+
+Joshua continues to perform regularly and is dedicated to sharing his love of jazz with new generations of music enthusiasts.`);
         }
       } catch (error) {
         console.error('Bio API Error:', error);
-        console.log('Using offline mode for bio');
-        // Set fallback biography content
+        console.log('Using fallback bio content');
         setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
 
 Throughout his career, Joshua has performed with numerous acclaimed artists and has been featured on *A Legendary Night* and *Impractical Jokers*. His unique style blends traditional jazz elements with contemporary influences, creating a sound that resonates with audiences worldwide.
