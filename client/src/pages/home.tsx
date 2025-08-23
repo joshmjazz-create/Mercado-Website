@@ -21,10 +21,10 @@ export default function Home() {
         className="hidden md:block absolute opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards] object-cover"
         style={{
           animationDelay: '0ms',
-          height: 'calc(100vh + 2in)',
+          height: '100vh',
           width: 'auto',
           right: '0',
-          top: '-1in',
+          top: '0',
           zIndex: 1
         }}
       />
