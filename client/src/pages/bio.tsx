@@ -39,7 +39,7 @@ export default function Bio() {
   const content = STATIC_BIOGRAPHY;
 
   return (
-    <section className="min-h-screen relative bg-black md:bg-transparent">
+    <section className="min-h-screen relative bg-gray-800 md:bg-transparent">
       {/* Mobile: Background Image */}
       <div 
         className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat animate-[slide-in-left_0.8s_ease-out_forwards]"
