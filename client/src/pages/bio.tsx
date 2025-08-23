@@ -158,25 +158,27 @@ export default function Bio() {
       </div>
 
       {/* Mobile: Content overlay */}
-      <div className="md:hidden relative z-10 min-h-screen flex flex-col justify-center px-4 py-16">
-        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '1500ms' }}>
+      <div className="md:hidden relative z-10 min-h-screen flex flex-col px-4 py-8">
+        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Biography</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
 
-        {isLoading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-          </div>
-        ) : content ? (
-          <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '2700ms' }}>
-            <div className="bg-black bg-opacity-70 rounded-lg p-6 backdrop-blur-sm">
-              <div className="prose prose-base max-w-none text-white leading-relaxed space-y-6">
-                {parseBiographyContent(content)}
+        <div className="flex-1 flex flex-col">
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+            </div>
+          ) : content ? (
+            <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
+              <div className="bg-black bg-opacity-70 rounded-lg p-6 backdrop-blur-sm">
+                <div className="prose prose-base max-w-none text-white leading-relaxed space-y-6">
+                  {parseBiographyContent(content)}
+                </div>
               </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     </section>
   );
