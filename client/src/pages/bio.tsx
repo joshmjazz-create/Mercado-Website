@@ -56,16 +56,18 @@ export default function Bio() {
               console.log('Bio content loaded from Google Docs with formatting');
               setContent(docContent);
             } else {
-              console.log('Failed to load from Google Docs API, trying plain text export');
-              // Fallback to plain text export
+              console.log('Failed to load from Google Docs API, trying HTML export to preserve formatting');
+              // Try HTML export to preserve formatting
               const exportResponse = await fetch(
-                `https://docs.google.com/document/d/${docFile.id}/export?format=txt`
+                `https://docs.google.com/document/d/${docFile.id}/export?format=html`
               );
               
               if (exportResponse.ok) {
-                const textContent = await exportResponse.text();
-                console.log('Bio content loaded from plain text export');
-                setContent(textContent);
+                const htmlContent = await exportResponse.text();
+                console.log('Bio content loaded from HTML export');
+                // Convert HTML to formatted text
+                const formattedText = convertHtmlToFormattedText(htmlContent);
+                setContent(formattedText);
               } else {
                 console.log('Using fallback bio content');
                 setContent(`Joshua Mercado is a renowned jazz musician with over two decades of experience performing across the globe. His musical journey began in his hometown, where he developed a passion for jazz that would define his career.
@@ -112,54 +114,107 @@ Joshua continues to perform regularly and is dedicated to sharing his love of ja
   const fetchDocumentContent = async (docId: string): Promise<string> => {
     try {
       const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
+      console.log('Fetching document with ID:', docId);
       const response = await fetch(
         `https://docs.googleapis.com/v1/documents/${docId}?key=${API_KEY}`
       );
       
-      if (response.ok) {
-        const docData = await response.json();
-        const content = docData.body?.content || [];
-        
-        let text = '';
-        let currentParagraph = '';
-        
-        content.forEach((element: any) => {
-          if (element.paragraph) {
-            // Start a new paragraph
-            currentParagraph = '';
-            
-            element.paragraph.elements?.forEach((elem: any) => {
-              if (elem.textRun) {
-                const textContent = elem.textRun.content;
-                const textStyle = elem.textRun.textStyle || {};
-                
-                // Preserve italics from Google Docs
-                if (textStyle.italic) {
-                  currentParagraph += `*${textContent.replace(/\n/g, '')}*`;
-                } else {
-                  currentParagraph += textContent.replace(/\n/g, '');
-                }
-              }
-            });
-            
-            // Add paragraph to text with proper spacing
-            if (currentParagraph.trim()) {
-              if (text) {
-                text += '\n\n' + currentParagraph.trim();
+      console.log('Google Docs API response status:', response.status);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Google Docs API error:', errorText);
+        return '';
+      }
+      
+      const docData = await response.json();
+      console.log('Google Docs structure:', JSON.stringify(docData, null, 2));
+      const content = docData.body?.content || [];
+      
+      let text = '';
+      let currentParagraph = '';
+      
+      content.forEach((element: any) => {
+        if (element.paragraph) {
+          // Start a new paragraph
+          currentParagraph = '';
+          
+          element.paragraph.elements?.forEach((elem: any) => {
+            if (elem.textRun) {
+              const textContent = elem.textRun.content;
+              const textStyle = elem.textRun.textStyle || {};
+              
+              console.log('Text content:', textContent, 'Style:', textStyle);
+              
+              // Preserve italics from Google Docs
+              if (textStyle.italic) {
+                currentParagraph += `*${textContent.replace(/\n/g, '')}*`;
               } else {
-                text = currentParagraph.trim();
+                currentParagraph += textContent.replace(/\n/g, '');
               }
             }
+          });
+          
+          // Add paragraph to text with proper spacing
+          if (currentParagraph.trim()) {
+            if (text) {
+              text += '\n\n' + currentParagraph.trim();
+            } else {
+              text = currentParagraph.trim();
+            }
           }
-        });
-        
-        return text.trim();
-      }
+        }
+      });
+      
+      console.log('Final processed text:', text);
+      return text.trim();
     } catch (error) {
       console.error('Error fetching document content:', error);
     }
     
     return '';
+  };
+
+  const convertHtmlToFormattedText = (html: string): string => {
+    // Create a temporary div to parse the HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    let formattedText = '';
+    
+    // Process each paragraph
+    const paragraphs = tempDiv.querySelectorAll('p');
+    paragraphs.forEach((p, index) => {
+      let paragraphText = '';
+      
+      // Process each child node to preserve formatting
+      p.childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          paragraphText += node.textContent || '';
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const element = node as Element;
+          const text = element.textContent || '';
+          
+          // Check for italics
+          if (element.tagName === 'EM' || element.tagName === 'I' || 
+              element.style.fontStyle === 'italic') {
+            paragraphText += `*${text}*`;
+          } else {
+            paragraphText += text;
+          }
+        }
+      });
+      
+      // Add paragraph with proper spacing
+      if (paragraphText.trim()) {
+        if (index > 0) {
+          formattedText += '\n\n';
+        }
+        formattedText += paragraphText.trim();
+      }
+    });
+    
+    console.log('Converted HTML to formatted text:', formattedText);
+    return formattedText;
   };
 
   return (
