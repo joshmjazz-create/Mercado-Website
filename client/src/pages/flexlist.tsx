@@ -7,7 +7,7 @@ const flexListLogo = "./assets/file_00000000293061f5b6c62d71c7ed0c97_17558243549
 
 export default function FlexList() {
   return (
-    <div className="h-screen bg-slate-800 text-white overflow-y-auto" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+    <div className="h-full bg-slate-800 text-white overflow-y-auto" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header Section */}
         <div className="text-center mb-16 animate-in slide-in-from-bottom-8 duration-1000">
