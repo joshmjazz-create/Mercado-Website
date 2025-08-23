@@ -3,7 +3,7 @@ const bgImage = "/assets/Screenshot_20250820_160009_Gallery_1755720047192.jpg";
 
 export default function Home() {
   return (
-    <section className="relative h-full flex items-center justify-center bg-black">
+    <section className="relative min-h-screen md:h-full flex items-center justify-center bg-black">
       <div 
         className="absolute inset-0 bg-cover bg-top opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards]" 
         style={{

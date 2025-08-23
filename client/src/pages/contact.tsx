@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function Contact() {
   return (
-    <section className="h-full bg-gradient-to-br from-jazz-cream via-white to-jazz-cream overflow-y-auto">
+    <section className="min-h-screen md:h-full bg-gradient-to-br from-jazz-cream via-white to-jazz-cream md:overflow-y-auto">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-800 mb-6">Contact</h1>
