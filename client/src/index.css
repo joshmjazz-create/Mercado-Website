@@ -78,12 +78,12 @@
   --chart-4: hsl(43, 74%, 66%);
   --chart-5: hsl(27, 87%, 67%);
   
-  /* Jazz Color Palette - Updated to match purple-400 */
-  --jazz-blue: hsl(262, 82%, 65%);
-  --jazz-blue-light: hsl(262, 82%, 65%);
-  --jazz-green: hsl(262, 82%, 65%);
-  --jazz-green-light: hsl(262, 82%, 65%);
-  --jazz-teal: hsl(262, 82%, 65%);
+  /* Jazz Color Palette - Darker purple */
+  --jazz-blue: hsl(262, 82%, 55%);
+  --jazz-blue-light: hsl(262, 82%, 55%);
+  --jazz-green: hsl(262, 82%, 55%);
+  --jazz-green-light: hsl(262, 82%, 55%);
+  --jazz-teal: hsl(262, 82%, 55%);
   --jazz-dark: hsl(220, 26%, 18%);
   --jazz-grey: hsl(220, 15%, 88%);
   

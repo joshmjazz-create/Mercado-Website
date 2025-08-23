@@ -7,8 +7,8 @@ export default function Contact() {
     <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto md:flex md:items-center">
       <div className="container mx-auto px-4 py-8 w-full" style={{ transform: 'translateY(-2in)' }}>
         <div className="text-center mb-12 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
-          <h1 className="text-5xl font-bold text-purple-400 mb-6">Contact</h1>
-          <div className="w-24 h-1 bg-purple-400 mx-auto"></div>
+          <h1 className="text-5xl font-bold text-purple-500 mb-6">Contact</h1>
+          <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
 
         <div className="max-w-2xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
@@ -19,12 +19,12 @@ export default function Contact() {
                 <div className="flex flex-col sm:flex-row items-center justify-center">
                   <a 
                     href="mailto:joshm.jazz@gmail.com"
-                    className="bg-purple-400 hover:bg-purple-300 text-white p-3 rounded-lg mb-2 sm:mb-0 sm:mr-4 transition-colors duration-300 cursor-pointer"
+                    className="bg-purple-500 hover:bg-purple-400 text-white p-3 rounded-lg mb-2 sm:mb-0 sm:mr-4 transition-colors duration-300 cursor-pointer"
                   >
                     <Mail className="w-5 h-5" />
                   </a>
                   <div className="text-center">
-                    <p className="font-semibold text-purple-400">Email</p>
+                    <p className="font-semibold text-purple-500">Email</p>
                     <p className="text-gray-800 text-lg">joshm.jazz@gmail.com</p>
                   </div>
                 </div>
@@ -32,12 +32,12 @@ export default function Contact() {
                 <div className="flex flex-col sm:flex-row items-center justify-center">
                   <a 
                     href="tel:+14072760739"
-                    className="bg-purple-400 hover:bg-purple-300 text-white p-3 rounded-lg mb-2 sm:mb-0 sm:mr-4 transition-colors duration-300 cursor-pointer"
+                    className="bg-purple-500 hover:bg-purple-400 text-white p-3 rounded-lg mb-2 sm:mb-0 sm:mr-4 transition-colors duration-300 cursor-pointer"
                   >
                     <Phone className="w-5 h-5" />
                   </a>
                   <div className="text-center">
-                    <p className="font-semibold text-purple-400">Phone</p>
+                    <p className="font-semibold text-purple-500">Phone</p>
                     <p className="text-gray-800 text-lg">(407) 276-0739</p>
                   </div>
                 </div>
