@@ -6,16 +6,16 @@ export default function Contact() {
   return (
     <section className="min-h-screen md:h-full bg-gradient-to-br from-jazz-cream via-white to-jazz-cream md:overflow-y-auto md:flex md:items-center">
       <div className="container mx-auto px-4 py-8 w-full" style={{ transform: 'translateY(-2in)' }}>
-        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
+        <div className="text-center mb-12 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-800 mb-6">Contact</h1>
           <div className="w-24 h-1 bg-purple-800 mx-auto"></div>
         </div>
 
         <div className="max-w-2xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
           {/* Contact Information */}
-          <Card className="shadow-xl border-0 overflow-hidden mb-8">
-            <CardContent className="p-8">
-              <div className="space-y-8">
+          <Card className="shadow-xl border-0 overflow-hidden mb-12">
+            <CardContent className="p-10">
+              <div className="space-y-12">
                 <div className="flex flex-col sm:flex-row items-center justify-center">
                   <a 
                     href="mailto:joshm.jazz@gmail.com"
