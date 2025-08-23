@@ -180,7 +180,12 @@ export default function Gallery() {
             className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
             onClick={() => setSelectedPhoto(null)}
           >
-            <div className="relative w-screen h-screen p-8">
+            <div className="relative w-full h-full flex items-center justify-center p-8">
+              <img
+                src={selectedPhoto}
+                alt="Gallery photo"
+                className="max-w-full max-h-full object-contain rounded-lg"
+              />
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -190,12 +195,6 @@ export default function Gallery() {
               >
                 ×
               </button>
-              <img
-                src={selectedPhoto}
-                alt="Gallery photo"
-                className="w-full h-full object-contain rounded-lg"
-                style={{ maxHeight: 'calc(100vh - 100px)', maxWidth: 'calc(100vw - 100px)' }}
-              />
             </div>
           </div>
         )}
