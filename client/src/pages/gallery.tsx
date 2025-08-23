@@ -23,16 +23,11 @@ export default function Gallery() {
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
-        // For now, show placeholder message until correct folder ID is provided
-        console.log('Gallery: Need correct Google Drive folder ID for photos');
-        setError('Please provide the correct Google Drive folder ID for gallery photos');
-        
-        // Uncomment and update with correct folder ID when available:
-        // const PHOTOS_FOLDER_ID = 'YOUR_ACTUAL_PHOTOS_FOLDER_ID';
-        // const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
-        // const response = await fetch(
-        //   `https://www.googleapis.com/drive/v3/files?q='${PHOTOS_FOLDER_ID}'+in+parents+and+mimeType+contains+'image'&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
-        // );
+        const PHOTOS_FOLDER_ID = '1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd';
+        const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
+        const response = await fetch(
+          `https://www.googleapis.com/drive/v3/files?q='${PHOTOS_FOLDER_ID}'+in+parents+and+mimeType+contains+'image'&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
+        );
         
         if (response.ok) {
           const data = await response.json();

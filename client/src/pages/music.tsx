@@ -31,15 +31,11 @@ export default function Music() {
   useEffect(() => {
     const fetchMusicData = async () => {
       try {
-        // For now, show placeholder message until correct folder ID is provided
-        console.log('Music: Need correct Google Drive folder ID for music albums');
-        
-        // Uncomment and update with correct folder ID when available:
-        // const MUSIC_FOLDER_ID = 'YOUR_ACTUAL_MUSIC_FOLDER_ID';
-        // const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
-        // const response = await fetch(
-        //   `https://www.googleapis.com/drive/v3/files?q='${MUSIC_FOLDER_ID}'+in+parents+and+mimeType='application/vnd.google-apps.folder'&key=${API_KEY}&fields=files(id,name)`
-        // );
+        const MUSIC_FOLDER_ID = '1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6';
+        const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
+        const response = await fetch(
+          `https://www.googleapis.com/drive/v3/files?q='${MUSIC_FOLDER_ID}'+in+parents+and+mimeType='application/vnd.google-apps.folder'&key=${API_KEY}&fields=files(id,name)`
+        );
         
         if (response.ok) {
           const data = await response.json();
