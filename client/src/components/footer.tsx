@@ -36,7 +36,7 @@ export default function Footer() {
             </a>
           </div>
           <p className="text-gray-400 text-sm">
-            © 2025 Joshua Mercado. All rights reserved.
+            © {new Date().getFullYear()} Joshua Mercado. All rights reserved.
           </p>
         </div>
       </div>
