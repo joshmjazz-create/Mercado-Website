@@ -11,9 +11,11 @@ function parseBiographyContent(content: string) {
     // Process text to preserve Google Docs formatting
     let processedText = paragraph;
     
-    // Convert any markdown-style italics to HTML
+    // Convert any markdown-style italics to HTML - handle multiple asterisks properly
     processedText = processedText.replace(/\*([^*]+)\*/g, '<em>$1</em>');
     processedText = processedText.replace(/_([^_]+)_/g, '<em>$1</em>');
+    
+    console.log(`Paragraph ${index} processed:`, processedText.substring(0, 100));
     
     return (
       <p 
@@ -295,8 +297,8 @@ export default function Bio() {
                   </div>
                 </div>
 
-                {/* Image - only show when content is loaded */}
-                <div className="flex-shrink-0">
+                {/* Image - only show when content is loaded with delay */}
+                <div className="flex-shrink-0 opacity-0 translate-x-4 animate-in" style={{ animationDelay: '1200ms' }}>
                   <img 
                     src={bioImagePath} 
                     alt="Joshua Mercado" 
