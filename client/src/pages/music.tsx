@@ -499,8 +499,8 @@ export default function Music() {
   const upcomingAlbums = albums.filter(album => album.category === 'Upcoming');
 
   return (
-    <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto">
-      <div className="container mx-auto px-4 py-8">
+    <section className="min-h-screen bg-jazz-grey">
+      <div className="container mx-auto px-4 py-8 pb-16">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Music</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
@@ -517,7 +517,7 @@ export default function Music() {
             {/* My Music Section - No title, displayed first */}
             {originalAlbums.length > 0 && (
               <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '400ms' }}>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
                   {originalAlbums.map((album, index) => (
                     <div
                       key={`${album.title}-${index}`}
@@ -557,7 +557,7 @@ export default function Music() {
             {featuredAlbums.length > 0 && (
               <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '600ms' }}>
                 <h2 className="text-2xl font-semibold text-gray-800 mb-8 text-left underline decoration-purple-500">Featured On</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
                   {featuredAlbums.map((album, index) => (
                     <div
                       key={`${album.title}-${index}`}
@@ -597,7 +597,7 @@ export default function Music() {
             {upcomingAlbums.length > 0 && (
               <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '800ms' }}>
                 <h2 className="text-2xl font-semibold text-gray-800 mb-8 text-left underline decoration-purple-500">Upcoming</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
                   {upcomingAlbums.map((album, index) => (
                     <div
                       key={`${album.title}-${index}`}
