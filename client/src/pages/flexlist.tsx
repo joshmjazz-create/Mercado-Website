@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Smartphone, Download } from "lucide-react";
+import { FaApple } from "react-icons/fa";
 
 // Updated for GitHub Pages deployment - using relative asset paths
 const flexListLogo = "./assets/file_00000000293061f5b6c62d71c7ed0c97_1755824354993.png";
@@ -27,9 +28,9 @@ export default function FlexList() {
 
         {/* Download Section */}
         <div className="text-center mb-16 animate-in slide-in-from-bottom-6 duration-800 delay-900">
-          <h2 className="text-3xl font-normal text-white mb-8">Download FlexList</h2>
+          <h2 className="text-3xl font-normal text-white mb-8">Access FlexList</h2>
           
-          <div className="max-w-md mx-auto">
+          <div className="max-w-2xl mx-auto grid md:grid-cols-2 gap-6">
             {/* Android Download */}
             <Card className="bg-slate-700 border-slate-600 animate-in slide-in-from-bottom-6 duration-700 delay-1100">
               <CardContent className="p-8 text-center">
@@ -47,21 +48,24 @@ export default function FlexList() {
                 </Button>
               </CardContent>
             </Card>
-          </div>
-        </div>
 
-        {/* iOS Notice Section */}
-        <div className="text-center animate-in slide-in-from-bottom-6 duration-800 delay-1300">
-          <div className="max-w-2xl mx-auto">
-            <Card className="bg-slate-700 border-slate-600">
-              <CardContent className="p-8">
-                <h3 className="text-xl font-normal text-gray-300 mb-6">Currently Developing Android Only</h3>
-                <p className="text-gray-300 font-normal leading-relaxed mb-4">
-                  FlexList will be available only on Android. While I would love to bring it to iOS, 
-                  rewriting the entire application for iOS would be extremely time-consuming.
-                </p>
-                <p className="text-gray-300 font-normal leading-relaxed">
-                  The app will be Android-exclusive for the foreseeable future. Thank you for your understanding!
+            {/* iOS Web App */}
+            <Card className="bg-slate-700 border-slate-600 animate-in slide-in-from-bottom-6 duration-700 delay-1200">
+              <CardContent className="p-8 text-center">
+                <div className="mb-6">
+                  <FaApple className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-normal text-white mb-2">iOS</h3>
+                  <p className="text-gray-400 font-normal">Web app available</p>
+                </div>
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-normal"
+                  onClick={() => window.open('https://bit.ly/FlexList', '_blank')}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Open Web App
+                </Button>
+                <p className="text-xs text-gray-400 mt-3 font-normal">
+                  This is a web app, not a downloadable app from the App Store
                 </p>
               </CardContent>
             </Card>
