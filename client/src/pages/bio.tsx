@@ -33,33 +33,10 @@ export default function Bio() {
   useEffect(() => {
     const fetchBioContent = async () => {
       try {
-        // Use the Bio folder to find Google Docs
-        const BIO_FOLDER_ID = '1RH0mRswhyD0rXU2mAsrj3fGpevbcw1Th';
-        const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
-        
-        // Get Google Docs from Bio folder
-        const response = await fetch(
-          `https://www.googleapis.com/drive/v3/files?q='${BIO_FOLDER_ID}'+in+parents+and+mimeType='application/vnd.google-apps.document'&key=${API_KEY}&fields=files(id,name)`
-        );
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Bio folder API Response:', data);
-          const docFile = data.files?.[0]; // Get first document
-          
-          if (docFile) {
-            console.log('Attempting to fetch document content for:', docFile.id);
-            const docContent = await fetchDocumentContent(docFile.id);
-            console.log('Bio content loaded from Google Docs with formatting preserved');
-            setContent(docContent);
-          } else {
-            throw new Error('No documents found in Bio folder');
-          }
-        } else {
-          const errorData = await response.json();
-          console.error('Bio folder API Error Response:', errorData);
-          throw new Error('Failed to access Bio folder');
-        }
+        console.log('Fetching biography content from public Google Doc...');
+        const docContent = await fetchDocumentContent();
+        console.log('Bio content loaded from public Google Docs with formatting preserved');
+        setContent(docContent);
       } catch (error) {
         console.error('Bio API Error:', error);
         // Don't set any content on error - keep it empty so nothing renders
@@ -72,18 +49,18 @@ export default function Bio() {
     fetchBioContent();
   }, []);
 
-  const fetchDocumentContent = async (docId: string): Promise<string> => {
+  const fetchDocumentContent = async (): Promise<string> => {
     try {
-      console.log('Fetching document with ID:', docId);
-      // Use the public HTML export since the document is publicly accessible
+      console.log('Fetching public Google Doc');
+      // Use the public published link
       const response = await fetch(
-        `https://docs.google.com/document/d/${docId}/export?format=html`
+        'https://docs.google.com/document/d/e/2PACX-1vTApJaXwg34sAi_yd5vJA0fcdLIzyW9fcRwi9BfQ0PKzEb-8x7X1OEjlJdX7C-O-CEa0jzop997cimB/pub'
       );
       
-      console.log('Google Docs export response status:', response.status);
+      console.log('Public Google Docs response status:', response.status);
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Google Docs export error:', errorText);
+        console.error('Public Google Docs error:', errorText);
         throw new Error('Failed to fetch document');
       }
       
