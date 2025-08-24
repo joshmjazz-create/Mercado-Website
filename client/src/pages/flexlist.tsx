@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Smartphone, Download } from "lucide-react";
-import { FaApple } from "react-icons/fa";
+import { Download } from "lucide-react";
+import { FaApple, FaAndroid } from "react-icons/fa";
 
 // Updated for GitHub Pages deployment - using relative asset paths
 const flexListLogo = "./assets/file_00000000293061f5b6c62d71c7ed0c97_1755824354993.png";
@@ -35,7 +35,7 @@ export default function FlexList() {
             <Card className="bg-slate-700 border-slate-600 animate-in slide-in-from-bottom-6 duration-700 delay-1100">
               <CardContent className="p-8 text-center">
                 <div className="mb-6">
-                  <Smartphone className="w-16 h-16 text-teal-400 mx-auto mb-4" />
+                  <FaAndroid className="w-16 h-16 text-teal-400 mx-auto mb-4" />
                   <h3 className="text-xl font-normal text-white mb-2">Android</h3>
                   <p className="text-gray-400 font-normal">App under development</p>
                 </div>
