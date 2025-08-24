@@ -14,7 +14,7 @@ export default function Contact() {
         <div className="max-w-2xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
           {/* Contact Information */}
           <Card className="shadow-xl border-0 overflow-hidden mb-12">
-            <CardContent className="p-10">
+            <CardContent className="p-10 bg-white">
               <div className="space-y-12">
                 <div className="flex flex-col sm:flex-row items-center justify-center">
                   <a 

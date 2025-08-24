@@ -342,42 +342,44 @@ export default function Music() {
       audio.addEventListener('canplaythrough', () => {
         console.log('Audio can play through for:', album.title, 'Duration:', audio?.duration);
         
-        // Auto-start playing when audio is fully buffered
-        const startTime = audio!.duration / 3;
-        audio!.currentTime = startTime;
-        
-        // Fade in
-        audio!.volume = 0;
-        audio!.play().then(() => {
-          console.log('Audio started playing for:', album.title);
-          setPlayingAudio(album.id);
-          setLoadingAudio(null);
+        // Check if this is still the current loading audio before playing
+        if (loadingAudio === album.id) {
+          const startTime = audio!.duration / 3;
+          audio!.currentTime = startTime;
           
-          const fadeInInterval = setInterval(() => {
-            if (audio!.volume < 1) {
-              audio!.volume = Math.min(1, audio!.volume + 0.05);
-            } else {
-              clearInterval(fadeInInterval);
-            }
-          }, 50);
-          
-          // Set timeout for fade out and stop after 15 seconds
-          setTimeout(() => {
-            const fadeOutInterval = setInterval(() => {
-              if (audio!.volume > 0) {
-                audio!.volume = Math.max(0, audio!.volume - 0.05);
+          // Fade in
+          audio!.volume = 0;
+          audio!.play().then(() => {
+            console.log('Audio started playing for:', album.title);
+            setPlayingAudio(album.id);
+            setLoadingAudio(null);
+            
+            const fadeInInterval = setInterval(() => {
+              if (audio!.volume < 1) {
+                audio!.volume = Math.min(1, audio!.volume + 0.05);
               } else {
-                clearInterval(fadeOutInterval);
-                audio!.pause();
-                setPlayingAudio(null);
+                clearInterval(fadeInInterval);
               }
             }, 50);
-          }, 15000);
-        }).catch((error) => {
-          console.error('Audio play failed:', error);
-          setLoadingAudio(null);
-          setPlayingAudio(null);
-        });
+            
+            // Set timeout for fade out and stop after 15 seconds
+            setTimeout(() => {
+              const fadeOutInterval = setInterval(() => {
+                if (audio!.volume > 0) {
+                  audio!.volume = Math.max(0, audio!.volume - 0.05);
+                } else {
+                  clearInterval(fadeOutInterval);
+                  audio!.pause();
+                  setPlayingAudio(null);
+                }
+              }, 50);
+            }, 15000);
+          }).catch((error) => {
+            console.error('Audio play failed:', error);
+            setLoadingAudio(null);
+            setPlayingAudio(null);
+          });
+        }
       });
 
       // Reset state when audio ends
