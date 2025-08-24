@@ -59,7 +59,7 @@ export default function FlexList() {
                 </div>
                 <Button 
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-normal"
-                  onClick={() => window.open('https://bit.ly/FlexList', '_blank')}
+                  onClick={() => window.open('https://joshmjazz-create.github.io/Flexlistz-Repo/', '_blank')}
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Open Web App
