@@ -33,7 +33,7 @@ export default function Bio() {
   useEffect(() => {
     const fetchBioContent = async () => {
       try {
-        console.log('Fetching biography content from public Google Doc...');
+        console.log('Fetching biography content from public Google Doc... (cache bypassed)');
         const docContent = await fetchDocumentContent();
         console.log('Bio content loaded from public Google Docs with formatting preserved');
         setContent(docContent);
@@ -47,14 +47,44 @@ export default function Bio() {
     };
 
     fetchBioContent();
+  }, []); // Remove deps to ensure fresh fetch
+
+  // Also refetch when window gains focus (user comes back to tab)
+  useEffect(() => {
+    const handleFocus = () => {
+      console.log('Window focused - refetching bio content for updates');
+      setIsLoading(true);
+      const fetchBioContent = async () => {
+        try {
+          const docContent = await fetchDocumentContent();
+          setContent(docContent);
+        } catch (error) {
+          console.error('Bio refetch error:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchBioContent();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
   const fetchDocumentContent = async (): Promise<string> => {
     try {
       console.log('Fetching public Google Doc');
-      // Use the public published link
+      // Use the public published link with cache-busting timestamp
+      const cacheBuster = Date.now();
       const response = await fetch(
-        'https://docs.google.com/document/d/e/2PACX-1vTApJaXwg34sAi_yd5vJA0fcdLIzyW9fcRwi9BfQ0PKzEb-8x7X1OEjlJdX7C-O-CEa0jzop997cimB/pub'
+        `https://docs.google.com/document/d/e/2PACX-1vTApJaXwg34sAi_yd5vJA0fcdLIzyW9fcRwi9BfQ0PKzEb-8x7X1OEjlJdX7C-O-CEa0jzop997cimB/pub?_=${cacheBuster}`,
+        {
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        }
       );
       
       console.log('Public Google Docs response status:', response.status);
