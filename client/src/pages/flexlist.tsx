@@ -37,18 +37,13 @@ export default function FlexList() {
                 <div className="mb-6">
                   <FaAndroid className="w-16 h-16 text-teal-400 mx-auto mb-4" />
                   <h3 className="text-xl font-normal text-white mb-2">Android</h3>
-                  <p className="text-gray-400 font-normal">Ready for download</p>
+                  <p className="text-gray-400 font-normal">App under development</p>
                 </div>
                 <Button 
                   className="w-full bg-teal-600 hover:bg-teal-700 text-white font-normal"
-                  onClick={() => {
-                    const link = document.createElement('a');
-                    link.href = './assets/flexlist-android.apk';
-                    link.download = 'FlexList.apk';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                  }}
+                  disabled
+                  data-download-path="./assets/flexlist-android.apk"
+                  data-download-name="FlexList.apk"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download for Android
