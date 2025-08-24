@@ -272,7 +272,7 @@ export default function Bio() {
 
   return (
     <>
-    <section className="min-h-screen md:min-h-dynamic-screen relative">
+    <section className="min-h-screen md:fit-screen relative">
       <style>{`
         @media (max-width: 767px) {
           section { background-color: #101010; }
