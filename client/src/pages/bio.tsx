@@ -155,23 +155,47 @@ export default function Bio() {
         // No spans, just get text content
         paragraphText = p.textContent?.trim() || '';
       } else {
-        spans.forEach(span => {
-          const text = span.textContent?.trim() || '';
-          if (text) {
-            // Check if this span has an italic class
+        // Process spans more intelligently to handle broken words
+        for (let i = 0; i < spans.length; i++) {
+          const span = spans[i];
+          const text = span.textContent || '';
+          
+          if (text.trim()) {
             const hasItalicClass = Array.from(span.classList).some(className => 
               italicClasses.has(className)
             );
             
-            console.log(`Span text: "${text}", classes: [${Array.from(span.classList).join(', ')}], isItalic: ${hasItalicClass}`);
+            console.log(`Span ${i} text: "${text}", classes: [${Array.from(span.classList).join(', ')}], isItalic: ${hasItalicClass}`);
             
-            if (hasItalicClass) {
-              paragraphText += `*${text}*`;
+            // Check if this looks like a broken word (ends without space and next span starts without space)
+            const nextSpan = spans[i + 1];
+            const isWordBroken = text.trim() && !text.endsWith(' ') && 
+                               nextSpan && nextSpan.textContent && 
+                               !nextSpan.textContent.startsWith(' ') &&
+                               hasItalicClass; // Only combine if current span is italic
+            
+            if (isWordBroken && nextSpan) {
+              // Combine with next span to complete the word
+              const nextText = nextSpan.textContent || '';
+              const combinedText = text + nextText;
+              console.log(`Combining broken word: "${text}" + "${nextText}" = "${combinedText}"`);
+              
+              // Check if we can find a word boundary to split properly
+              const wordMatch = combinedText.match(/^([^\s]+)(.*)$/);
+              if (wordMatch) {
+                const [, word, remainder] = wordMatch;
+                paragraphText += `*${word}*${remainder}`;
+                i++; // Skip the next span since we processed it
+              } else {
+                paragraphText += hasItalicClass ? `*${text}*` : text;
+              }
             } else {
-              paragraphText += text;
+              paragraphText += hasItalicClass ? `*${text}*` : text;
             }
+          } else {
+            paragraphText += text; // Keep spaces and empty content
           }
-        });
+        }
       }
       
       // Clean up and add paragraph if it has meaningful content
