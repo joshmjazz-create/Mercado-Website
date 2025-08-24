@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Footer from "@/components/footer";
 
 export default function Gallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
@@ -131,7 +132,7 @@ export default function Gallery() {
 
   return (
     <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto">
-      <div className="container mx-auto px-4 py-8 pb-16 md:pb-32">
+      <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Gallery</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
@@ -198,6 +199,11 @@ export default function Gallery() {
             </div>
           </div>
         )}
+      </div>
+      
+      {/* Mobile Footer */}
+      <div className="md:hidden">
+        <Footer />
       </div>
     </section>
   );

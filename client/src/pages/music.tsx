@@ -3,6 +3,7 @@ import { ExternalLink, Play, Pause } from "lucide-react";
 import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/footer";
 
 interface Album {
   id: string;
@@ -500,7 +501,7 @@ export default function Music() {
 
   return (
     <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto">
-      <div className="container mx-auto px-4 py-8 pb-16 md:pb-32">
+      <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Music</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
@@ -718,6 +719,11 @@ export default function Music() {
             </div>
           </DialogContent>
         </Dialog>
+      </div>
+      
+      {/* Mobile Footer */}
+      <div className="md:hidden">
+        <Footer />
       </div>
     </section>
   );
