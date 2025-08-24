@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Download } from "lucide-react";
 import { FaApple, FaAndroid } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import Footer from "@/components/footer";
 
 // Updated for GitHub Pages deployment - using relative asset paths
 const flexListLogo = "./assets/file_00000000293061f5b6c62d71c7ed0c97_1755824354993.png";
@@ -107,6 +108,11 @@ export default function FlexList() {
             </Card>
           </div>
         </div>
+      </div>
+      
+      {/* Footer - only visible on mobile */}
+      <div className="md:hidden">
+        <Footer />
       </div>
     </div>
   );

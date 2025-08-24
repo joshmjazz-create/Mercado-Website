@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { MapPin, Clock, Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import Footer from "@/components/footer";
 
 interface CalendarEvent {
   id: string;
@@ -322,6 +323,11 @@ export default function Schedule() {
             )}
           </DialogContent>
         </Dialog>
+      </div>
+      
+      {/* Footer - only visible on mobile */}
+      <div className="md:hidden">
+        <Footer />
       </div>
     </section>
   );

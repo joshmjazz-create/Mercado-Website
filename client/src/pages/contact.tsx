@@ -1,5 +1,6 @@
 import { Mail, Phone } from "lucide-react";
 import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
+import Footer from "@/components/footer";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function Contact() {
@@ -79,6 +80,11 @@ export default function Contact() {
             </a>
           </div>
         </div>
+      </div>
+      
+      {/* Footer - only visible on mobile */}
+      <div className="md:hidden">
+        <Footer />
       </div>
     </section>
   );

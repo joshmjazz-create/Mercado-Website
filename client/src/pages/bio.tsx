@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Footer from "@/components/footer";
 
 // Updated for GitHub Pages deployment - using relative asset paths
 const bioImagePath = "./assets/Headshot_2_1755873415112.jpeg";
@@ -352,6 +353,11 @@ export default function Bio() {
             </div>
           ) : null}
         </div>
+      </div>
+      
+      {/* Footer - only visible on mobile */}
+      <div className="md:hidden">
+        <Footer />
       </div>
     </section>
   );
