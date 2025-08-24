@@ -341,6 +341,7 @@ export default function Music() {
       // Set up audio event listeners 
       audio.addEventListener('canplaythrough', () => {
         console.log('Audio can play through for:', album.title, 'Duration:', audio?.duration);
+        console.log('Current loadingAudio state:', loadingAudio, 'Album ID:', album.id);
         
         // Only auto-play if this is the currently loading audio
         if (loadingAudio === album.id) {
@@ -651,7 +652,6 @@ export default function Music() {
                         <div className="p-4 bg-white border-t">
                           <h3 className="text-base font-semibold text-gray-900 mb-1 truncate">{album.title}</h3>
                           <p className="text-gray-600 text-sm truncate">{album.artist}</p>
-                          <p className="text-gray-500 text-sm mb-1">{album.year}</p>
                           {album.audioPreviewUrl && (
                             <p className="text-purple-600 text-sm font-medium">Preview Available</p>
                           )}
