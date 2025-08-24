@@ -67,6 +67,14 @@ export default function Bio() {
       const htmlContent = await response.text();
       console.log('HTML content received, length:', htmlContent.length);
       
+      // Log a sample of the HTML to understand the structure
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = htmlContent;
+      const sampleContent = tempDiv.querySelector('p, div[dir="ltr"]');
+      if (sampleContent) {
+        console.log('Sample HTML structure:', sampleContent.outerHTML.substring(0, 500));
+      }
+      
       // Convert HTML to formatted text with proper paragraph breaks and italics
       return convertHtmlToFormattedText(htmlContent);
     } catch (error) {
@@ -82,39 +90,61 @@ export default function Bio() {
     
     let formattedText = '';
     
-    // Process each paragraph
-    const paragraphs = tempDiv.querySelectorAll('p');
-    paragraphs.forEach((p, index) => {
+    // Find the main content area - Google Docs public view has content in specific divs
+    const contentArea = tempDiv.querySelector('[id*="contents"]') || 
+                       tempDiv.querySelector('.doc-content') || 
+                       tempDiv.querySelector('#contents') || 
+                       tempDiv;
+    
+    // Process each paragraph - look for more specific selectors for Google Docs
+    const paragraphs = contentArea.querySelectorAll('p, .c1, .c0, div[dir="ltr"]');
+    
+    const processedParagraphs: string[] = [];
+    
+    paragraphs.forEach((p) => {
       let paragraphText = '';
       
-      // Process each child node to preserve formatting
-      p.childNodes.forEach(node => {
+      // Recursive function to process all nested elements
+      const processNode = (node: Node): void => {
         if (node.nodeType === Node.TEXT_NODE) {
           paragraphText += node.textContent || '';
         } else if (node.nodeType === Node.ELEMENT_NODE) {
           const element = node as Element;
-          const text = element.textContent || '';
           
-          // Check for italics
-          if (element.tagName === 'EM' || element.tagName === 'I' || 
-              element.style.fontStyle === 'italic') {
-            paragraphText += `*${text}*`;
+          // Check for italics in various Google Docs formats
+          const isItalic = element.tagName === 'EM' || 
+                          element.tagName === 'I' || 
+                          element.style.fontStyle === 'italic' ||
+                          element.classList.contains('c2') || // Common Google Docs italic class
+                          element.classList.contains('c3') ||
+                          element.classList.contains('c4') ||
+                          element.classList.contains('c5') ||
+                          getComputedStyle(element).fontStyle === 'italic';
+          
+          if (isItalic && element.textContent?.trim()) {
+            paragraphText += `*${element.textContent.trim()}*`;
           } else {
-            paragraphText += text;
+            // Process child nodes recursively
+            element.childNodes.forEach(processNode);
           }
         }
-      });
+      };
       
-      // Add paragraph with proper spacing
-      if (paragraphText.trim()) {
-        if (index > 0) {
-          formattedText += '\n\n';
-        }
-        formattedText += paragraphText.trim();
+      // Process all child nodes
+      p.childNodes.forEach(processNode);
+      
+      // Clean up and add paragraph if it has content
+      paragraphText = paragraphText.trim();
+      if (paragraphText && paragraphText.length > 10) { // Filter out very short content
+        processedParagraphs.push(paragraphText);
       }
     });
     
+    // Join paragraphs with double line breaks
+    formattedText = processedParagraphs.join('\n\n');
+    
     console.log('Converted HTML to formatted text:', formattedText);
+    console.log('Found paragraphs:', processedParagraphs.length);
     return formattedText;
   };
 
