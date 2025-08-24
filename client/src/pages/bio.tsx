@@ -67,13 +67,26 @@ export default function Bio() {
       const htmlContent = await response.text();
       console.log('HTML content received, length:', htmlContent.length);
       
-      // Log a sample of the HTML to understand the structure
+      // Log multiple samples to understand the HTML structure and find italic patterns
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = htmlContent;
-      const sampleContent = tempDiv.querySelector('p, div[dir="ltr"]');
-      if (sampleContent) {
-        console.log('Sample HTML structure:', sampleContent.outerHTML.substring(0, 500));
-      }
+      const sampleParagraphs = tempDiv.querySelectorAll('p');
+      console.log('Total paragraphs found:', sampleParagraphs.length);
+      
+      // Log first few paragraphs to understand structure
+      sampleParagraphs.forEach((p, index) => {
+        if (index < 3) {
+          console.log(`Paragraph ${index + 1} HTML:`, p.outerHTML.substring(0, 300));
+        }
+      });
+      
+      // Look for style definitions that might indicate italics
+      const styles = tempDiv.querySelectorAll('style');
+      styles.forEach((style, index) => {
+        if (style.textContent?.includes('italic')) {
+          console.log(`Style ${index} with italic:`, style.textContent.substring(0, 500));
+        }
+      });
       
       // Convert HTML to formatted text with proper paragraph breaks and italics
       return convertHtmlToFormattedText(htmlContent);
@@ -88,63 +101,94 @@ export default function Bio() {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
     
-    let formattedText = '';
+    // Extract CSS styles from ALL style tags to understand which classes are italic
+    const allStyleTags = tempDiv.querySelectorAll('style');
+    const italicClasses = new Set<string>();
     
-    // Find the main content area - Google Docs public view has content in specific divs
-    const contentArea = tempDiv.querySelector('[id*="contents"]') || 
-                       tempDiv.querySelector('.doc-content') || 
-                       tempDiv.querySelector('#contents') || 
-                       tempDiv;
+    console.log(`Found ${allStyleTags.length} style tags`);
     
-    // Process each paragraph - look for more specific selectors for Google Docs
-    const paragraphs = contentArea.querySelectorAll('p, .c1, .c0, div[dir="ltr"]');
+    // Check all style tags for italic classes
+    allStyleTags.forEach((styleTag, index) => {
+      const styles = styleTag.textContent || '';
+      console.log(`Style tag ${index} length:`, styles.length);
+      
+      // Look for c4 specifically since we know it's the italic class
+      if (styles.includes('.c4{font-style:italic}')) {
+        italicClasses.add('c4');
+        console.log('Found italic class c4 in style tag', index);
+      }
+      
+      // Also look for any other italic classes
+      const italicMatches = styles.match(/\.c\d+[^}]*font-style:italic/g);
+      if (italicMatches) {
+        italicMatches.forEach(match => {
+          const classMatch = match.match(/\.c(\d+)/);
+          if (classMatch) {
+            italicClasses.add(`c${classMatch[1]}`);
+            console.log('Found italic class via regex:', `c${classMatch[1]}`);
+          }
+        });
+      }
+    });
+    
+    // Also check for any span with class c4 directly
+    const allSpans = tempDiv.querySelectorAll('span.c4');
+    console.log('Found spans with c4 class:', allSpans.length);
+    allSpans.forEach((span, index) => {
+      if (index < 3) {
+        console.log(`c4 span ${index}:`, span.textContent);
+      }
+    });
+    
+    // Find the main content area
+    const contentArea = tempDiv.querySelector('[id*="contents"]') || tempDiv;
+    const paragraphs = contentArea.querySelectorAll('p');
     
     const processedParagraphs: string[] = [];
     
     paragraphs.forEach((p) => {
       let paragraphText = '';
       
-      // Recursive function to process all nested elements
-      const processNode = (node: Node): void => {
-        if (node.nodeType === Node.TEXT_NODE) {
-          paragraphText += node.textContent || '';
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-          const element = node as Element;
-          
-          // Check for italics in various Google Docs formats
-          const isItalic = element.tagName === 'EM' || 
-                          element.tagName === 'I' || 
-                          element.style.fontStyle === 'italic' ||
-                          element.classList.contains('c2') || // Common Google Docs italic class
-                          element.classList.contains('c3') ||
-                          element.classList.contains('c4') ||
-                          element.classList.contains('c5') ||
-                          getComputedStyle(element).fontStyle === 'italic';
-          
-          if (isItalic && element.textContent?.trim()) {
-            paragraphText += `*${element.textContent.trim()}*`;
-          } else {
-            // Process child nodes recursively
-            element.childNodes.forEach(processNode);
+      // Process each span within the paragraph
+      const spans = p.querySelectorAll('span');
+      if (spans.length === 0) {
+        // No spans, just get text content
+        paragraphText = p.textContent?.trim() || '';
+      } else {
+        spans.forEach(span => {
+          const text = span.textContent?.trim() || '';
+          if (text) {
+            // Check if this span has an italic class
+            const hasItalicClass = Array.from(span.classList).some(className => 
+              italicClasses.has(className)
+            );
+            
+            console.log(`Span text: "${text}", classes: [${Array.from(span.classList).join(', ')}], isItalic: ${hasItalicClass}`);
+            
+            if (hasItalicClass) {
+              paragraphText += `*${text}*`;
+            } else {
+              paragraphText += text;
+            }
           }
-        }
-      };
+        });
+      }
       
-      // Process all child nodes
-      p.childNodes.forEach(processNode);
-      
-      // Clean up and add paragraph if it has content
+      // Clean up and add paragraph if it has meaningful content
       paragraphText = paragraphText.trim();
-      if (paragraphText && paragraphText.length > 10) { // Filter out very short content
+      if (paragraphText && paragraphText.length > 20) {
         processedParagraphs.push(paragraphText);
       }
     });
     
-    // Join paragraphs with double line breaks
-    formattedText = processedParagraphs.join('\n\n');
+    // Remove duplicates (Google Docs sometimes has duplicate content)
+    const uniqueParagraphs = [...new Set(processedParagraphs)];
+    const formattedText = uniqueParagraphs.join('\n\n');
     
-    console.log('Converted HTML to formatted text:', formattedText);
-    console.log('Found paragraphs:', processedParagraphs.length);
+    console.log('Found italic classes:', Array.from(italicClasses));
+    console.log('Processed paragraphs:', uniqueParagraphs.length);
+    console.log('Final formatted text:', formattedText.substring(0, 500) + '...');
+    
     return formattedText;
   };
 
@@ -191,7 +235,7 @@ export default function Bio() {
                   </div>
                 </div>
 
-                {/* Image */}
+                {/* Image - only show when content is loaded */}
                 <div className="flex-shrink-0">
                   <img 
                     src={bioImagePath} 
