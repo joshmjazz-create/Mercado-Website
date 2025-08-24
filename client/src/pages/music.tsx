@@ -338,16 +338,16 @@ export default function Music() {
         console.log('Audio loading started for:', album.title);
       });
       
-      // Set up audio event listeners - auto-play when loaded
+      // Set up audio event listeners 
       audio.addEventListener('canplaythrough', () => {
         console.log('Audio can play through for:', album.title, 'Duration:', audio?.duration);
         
-        // Check if this is still the current loading audio before playing
+        // Only auto-play if this is the currently loading audio
         if (loadingAudio === album.id) {
           const startTime = audio!.duration / 3;
           audio!.currentTime = startTime;
           
-          // Fade in
+          // Fade in and auto-start
           audio!.volume = 0;
           audio!.play().then(() => {
             console.log('Audio started playing for:', album.title);
@@ -387,8 +387,9 @@ export default function Music() {
         setPlayingAudio(null);
       });
     } else {
-      // For existing audio element, auto-play immediately if ready
+      // For existing audio element that's ready, just start loading state
       if (audio.readyState >= 4) { // HAVE_ENOUGH_DATA
+        setLoadingAudio(album.id);
         const startTime = audio.duration / 3;
         audio.currentTime = startTime;
         audio.volume = 0;
@@ -422,8 +423,9 @@ export default function Music() {
           setPlayingAudio(null);
         });
       } else {
-        // Audio not ready, wait for it to load
-        console.log('Audio not ready, waiting for loading...');
+        // Audio not ready, trigger reload
+        setLoadingAudio(album.id);
+        audio.load();
       }
     }
   };
