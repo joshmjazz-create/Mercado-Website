@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Footer from "@/components/footer";
 
 export default function Gallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const scrollRef = useRef<HTMLElement>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Handle window resize for responsive sizing
   useEffect(() => {
@@ -13,6 +15,33 @@ export default function Gallery() {
     
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Handle custom scrollbar fade effect
+  useEffect(() => {
+    const scrollElement = scrollRef.current;
+    if (!scrollElement) return;
+
+    const handleScroll = () => {
+      scrollElement.classList.add('scrolling');
+      
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      scrollTimeoutRef.current = setTimeout(() => {
+        scrollElement.classList.remove('scrolling');
+      }, 2000);
+    };
+
+    scrollElement.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      scrollElement.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Load photos from Google Drive API
@@ -131,7 +160,7 @@ export default function Gallery() {
   };
 
   return (
-    <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto">
+    <section ref={scrollRef} className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto custom-scrollbar">
       <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Gallery</h1>

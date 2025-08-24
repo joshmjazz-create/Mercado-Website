@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ExternalLink, Play, Pause } from "lucide-react";
 import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -29,6 +29,8 @@ export default function Music() {
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [loadingAudio, setLoadingAudio] = useState<string | null>(null);
   const [audioElements, setAudioElements] = useState<Map<string, HTMLAudioElement>>(new Map());
+  const scrollRef = useRef<HTMLElement>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const fetchMusicData = async () => {
@@ -66,6 +68,33 @@ export default function Music() {
     };
 
     fetchMusicData();
+  }, []);
+
+  // Handle custom scrollbar fade effect
+  useEffect(() => {
+    const scrollElement = scrollRef.current;
+    if (!scrollElement) return;
+
+    const handleScroll = () => {
+      scrollElement.classList.add('scrolling');
+      
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      scrollTimeoutRef.current = setTimeout(() => {
+        scrollElement.classList.remove('scrolling');
+      }, 2000);
+    };
+
+    scrollElement.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      scrollElement.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
   }, []);
 
   const fetchAlbumsInCategory = async (categoryFolderId: string, categoryName: string): Promise<Album[]> => {
@@ -500,7 +529,7 @@ export default function Music() {
   const upcomingAlbums = albums.filter(album => album.category === 'Upcoming');
 
   return (
-    <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto">
+    <section ref={scrollRef} className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto custom-scrollbar">
       <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Music</h1>

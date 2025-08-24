@@ -118,6 +118,41 @@
   --chart-5: hsl(340, 75%, 55%);
 }
 
+/* Custom scrollbar for Gallery and Music pages on desktop */
+@media (min-width: 768px) {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(147, 51, 234, 0) transparent;
+    transition: scrollbar-color 0.3s ease;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(147, 51, 234, 0);
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+
+  .custom-scrollbar.scrolling {
+    scrollbar-color: rgba(147, 51, 234, 0.7) transparent;
+  }
+
+  .custom-scrollbar.scrolling::-webkit-scrollbar-thumb {
+    background-color: rgba(147, 51, 234, 0.7);
+  }
+
+  .custom-scrollbar.scrolling::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(147, 51, 234, 0.9);
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
