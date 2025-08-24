@@ -3,25 +3,20 @@ import { useState, useEffect } from "react";
 // Updated for GitHub Pages deployment - using relative asset paths
 const bioImagePath = "./assets/Headshot_2_1755873415112.jpeg";
 
-// Function to parse biography content with exact formatting and preserve all italics
+// Function to parse biography content exactly as written in Google Docs
 function parseBiographyContent(content: string) {
   const paragraphs = content.split('\n\n').filter(p => p.trim());
   
   return paragraphs.map((paragraph, index) => {
-    // Process text to preserve Google Docs formatting
-    let processedText = paragraph;
-    
-    // Convert any markdown-style italics to HTML
-    processedText = processedText.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-    processedText = processedText.replace(/_([^_]+)_/g, '<em>$1</em>');
-    
+    // Display text exactly as it appears in the document - no processing needed
     return (
       <p 
         key={index}
         className="opacity-0 translate-y-4 animate-in" 
         style={{ animationDelay: `${600 + (index * 200)}ms` }}
-        dangerouslySetInnerHTML={{ __html: processedText }}
-      />
+      >
+        {paragraph}
+      </p>
     );
   });
 }
@@ -184,7 +179,12 @@ export default function Bio() {
                 const completedWord = text.trim() + firstWord;
                 console.log(`Completing broken word: "${text.trim()}" + "${firstWord}" = "${completedWord}"`);
                 
-                paragraphText += `*${completedWord}*`;
+                // For italic spans, wrap with actual asterisks to display literally
+                if (hasItalicClass) {
+                  paragraphText += `*${completedWord}*`;
+                } else {
+                  paragraphText += completedWord;
+                }
                 
                 // Update the next span's content to only have the remainder
                 if (remainder.trim()) {
@@ -196,6 +196,7 @@ export default function Bio() {
                 paragraphText += hasItalicClass ? `*${text}*` : text;
               }
             } else {
+              // Add asterisks around italic content to display them literally
               paragraphText += hasItalicClass ? `*${text}*` : text;
             }
           } else {
