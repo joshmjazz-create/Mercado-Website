@@ -175,17 +175,23 @@ export default function Bio() {
                                hasItalicClass; // Only combine if current span is italic
             
             if (isWordBroken && nextSpan) {
-              // Combine with next span to complete the word
+              // Only take the first word from the next span to complete the broken word
               const nextText = nextSpan.textContent || '';
-              const combinedText = text + nextText;
-              console.log(`Combining broken word: "${text}" + "${nextText}" = "${combinedText}"`);
+              const firstWordMatch = nextText.match(/^(\S+)(.*)$/);
               
-              // Check if we can find a word boundary to split properly
-              const wordMatch = combinedText.match(/^([^\s]+)(.*)$/);
-              if (wordMatch) {
-                const [, word, remainder] = wordMatch;
-                paragraphText += `*${word}*${remainder}`;
-                i++; // Skip the next span since we processed it
+              if (firstWordMatch) {
+                const [, firstWord, remainder] = firstWordMatch;
+                const completedWord = text.trim() + firstWord;
+                console.log(`Completing broken word: "${text.trim()}" + "${firstWord}" = "${completedWord}"`);
+                
+                paragraphText += `*${completedWord}*`;
+                
+                // Update the next span's content to only have the remainder
+                if (remainder.trim()) {
+                  nextSpan.textContent = remainder;
+                } else {
+                  i++; // Skip next span if it's now empty
+                }
               } else {
                 paragraphText += hasItalicClass ? `*${text}*` : text;
               }
