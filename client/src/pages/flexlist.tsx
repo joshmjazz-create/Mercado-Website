@@ -2,11 +2,44 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Download } from "lucide-react";
 import { FaApple, FaAndroid } from "react-icons/fa";
+import { useState, useEffect } from "react";
 
 // Updated for GitHub Pages deployment - using relative asset paths
 const flexListLogo = "./assets/file_00000000293061f5b6c62d71c7ed0c97_1755824354993.png";
 
 export default function FlexList() {
+  const [isAndroidAppReady, setIsAndroidAppReady] = useState(false);
+
+  useEffect(() => {
+    // Check if the APK file exists and has content
+    const checkAppAvailability = async () => {
+      try {
+        const response = await fetch('./assets/flexlist-android.apk', { method: 'HEAD' });
+        if (response.ok) {
+          const contentLength = response.headers.get('content-length');
+          // Consider the app ready if file exists and has content (> 1KB)
+          setIsAndroidAppReady(contentLength && parseInt(contentLength) > 1024);
+        }
+      } catch (error) {
+        console.log('APK file not ready yet');
+        setIsAndroidAppReady(false);
+      }
+    };
+
+    checkAppAvailability();
+  }, []);
+
+  const handleAndroidDownload = () => {
+    if (isAndroidAppReady) {
+      const link = document.createElement('a');
+      link.href = './assets/flexlist-android.apk';
+      link.download = 'FlexList.apk';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <div className="min-h-screen md:h-full bg-slate-800 text-white md:overflow-y-auto" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -37,13 +70,14 @@ export default function FlexList() {
                 <div className="mb-6">
                   <FaAndroid className="w-16 h-16 text-teal-400 mx-auto mb-4" />
                   <h3 className="text-xl font-normal text-white mb-2">Android</h3>
-                  <p className="text-gray-400 font-normal">App under development</p>
+                  <p className="text-gray-400 font-normal">
+                    {isAndroidAppReady ? "App is ready!" : "App under development"}
+                  </p>
                 </div>
                 <Button 
                   className="w-full bg-teal-600 hover:bg-teal-700 text-white font-normal"
-                  disabled
-                  data-download-path="./assets/flexlist-android.apk"
-                  data-download-name="FlexList.apk"
+                  disabled={!isAndroidAppReady}
+                  onClick={handleAndroidDownload}
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download for Android
