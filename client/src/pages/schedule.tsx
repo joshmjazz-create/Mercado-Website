@@ -188,6 +188,7 @@ export default function Schedule() {
   };
 
   return (
+    <>
     <section className="min-h-screen md:h-full bg-jazz-grey md:overflow-y-auto">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
@@ -324,11 +325,12 @@ export default function Schedule() {
           </DialogContent>
         </Dialog>
       </div>
-      
-      {/* Footer - only visible on mobile */}
-      <div className="md:hidden">
-        <Footer />
-      </div>
     </section>
+    
+    {/* Mobile Footer */}
+    <div className="md:hidden">
+      <Footer />
+    </div>
+    </>
   );
 }

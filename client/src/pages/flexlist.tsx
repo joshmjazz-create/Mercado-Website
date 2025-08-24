@@ -42,6 +42,7 @@ export default function FlexList() {
   };
 
   return (
+    <>
     <div className="min-h-screen md:h-full bg-slate-800 text-white md:overflow-y-auto" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header Section */}
@@ -109,11 +110,12 @@ export default function FlexList() {
           </div>
         </div>
       </div>
-      
-      {/* Footer - only visible on mobile */}
-      <div className="md:hidden">
-        <Footer />
-      </div>
     </div>
+    
+    {/* Mobile Footer */}
+    <div className="md:hidden">
+      <Footer />
+    </div>
+    </>
   );
 }

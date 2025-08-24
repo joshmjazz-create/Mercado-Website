@@ -271,6 +271,7 @@ export default function Bio() {
   };
 
   return (
+    <>
     <section className="min-h-screen relative">
       <style>{`
         @media (max-width: 767px) {
@@ -354,11 +355,12 @@ export default function Bio() {
           ) : null}
         </div>
       </div>
-      
-      {/* Footer - only visible on mobile */}
-      <div className="md:hidden">
-        <Footer />
-      </div>
     </section>
+    
+    {/* Mobile Footer */}
+    <div className="md:hidden">
+      <Footer />
+    </div>
+    </>
   );
 }
