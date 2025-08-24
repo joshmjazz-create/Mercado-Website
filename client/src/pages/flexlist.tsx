@@ -94,6 +94,11 @@ export default function FlexList() {
                   <FaApple className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-xl font-normal text-white mb-2">iOS</h3>
                   <p className="text-gray-400 font-normal">Web app available</p>
+                  <div className="mt-3 p-2 bg-amber-900/30 border border-amber-700/50 rounded-md">
+                    <p className="text-xs text-amber-300 font-normal">
+                      ⚠️ App is not finished but you can preview here
+                    </p>
+                  </div>
                 </div>
                 <Button 
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-normal"
