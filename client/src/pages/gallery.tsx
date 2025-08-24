@@ -230,10 +230,12 @@ export default function Gallery() {
         )}
       </div>
       
-      {/* Mobile Footer */}
-      <div className="md:hidden">
-        <Footer />
-      </div>
+      {/* Mobile Footer - only show when content is loaded or if there's an error */}
+      {(!isLoading || error) && (
+        <div className="md:hidden">
+          <Footer />
+        </div>
+      )}
     </section>
   );
 }

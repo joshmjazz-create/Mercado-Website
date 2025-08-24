@@ -750,10 +750,12 @@ export default function Music() {
         </Dialog>
       </div>
       
-      {/* Mobile Footer */}
-      <div className="md:hidden">
-        <Footer />
-      </div>
+      {/* Mobile Footer - only show when content is loaded */}
+      {!isLoading && (
+        <div className="md:hidden">
+          <Footer />
+        </div>
+      )}
     </section>
   );
 }
