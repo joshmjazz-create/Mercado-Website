@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Footer from "@/components/footer";
 
 export default function Gallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
@@ -199,11 +198,6 @@ export default function Gallery() {
             </div>
           </div>
         )}
-      </div>
-      
-      {/* Mobile Footer */}
-      <div className="md:hidden">
-        <Footer />
       </div>
     </section>
   );

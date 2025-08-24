@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -15,10 +15,13 @@ import FlexList from "@/pages/flexlist";
 import NotFound from "@/pages/not-found";
 
 function Router() {
+  const [location] = useLocation();
+  const isScrollablePage = location === '/gallery' || location === '/music';
+  
   return (
-    <div className="min-h-screen md:h-screen flex flex-col md:overflow-hidden">
+    <div className={`min-h-screen flex flex-col ${!isScrollablePage ? 'md:h-screen md:overflow-hidden' : ''}`}>
       <Navigation />
-      <main className="flex-1 md:overflow-hidden">
+      <main className={`flex-1 ${!isScrollablePage ? 'md:overflow-hidden' : ''}`}>
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/bio" component={Bio} />
@@ -30,7 +33,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </main>
-      <div className="hidden md:block">
+      <div className={isScrollablePage ? 'md:block' : 'hidden md:block'}>
         <Footer />
       </div>
     </div>
