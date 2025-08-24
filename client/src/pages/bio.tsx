@@ -31,6 +31,7 @@ function parseBiographyContent(content: string) {
 export default function Bio() {
   const [content, setContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const fetchBioContent = async () => {
@@ -50,6 +51,20 @@ export default function Bio() {
 
     fetchBioContent();
   }, []); // Remove deps to ensure fresh fetch
+
+  // Preload image to prevent size jumping
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      console.log('Bio image preloaded');
+      setImageLoaded(true);
+    };
+    img.onerror = () => {
+      console.log('Bio image failed to load');
+      setImageLoaded(true); // Still allow page to continue
+    };
+    img.src = bioImagePath;
+  }, []);
 
   // Also refetch when window gains focus (user comes back to tab)
   useEffect(() => {
@@ -264,16 +279,22 @@ export default function Bio() {
           section { background-color: hsl(220, 15%, 88%); }
         }
       `}</style>
-      {/* Mobile: Background Image */}
-      <div 
-        className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat animate-[slide-in-left_0.8s_ease-out_forwards]"
-        style={{ 
-          backgroundImage: `url(${bioImagePath})`,
-          animationDelay: '0ms'
-        }}
-      >
-        <div className="absolute inset-0 bg-black bg-opacity-60"></div>
-      </div>
+      {/* Mobile: Background Image - only show when content and image are loaded */}
+      {!isLoading && content && imageLoaded && (
+        <div 
+          className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 animate-in"
+          style={{ 
+            backgroundImage: `url(${bioImagePath})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            animationDelay: '500ms',
+            animationDuration: '800ms',
+            animationFillMode: 'forwards'
+          }}
+        >
+          <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+        </div>
+      )}
 
       {/* Desktop: Content with side image */}
       <div className="hidden md:block h-full bg-jazz-grey overflow-y-auto">
@@ -313,7 +334,7 @@ export default function Bio() {
 
       {/* Mobile: Content overlay */}
       <div className="md:hidden relative z-10 min-h-screen flex flex-col px-4 py-8">
-        {!isLoading && content && (
+        {!isLoading && content && imageLoaded && (
           <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '1500ms' }}>
             <h1 className="text-5xl font-bold text-purple-500 mb-6">Biography</h1>
             <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
@@ -321,7 +342,7 @@ export default function Bio() {
         )}
 
         <div className="flex-1 flex flex-col">
-          {!isLoading && content ? (
+          {!isLoading && content && imageLoaded ? (
             <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '2700ms' }}>
               <div className="bg-black bg-opacity-70 rounded-lg p-6 backdrop-blur-sm">
                 <div className="prose prose-base max-w-none text-white leading-relaxed space-y-6">
