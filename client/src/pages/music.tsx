@@ -3,6 +3,7 @@ import { ExternalLink, Play, Pause } from "lucide-react";
 import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/footer";
 
 interface Album {
   id: string;
@@ -718,6 +719,11 @@ export default function Music() {
             </div>
           </DialogContent>
         </Dialog>
+      </div>
+      
+      {/* Mobile Footer */}
+      <div className="md:hidden">
+        <Footer />
       </div>
     </section>
   );
