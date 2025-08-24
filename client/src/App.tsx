@@ -13,10 +13,16 @@ import Schedule from "@/pages/schedule";
 import Contact from "@/pages/contact";
 import FlexList from "@/pages/flexlist";
 import NotFound from "@/pages/not-found";
+import { initDynamicViewport } from "@/utils/viewport";
+import { useEffect } from "react";
 
 function Router() {
+  useEffect(() => {
+    initDynamicViewport();
+  }, []);
+
   return (
-    <div className="min-h-screen md:h-screen flex flex-col md:overflow-hidden">
+    <div className="min-h-screen md:h-dynamic-screen flex flex-col md:overflow-hidden">
       <Navigation />
       <main className="flex-1 md:overflow-hidden">
         <Switch>

@@ -43,7 +43,7 @@ export default function FlexList() {
 
   return (
     <>
-    <div className="min-h-screen md:h-full bg-slate-800 text-white md:overflow-y-auto" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+    <div className="min-h-screen md:min-h-dynamic-screen bg-slate-800 text-white md:overflow-y-auto" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header Section */}
         <div className="text-center mb-16 animate-in slide-in-from-bottom-8 duration-1000">

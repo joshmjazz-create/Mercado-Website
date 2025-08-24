@@ -7,7 +7,7 @@ const bgImageDesktop = "/assets/Another_Screenshot_1755918412460.jpg";
 export default function Home() {
   return (
     <>
-      <section className="relative min-h-screen md:h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: '#101010' }}>
+      <section className="relative min-h-screen md:h-dynamic-screen flex items-center justify-center overflow-hidden" style={{ backgroundColor: '#101010' }}>
         {/* Mobile: Background Image */}
         <div 
           className="md:hidden absolute inset-0 opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards] bg-cover bg-center bg-no-repeat"
@@ -24,7 +24,7 @@ export default function Home() {
           className="hidden md:block absolute opacity-0 animate-[slide-in-right_0.8s_ease-out_forwards] object-cover"
           style={{
             animationDelay: '0ms',
-            height: '100vh',
+            height: 'var(--dynamic-vh)',
             width: 'auto',
             right: '0',
             top: '0',
