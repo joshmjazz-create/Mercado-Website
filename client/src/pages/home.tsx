@@ -32,7 +32,7 @@ export default function Home() {
           }}
         />
         
-        <div className="relative text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
+        <div className="home-wrapper relative text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
           <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-500 mb-8 drop-shadow-lg opacity-0 scale-95 animate-in" style={{ 
             animationDelay: '1500ms',
             animationDuration: '1200ms'
