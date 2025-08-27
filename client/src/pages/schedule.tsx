@@ -1,133 +1,225 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { MapPin, Clock, Calendar } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import Footer from "@/components/footer";
 
 interface CalendarEvent {
   id: string;
   summary: string;
   description?: string;
-  start: { dateTime?: string; date?: string };
-  end: { dateTime?: string; date?: string };
+  start: { dateTime: string; timeZone?: string };
+  end: { dateTime: string; timeZone?: string };
   location?: string;
+  color?: string;
 }
 
 export default function Schedule() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [showEventModal, setShowEventModal] = useState(false);
 
   useEffect(() => {
-    async function fetchEvents() {
+    const fetchEvents = async () => {
       try {
+        const CALENDAR_ID = "joshm.jazz@gmail.com";
+        const API_KEY = "AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI";
         const response = await fetch(
-          `https://www.googleapis.com/calendar/v3/calendars/${import.meta.env.VITE_GOOGLE_CALENDAR_ID}/events?key=${import.meta.env.VITE_GOOGLE_API_KEY}`
+          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(
+            CALENDAR_ID
+          )}/events?key=${API_KEY}&timeMin=${new Date().toISOString()}&singleEvents=true&orderBy=startTime&maxResults=50`
         );
-        const data = await response.json();
 
-        if (data.items) {
-          const now = new Date();
-
-          const filteredEvents = data.items.filter((event: CalendarEvent) => {
-            const hasSHOW =
-              event.description &&
-              event.description.includes("SHOW");
-
-            const startDate = event.start.dateTime
-              ? new Date(event.start.dateTime)
-              : event.start.date
-              ? new Date(event.start.date)
-              : null;
-
-            return hasSHOW && startDate && startDate >= now;
-          });
-
-          // sort events chronologically
-          filteredEvents.sort((a: CalendarEvent, b: CalendarEvent) => {
-            const aDate = a.start.dateTime
-              ? new Date(a.start.dateTime).getTime()
-              : a.start.date
-              ? new Date(a.start.date).getTime()
-              : 0;
-            const bDate = b.start.dateTime
-              ? new Date(b.start.dateTime).getTime()
-              : b.start.date
-              ? new Date(b.start.date).getTime()
-              : 0;
-            return aDate - bDate;
-          });
-
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Calendar API Response:", data);
+          const filteredEvents =
+            data.items?.filter((event: any) =>
+              event.description?.includes("SHOW")
+            ) || [];
           setEvents(filteredEvents);
+        } else {
+          const errorData = await response.json();
+          console.error("Calendar API Error Response:", errorData);
         }
-      } catch (err) {
-        console.error("Error fetching calendar events:", err);
+      } catch (error) {
+        console.error("Schedule API Error:", error);
+        console.log("Using offline mode for schedule");
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchEvents();
   }, []);
 
-  function formatDate(dateString?: string) {
-    if (!dateString) return "";
+  const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, {
+    return date.toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
     });
-  }
+  };
 
-  function formatTime(dateString?: string) {
-    if (!dateString) return "";
+  const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString(undefined, {
-      hour: "2-digit",
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
       minute: "2-digit",
+      hour12: true,
     });
-  }
+  };
+
+  const cleanLocation = (location?: string) => {
+    if (!location) return "";
+    return location.replace(/\\/g, "");
+  };
+
+  const getEventColor = (description?: string) => {
+    if (!description) return "bg-purple-400";
+    const upperDesc = description.toUpperCase();
+    if (upperDesc.includes("RED")) return "bg-red-400";
+    if (upperDesc.includes("GREEN")) return "bg-green-400";
+    if (upperDesc.includes("YELLOW")) return "bg-yellow-400";
+    if (upperDesc.includes("ORANGE")) return "bg-orange-400";
+    if (upperDesc.includes("BLUE")) return "bg-blue-400";
+    return "bg-purple-400";
+  };
+
+  const cleanDescription = (description?: string) => {
+    if (!description) return "";
+    let cleaned = description.replace(/SHOW/g, "").trim();
+    cleaned = cleaned.replace(/\b(RED|GREEN|YELLOW|ORANGE|BLUE)\b/g, "").trim();
+    cleaned = cleaned.replace(/\s+/g, " ").trim();
+    return cleaned;
+  };
+
+  const renderDescriptionWithLinks = (description: string) => {
+    const cleaned = cleanDescription(description);
+    if (!cleaned) return null;
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = cleaned.split(urlRegex);
+    return parts.map((part, index) =>
+      urlRegex.test(part) ? (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-purple-600 hover:text-purple-800 underline break-all"
+        >
+          {part}
+        </a>
+      ) : (
+        part
+      )
+    );
+  };
+
+  const handleEventClick = (event: CalendarEvent) => {
+    setSelectedEvent(event);
+    setShowEventModal(true);
+  };
 
   return (
-    <section className="min-h-screen bg-[#101010] text-white py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto text-center mb-12">
-        <h1 className="text-5xl font-bold font-display text-purple-500 drop-shadow-lg">
-          Schedule
-        </h1>
-      </div>
+    <>
+      <section className="min-h-screen md:fit-screen bg-jazz-grey">
+        <div className="container mx-auto px-4 py-8">
+          <div
+            className="text-center mb-8 opacity-0 translate-y-4 animate-in"
+            style={{ animationDelay: "200ms" }}
+          >
+            <h1 className="text-5xl font-bold text-purple-500 mb-6">Schedule</h1>
+            <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
+          </div>
 
-      {loading ? (
-        <p className="text-center">Loading events...</p>
-      ) : events.length === 0 ? (
-        <p className="text-center">No upcoming shows.</p>
-      ) : (
-        <div className="space-y-6">
-          {events.map((event) => (
-            <Card key={event.id} className="bg-[#1a1a1a] text-left">
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold text-purple-400 mb-2">
-                  {event.summary}
-                </h2>
-                <p className="text-lg mb-1">
-                  <span className="font-semibold">Date:</span>{" "}
-                  {formatDate(event.start.dateTime || event.start.date)}
-                </p>
-                {event.start.dateTime && (
-                  <p className="text-lg mb-1">
-                    <span className="font-semibold">Time:</span>{" "}
-                    {formatTime(event.start.dateTime)} –{" "}
-                    {formatTime(event.end?.dateTime)}
-                  </p>
-                )}
-                {event.location && (
-                  <p className="text-lg">
-                    <span className="font-semibold">Location:</span>{" "}
-                    {event.location}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+          {loading && (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+            </div>
+          )}
+
+          {!loading && events.length === 0 && <div></div>}
+
+          {!loading && events.length > 0 && (
+            <div className="space-y-4 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "400ms" }}>
+              {events
+                .sort((a, b) => new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime())
+                .map((event) => (
+                  <div
+                    key={event.id}
+                    onClick={() => handleEventClick(event)}
+                    className={`p-4 rounded-lg cursor-pointer hover:opacity-80 transition-opacity ${getEventColor(
+                      event.description
+                    )} text-white`}
+                  >
+                    <div className="font-semibold text-lg">{event.summary}</div>
+                    <div className="text-sm">
+                      {formatDate(event.start.dateTime)} | {formatTime(event.start.dateTime)}
+                    </div>
+                    {event.location && (
+                      <div className="text-sm mt-1">
+                        <MapPin className="w-4 h-4 inline mr-1" />
+                        {cleanLocation(event.location)}
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+          )}
+
+          {/* Event Detail Modal */}
+          <Dialog open={showEventModal} onOpenChange={setShowEventModal}>
+            <DialogContent className="max-w-md bg-white">
+              <DialogTitle className="text-xl font-bold text-gray-800 mb-4">
+                {selectedEvent?.summary}
+              </DialogTitle>
+              {selectedEvent && (
+                <div className="space-y-4">
+                  <div className="flex items-center text-gray-600">
+                    <Calendar className="w-5 h-5 mr-3 text-purple-500" />
+                    <span>{formatDate(selectedEvent.start.dateTime)}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <Clock className="w-5 h-5 mr-3 text-purple-500" />
+                    <span>
+                      {formatTime(selectedEvent.start.dateTime)} -{" "}
+                      {formatTime(selectedEvent.end.dateTime)}
+                    </span>
+                  </div>
+                  {selectedEvent.location && (
+                    <div className="flex items-start text-gray-600">
+                      <MapPin className="w-5 h-5 mr-3 text-purple-500 mt-0.5" />
+                      <a
+                        href={`https://maps.google.com/?q=${encodeURIComponent(
+                          cleanLocation(selectedEvent.location)
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-purple-600 hover:text-purple-800 underline"
+                      >
+                        {cleanLocation(selectedEvent.location)}
+                      </a>
+                    </div>
+                  )}
+                  {selectedEvent.description && cleanDescription(selectedEvent.description) && (
+                    <div className="mt-4 p-3 bg-gray-50 rounded">
+                      <p className="text-gray-700">{renderDescriptionWithLinks(selectedEvent.description)}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
-      )}
-    </section>
+      </section>
+
+      {/* Mobile Footer */}
+      <div className="md:hidden">
+        <Footer />
+      </div>
+    </>
   );
 }
