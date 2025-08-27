@@ -74,14 +74,15 @@ export default function Schedule() {
     <>
       <section className="min-h-screen md:fit-screen bg-jazz-grey">
         <div className="container mx-auto px-4 py-8">
+          {/* Page Title */}
           <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
-            <h1 className="text-5xl font-bold text-black mb-6">Schedule</h1>
-            <div className="w-24 h-1 bg-gray-400 mx-auto"></div>
+            <h1 className="text-5xl font-bold text-purple-500 mb-6">Schedule</h1>
+            <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
           </div>
 
           {loading && (
             <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
             </div>
           )}
 
@@ -94,33 +95,33 @@ export default function Schedule() {
                   return (
                     <div
                       key={event.id}
-                      className={`flex items-center justify-between py-3 ${index < events.length - 1 ? "border-b border-gray-400" : ""}`}
+                      className={`flex items-center justify-between py-3 border-b border-gray-300`}
                     >
                       {/* Title */}
                       <div className="flex-1">
                         {eventLink ? (
-                          <a href={eventLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg text-black underline hover:text-gray-700">
+                          <a href={eventLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg text-purple-500 underline hover:text-purple-700">
                             {event.summary}
                           </a>
                         ) : (
-                          <span className="font-semibold text-lg text-black">{event.summary}</span>
+                          <span className="font-semibold text-lg text-purple-500">{event.summary}</span>
                         )}
                       </div>
 
                       {/* Date & Time */}
-                      <div className="flex-1 text-center text-black">
+                      <div className="flex-1 text-center text-gray-700">
                         <div className="font-medium">{formatDate(event.start.dateTime)}</div>
                         <div className="text-sm">{formatTime(event.start.dateTime)}</div>
                       </div>
 
                       {/* Location */}
-                      <div className="flex-1 text-right">
+                      <div className="flex-1 text-right text-gray-700">
                         {event.location && (
                           <a
                             href={`https://maps.google.com/?q=${encodeURIComponent(cleanLocation(event.location))}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-black underline hover:text-gray-700"
+                            className="underline hover:text-gray-900"
                           >
                             {cleanLocation(event.location)}
                           </a>
