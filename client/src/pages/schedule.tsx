@@ -98,13 +98,13 @@ export default function Schedule() {
                       className={`flex items-center justify-between py-3 border-b border-gray-300`}
                     >
                       {/* Title */}
-                      <div className="flex-1">
+                      <div className="flex-1 text-gray-700">
                         {eventLink ? (
-                          <a href={eventLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg text-purple-500 underline hover:text-purple-700">
+                          <a href={eventLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg underline hover:text-gray-900">
                             {event.summary}
                           </a>
                         ) : (
-                          <span className="font-semibold text-lg text-purple-500">{event.summary}</span>
+                          <span className="font-semibold text-lg">{event.summary}</span>
                         )}
                       </div>
 
