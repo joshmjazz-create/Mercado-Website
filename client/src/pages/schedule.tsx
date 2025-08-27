@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapPin, Clock, Calendar } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { MapPin, Calendar, Clock } from "lucide-react";
 import Footer from "@/components/footer";
 
 interface CalendarEvent {
@@ -16,8 +15,6 @@ interface CalendarEvent {
 export default function Schedule() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
-  const [showEventModal, setShowEventModal] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -32,7 +29,6 @@ export default function Schedule() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Calendar API Response:", data);
           const filteredEvents =
             data.items?.filter((event: any) =>
               event.description?.includes("SHOW")
@@ -44,7 +40,6 @@ export default function Schedule() {
         }
       } catch (error) {
         console.error("Schedule API Error:", error);
-        console.log("Using offline mode for schedule");
       } finally {
         setLoading(false);
       }
@@ -55,26 +50,24 @@ export default function Schedule() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
   };
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
+    return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
   };
 
   const cleanLocation = (location?: string) => {
     if (!location) return "";
     return location.replace(/\\/g, "");
+  };
+
+  const getEventLink = (description?: string) => {
+    if (!description) return undefined;
+    const urlRegex = /(https?:\/\/[^\s]+)/;
+    const match = description.match(urlRegex);
+    return match ? match[0] : undefined;
   };
 
   const getEventColor = (description?: string) => {
@@ -88,49 +81,11 @@ export default function Schedule() {
     return "bg-purple-400";
   };
 
-  const cleanDescription = (description?: string) => {
-    if (!description) return "";
-    let cleaned = description.replace(/SHOW/g, "").trim();
-    cleaned = cleaned.replace(/\b(RED|GREEN|YELLOW|ORANGE|BLUE)\b/g, "").trim();
-    cleaned = cleaned.replace(/\s+/g, " ").trim();
-    return cleaned;
-  };
-
-  const renderDescriptionWithLinks = (description: string) => {
-    const cleaned = cleanDescription(description);
-    if (!cleaned) return null;
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const parts = cleaned.split(urlRegex);
-    return parts.map((part, index) =>
-      urlRegex.test(part) ? (
-        <a
-          key={index}
-          href={part}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-purple-600 hover:text-purple-800 underline break-all"
-        >
-          {part}
-        </a>
-      ) : (
-        part
-      )
-    );
-  };
-
-  const handleEventClick = (event: CalendarEvent) => {
-    setSelectedEvent(event);
-    setShowEventModal(true);
-  };
-
   return (
     <>
       <section className="min-h-screen md:fit-screen bg-jazz-grey">
         <div className="container mx-auto px-4 py-8">
-          <div
-            className="text-center mb-8 opacity-0 translate-y-4 animate-in"
-            style={{ animationDelay: "200ms" }}
-          >
+          <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
             <h1 className="text-5xl font-bold text-purple-500 mb-6">Schedule</h1>
             <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
           </div>
@@ -141,78 +96,52 @@ export default function Schedule() {
             </div>
           )}
 
-          {!loading && events.length === 0 && <div></div>}
-
           {!loading && events.length > 0 && (
             <div className="space-y-4 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "400ms" }}>
               {events
                 .sort((a, b) => new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime())
-                .map((event) => (
-                  <div
-                    key={event.id}
-                    onClick={() => handleEventClick(event)}
-                    className={`p-4 rounded-lg cursor-pointer hover:opacity-80 transition-opacity ${getEventColor(
-                      event.description
-                    )} text-white`}
-                  >
-                    <div className="font-semibold text-lg">{event.summary}</div>
-                    <div className="text-sm">
-                      {formatDate(event.start.dateTime)} | {formatTime(event.start.dateTime)}
-                    </div>
-                    {event.location && (
-                      <div className="text-sm mt-1">
-                        <MapPin className="w-4 h-4 inline mr-1" />
-                        {cleanLocation(event.location)}
+                .map((event) => {
+                  const eventLink = getEventLink(event.description);
+                  return (
+                    <div
+                      key={event.id}
+                      className={`flex items-center justify-between p-4 rounded-lg ${getEventColor(event.description)} text-white`}
+                    >
+                      {/* Title */}
+                      <div className="flex-1">
+                        {eventLink ? (
+                          <a href={eventLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg underline hover:text-gray-200">
+                            {event.summary}
+                          </a>
+                        ) : (
+                          <span className="font-semibold text-lg">{event.summary}</span>
+                        )}
                       </div>
-                    )}
-                  </div>
-                ))}
+
+                      {/* Date & Time */}
+                      <div className="flex-1 text-center">
+                        <div className="font-medium">{formatDate(event.start.dateTime)}</div>
+                        <div className="text-sm">{formatTime(event.start.dateTime)}</div>
+                      </div>
+
+                      {/* Location */}
+                      <div className="flex-1 text-right">
+                        {event.location && (
+                          <a
+                            href={`https://maps.google.com/?q=${encodeURIComponent(cleanLocation(event.location))}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline hover:text-gray-200"
+                          >
+                            {cleanLocation(event.location)}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           )}
-
-          {/* Event Detail Modal */}
-          <Dialog open={showEventModal} onOpenChange={setShowEventModal}>
-            <DialogContent className="max-w-md bg-white">
-              <DialogTitle className="text-xl font-bold text-gray-800 mb-4">
-                {selectedEvent?.summary}
-              </DialogTitle>
-              {selectedEvent && (
-                <div className="space-y-4">
-                  <div className="flex items-center text-gray-600">
-                    <Calendar className="w-5 h-5 mr-3 text-purple-500" />
-                    <span>{formatDate(selectedEvent.start.dateTime)}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <Clock className="w-5 h-5 mr-3 text-purple-500" />
-                    <span>
-                      {formatTime(selectedEvent.start.dateTime)} -{" "}
-                      {formatTime(selectedEvent.end.dateTime)}
-                    </span>
-                  </div>
-                  {selectedEvent.location && (
-                    <div className="flex items-start text-gray-600">
-                      <MapPin className="w-5 h-5 mr-3 text-purple-500 mt-0.5" />
-                      <a
-                        href={`https://maps.google.com/?q=${encodeURIComponent(
-                          cleanLocation(selectedEvent.location)
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-purple-600 hover:text-purple-800 underline"
-                      >
-                        {cleanLocation(selectedEvent.location)}
-                      </a>
-                    </div>
-                  )}
-                  {selectedEvent.description && cleanDescription(selectedEvent.description) && (
-                    <div className="mt-4 p-3 bg-gray-50 rounded">
-                      <p className="text-gray-700">{renderDescriptionWithLinks(selectedEvent.description)}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </DialogContent>
-          </Dialog>
         </div>
       </section>
 
