@@ -70,17 +70,6 @@ export default function Schedule() {
     return match ? match[0] : undefined;
   };
 
-  const getEventColor = (description?: string) => {
-    if (!description) return "bg-purple-400";
-    const upperDesc = description.toUpperCase();
-    if (upperDesc.includes("RED")) return "bg-red-400";
-    if (upperDesc.includes("GREEN")) return "bg-green-400";
-    if (upperDesc.includes("YELLOW")) return "bg-yellow-400";
-    if (upperDesc.includes("ORANGE")) return "bg-orange-400";
-    if (upperDesc.includes("BLUE")) return "bg-blue-400";
-    return "bg-purple-400";
-  };
-
   return (
     <>
       <section className="min-h-screen md:fit-screen bg-jazz-grey">
@@ -105,12 +94,12 @@ export default function Schedule() {
                   return (
                     <div
                       key={event.id}
-                      className={`flex items-center justify-between p-4 rounded-lg ${getEventColor(event.description)} text-white`}
+                      className="flex items-center justify-between p-4 rounded-lg bg-white text-purple-600 hover:bg-gray-100 transition-colors"
                     >
                       {/* Title */}
                       <div className="flex-1">
                         {eventLink ? (
-                          <a href={eventLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg underline hover:text-gray-200">
+                          <a href={eventLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg underline hover:text-purple-800">
                             {event.summary}
                           </a>
                         ) : (
@@ -131,7 +120,7 @@ export default function Schedule() {
                             href={`https://maps.google.com/?q=${encodeURIComponent(cleanLocation(event.location))}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="underline hover:text-gray-200"
+                            className="underline hover:text-purple-800"
                           >
                             {cleanLocation(event.location)}
                           </a>
