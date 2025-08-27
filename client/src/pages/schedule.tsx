@@ -86,29 +86,26 @@ export default function Schedule() {
           )}
 
           {!loading && events.length > 0 && (
-            <div className="space-y-4 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "400ms" }}>
+            <div className="space-y-2 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "400ms" }}>
               {events
                 .sort((a, b) => new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime())
-                .map((event) => {
+                .map((event, index) => {
                   const eventLink = getEventLink(event.description);
                   return (
-                    <div
-                      key={event.id}
-                      className="flex items-center justify-between p-4 rounded-lg bg-white text-purple-600 hover:bg-gray-100 transition-colors"
-                    >
+                    <div key={event.id} className={`flex items-center justify-between py-3 ${index < events.length - 1 ? "border-b border-gray-300" : ""}`}>
                       {/* Title */}
                       <div className="flex-1">
                         {eventLink ? (
-                          <a href={eventLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg underline hover:text-purple-800">
+                          <a href={eventLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg text-purple-500 underline hover:text-purple-700">
                             {event.summary}
                           </a>
                         ) : (
-                          <span className="font-semibold text-lg">{event.summary}</span>
+                          <span className="font-semibold text-lg text-purple-500">{event.summary}</span>
                         )}
                       </div>
 
                       {/* Date & Time */}
-                      <div className="flex-1 text-center">
+                      <div className="flex-1 text-center text-purple-500">
                         <div className="font-medium">{formatDate(event.start.dateTime)}</div>
                         <div className="text-sm">{formatTime(event.start.dateTime)}</div>
                       </div>
@@ -120,7 +117,7 @@ export default function Schedule() {
                             href={`https://maps.google.com/?q=${encodeURIComponent(cleanLocation(event.location))}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="underline hover:text-purple-800"
+                            className="text-purple-500 underline hover:text-purple-700"
                           >
                             {cleanLocation(event.location)}
                           </a>
