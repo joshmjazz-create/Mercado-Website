@@ -25,7 +25,8 @@ export default function Contact() {
 
     try {
       await emailjs.send(
-        "template_hm36im4",   // Your Template ID
+        "service_p6hxlqn",       // Your new Gmail SMTP Service ID
+        "template_hm36im4",      // Your Template ID
         {
           name: formData.name,
           email: formData.email,
@@ -33,7 +34,7 @@ export default function Contact() {
           date: formData.date,
           message: formData.message
         },
-        "f3l713gprTCuwWXc9"   // Your Public Key
+        "f3l713gprTCuwWXc9"      // Your Public Key
       );
       alert("Message sent successfully!");
       setFormData({ name: "", email: "", subject: "", date: "", message: "" });
