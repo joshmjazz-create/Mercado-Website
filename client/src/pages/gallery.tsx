@@ -152,7 +152,7 @@ export default function Gallery() {
     >
       <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
-          <h1 className="text-5xl font-bold text-purple-500 mb-6">Media</h1>
+          <h1 className="text-5xl font-bold text-purple-500 mb-6">Gallery</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
 
