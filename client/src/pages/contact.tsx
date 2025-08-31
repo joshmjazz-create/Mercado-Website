@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 import Footer from "@/components/footer";
 import emailjs from "@emailjs/browser";
 
@@ -20,6 +19,14 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Ensure all fields are filled
+    const allFilled = Object.values(formData).every(value => value.trim() !== "");
+    if (!allFilled) {
+      alert("Please fill in all fields before sending.");
+      return;
+    }
+
     setSending(true);
 
     try {
@@ -58,7 +65,9 @@ export default function Contact() {
           <div className="max-w-2xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: "400ms" }}>
             <form onSubmit={handleSubmit} className="space-y-6 bg-white p-10 rounded-lg shadow-xl">
               <div>
-                <label className="block font-semibold text-gray-700 mb-1">Name</label>
+                <label className="block font-semibold text-gray-700 mb-1">
+                  Name <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   name="name"
@@ -69,7 +78,9 @@ export default function Contact() {
                 />
               </div>
               <div>
-                <label className="block font-semibold text-gray-700 mb-1">Email</label>
+                <label className="block font-semibold text-gray-700 mb-1">
+                  Email <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -80,7 +91,9 @@ export default function Contact() {
                 />
               </div>
               <div>
-                <label className="block font-semibold text-gray-700 mb-1">Subject</label>
+                <label className="block font-semibold text-gray-700 mb-1">
+                  Subject <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   name="subject"
@@ -91,7 +104,9 @@ export default function Contact() {
                 />
               </div>
               <div>
-                <label className="block font-semibold text-gray-700 mb-1">Date</label>
+                <label className="block font-semibold text-gray-700 mb-1">
+                  Date <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="date"
                   name="date"
@@ -102,7 +117,9 @@ export default function Contact() {
                 />
               </div>
               <div>
-                <label className="block font-semibold text-gray-700 mb-1">Your Message</label>
+                <label className="block font-semibold text-gray-700 mb-1">
+                  Your Message <span className="text-red-500">*</span>
+                </label>
                 <textarea
                   name="message"
                   value={formData.message}
@@ -124,40 +141,8 @@ export default function Contact() {
             {/* Left-aligned Email Info */}
             <div className="mt-6 text-left">
               <p className="text-purple-500 text-sm font-semibold">Contact Joshua Mercado</p>
-              <a href="mailto:joshm.jazz@gmail.com" className="text-gray-700 text-sm underline">joshm.jazz@gmail.com</a>
-            </div>
-          </div>
-
-          {/* Social Media */}
-          <div className="mt-12 text-center opacity-0 translate-y-4 animate-in" style={{ animationDelay: "600ms" }}>
-            <p className="text-gray-800 mb-6">Follow me on social media</p>
-            <div className="flex justify-center space-x-8">
-              <a
-                href="https://www.facebook.com/share/19eJ712nF4/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#1877F2] hover:opacity-80 transition-opacity duration-300"
-                aria-label="Facebook"
-              >
-                <FaFacebook className="w-10 h-10" />
-              </a>
-              <a
-                href="https://www.instagram.com/josh.m_music?igsh=MWtlZmZlZDQ5enZtMQ=="
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#E4405F] hover:opacity-80 transition-opacity duration-300"
-                aria-label="Instagram"
-              >
-                <FaInstagram className="w-10 h-10" />
-              </a>
-              <a
-                href="https://youtube.com/@joshm.music_?si=6rdyKqF43CHNXqDY"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#FF0000] hover:opacity-80 transition-opacity duration-300"
-                aria-label="YouTube"
-              >
-                <FaYoutube className="w-10 h-10" />
+              <a href="mailto:joshm.jazz@gmail.com" className="text-gray-700 text-sm underline">
+                joshm.jazz@gmail.com
               </a>
             </div>
           </div>
