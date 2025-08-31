@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Mail, Phone } from "lucide-react";
 import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 import Footer from "@/components/footer";
 import emailjs from "@emailjs/browser";
@@ -25,8 +24,8 @@ export default function Contact() {
 
     try {
       await emailjs.send(
-        "service_p6hxlqn",       // Your new Gmail SMTP Service ID
-        "template_hm36im4",      // Your Template ID
+        "service_p6hxlqn",
+        "template_hm36im4",
         {
           name: formData.name,
           email: formData.email,
@@ -34,7 +33,7 @@ export default function Contact() {
           date: formData.date,
           message: formData.message
         },
-        "f3l713gprTCuwWXc9"      // Your Public Key
+        "f3l713gprTCuwWXc9"
       );
       alert("Message sent successfully!");
       setFormData({ name: "", email: "", subject: "", date: "", message: "" });
@@ -121,67 +120,45 @@ export default function Contact() {
                 {sending ? "Sending..." : "Send Message"}
               </button>
             </form>
+
+            {/* Left-aligned Email Info */}
+            <div className="mt-6 text-left">
+              <p className="text-purple-500 text-sm font-semibold">Contact Joshua Mercado</p>
+              <a href="mailto:joshm.jazz@gmail.com" className="text-gray-700 text-sm underline">joshm.jazz@gmail.com</a>
+            </div>
           </div>
 
-          {/* Existing Contact Info */}
-          <div className="mt-12 space-y-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "600ms" }}>
-            <div className="flex flex-col sm:flex-row items-center justify-center">
+          {/* Social Media */}
+          <div className="mt-12 text-center opacity-0 translate-y-4 animate-in" style={{ animationDelay: "600ms" }}>
+            <p className="text-gray-800 mb-6">Follow me on social media</p>
+            <div className="flex justify-center space-x-8">
               <a
-                href="mailto:joshm.jazz@gmail.com"
-                className="bg-purple-500 hover:bg-purple-400 text-white p-3 rounded-lg mb-2 sm:mb-0 sm:mr-4 transition-colors duration-300 cursor-pointer"
+                href="https://www.facebook.com/share/19eJ712nF4/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#1877F2] hover:opacity-80 transition-opacity duration-300"
+                aria-label="Facebook"
               >
-                <Mail className="w-5 h-5" />
+                <FaFacebook className="w-10 h-10" />
               </a>
-              <div className="text-center text-sm">
-                <p className="font-semibold text-purple-500">Email</p>
-                <p className="text-gray-800">joshm.jazz@gmail.com</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center">
               <a
-                href="tel:+14072760739"
-                className="bg-purple-500 hover:bg-purple-400 text-white p-3 rounded-lg mb-2 sm:mb-0 sm:mr-4 transition-colors duration-300 cursor-pointer"
+                href="https://www.instagram.com/josh.m_music?igsh=MWtlZmZlZDQ5enZtMQ=="
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#E4405F] hover:opacity-80 transition-opacity duration-300"
+                aria-label="Instagram"
               >
-                <Phone className="w-5 h-5" />
+                <FaInstagram className="w-10 h-10" />
               </a>
-              <div className="text-center text-sm">
-                <p className="font-semibold text-purple-500">Phone</p>
-                <p className="text-gray-800">(407) 276-0739</p>
-              </div>
-            </div>
-
-            <div className="text-center pt-8 border-t border-gray-200">
-              <p className="text-gray-800 mb-6">Follow me on social media</p>
-              <div className="flex justify-center space-x-8">
-                <a
-                  href="https://www.facebook.com/share/19eJ712nF4/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#1877F2] hover:opacity-80 transition-opacity duration-300"
-                  aria-label="Facebook"
-                >
-                  <FaFacebook className="w-10 h-10" />
-                </a>
-                <a
-                  href="https://www.instagram.com/josh.m_music?igsh=MWtlZmZlZDQ5enZtMQ=="
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#E4405F] hover:opacity-80 transition-opacity duration-300"
-                  aria-label="Instagram"
-                >
-                  <FaInstagram className="w-10 h-10" />
-                </a>
-                <a
-                  href="https://youtube.com/@joshm.music_?si=6rdyKqF43CHNXqDY"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#FF0000] hover:opacity-80 transition-opacity duration-300"
-                  aria-label="YouTube"
-                >
-                  <FaYoutube className="w-10 h-10" />
-                </a>
-              </div>
+              <a
+                href="https://youtube.com/@joshm.music_?si=6rdyKqF43CHNXqDY"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#FF0000] hover:opacity-80 transition-opacity duration-300"
+                aria-label="YouTube"
+              >
+                <FaYoutube className="w-10 h-10" />
+              </a>
             </div>
           </div>
         </div>
