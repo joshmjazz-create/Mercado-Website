@@ -586,7 +586,7 @@ export default function Music() {
             {/* Featured On Section */}
             {featuredAlbums.length > 0 && (
               <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '600ms' }}>
-                <h2 className="text-2xl font-semibold text-gray-800 mb-8 text-left underline decoration-purple-500">Featured On</h2>
+                <h2 className="text-2xl font-semibold text-gray-700 mb-8 text-left underline decoration-gray-700">Featured On</h2>
                 <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
                   {featuredAlbums.map((album, index) => (
                     <div
@@ -626,7 +626,7 @@ export default function Music() {
             {/* Upcoming Section */}
             {upcomingAlbums.length > 0 && (
               <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '800ms' }}>
-                <h2 className="text-2xl font-semibold text-gray-800 mb-8 text-left underline decoration-purple-500">Upcoming</h2>
+                <h2 className="text-2xl font-semibold text-gray-700 mb-8 text-left underline decoration-gray-700">Upcoming</h2>
                 <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
                   {upcomingAlbums.map((album, index) => (
                     <div
