@@ -6,15 +6,17 @@ export default function Gallery() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const scrollRef = useRef<HTMLElement>(null);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
+  // Update document title
+  useEffect(() => {
+    document.title = "Media";
+  }, []);
+
   // Handle window resize for responsive sizing
   useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Handle custom scrollbar fade effect
@@ -23,24 +25,17 @@ export default function Gallery() {
     if (!scrollElement) return;
 
     const handleScroll = () => {
-      scrollElement.classList.add('scrolling');
-      
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-      
+      scrollElement.classList.add("scrolling");
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
       scrollTimeoutRef.current = setTimeout(() => {
-        scrollElement.classList.remove('scrolling');
+        scrollElement.classList.remove("scrolling");
       }, 2000);
     };
 
-    scrollElement.addEventListener('scroll', handleScroll);
-    
+    scrollElement.addEventListener("scroll", handleScroll);
     return () => {
-      scrollElement.removeEventListener('scroll', handleScroll);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
+      scrollElement.removeEventListener("scroll", handleScroll);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     };
   }, []);
 
@@ -53,35 +48,31 @@ export default function Gallery() {
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
-        const PHOTOS_FOLDER_ID = '1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd';
-        const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
+        const PHOTOS_FOLDER_ID = "1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd";
+        const API_KEY = "AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI";
         const response = await fetch(
           `https://www.googleapis.com/drive/v3/files?q='${PHOTOS_FOLDER_ID}'+in+parents+and+mimeType+contains+'image'&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
         );
-        
+
         if (response.ok) {
           const data = await response.json();
-          console.log('Gallery API Response:', data);
+          console.log("Gallery API Response:", data);
           const photosWithDimensions = await Promise.all(
             (data.files || []).map(async (photo: any) => {
               const imageUrl = `https://lh3.googleusercontent.com/d/${photo.id}`;
               const dimensions = await getImageDimensions(imageUrl);
-              return {
-                ...photo,
-                imageUrl,
-                ...dimensions
-              };
+              return { ...photo, imageUrl, ...dimensions };
             })
           );
           setPhotos(photosWithDimensions);
           setProcessedPhotos(organizePhotosForLayout(photosWithDimensions));
         } else {
           const errorData = await response.json();
-          console.error('Gallery API Error Response:', errorData);
+          console.error("Gallery API Error Response:", errorData);
         }
       } catch (error) {
-        console.error('Gallery API Error:', error);
-        console.log('Using offline mode for gallery');
+        console.error("Gallery API Error:", error);
+        console.log("Using offline mode for gallery");
       } finally {
         setIsLoading(false);
       }
@@ -90,80 +81,78 @@ export default function Gallery() {
     fetchPhotos();
   }, []);
 
-  const getImageDimensions = (src: string): Promise<{width: number, height: number, orientation: string}> => {
+  const getImageDimensions = (
+    src: string
+  ): Promise<{ width: number; height: number; orientation: string }> => {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
         const aspectRatio = img.width / img.height;
-        const orientation = aspectRatio > 1.2 ? 'horizontal' : aspectRatio < 0.8 ? 'vertical' : 'square';
-        resolve({
-          width: img.width,
-          height: img.height,
-          orientation
-        });
+        const orientation =
+          aspectRatio > 1.2 ? "horizontal" : aspectRatio < 0.8 ? "vertical" : "square";
+        resolve({ width: img.width, height: img.height, orientation });
       };
-      img.onerror = () => {
-        resolve({ width: 1, height: 1, orientation: 'square' });
-      };
+      img.onerror = () => resolve({ width: 1, height: 1, orientation: "square" });
       img.src = src;
     });
   };
 
   const organizePhotosForLayout = (photos: any[]) => {
-    const horizontal = photos.filter(p => p.orientation === 'horizontal');
-    const vertical = photos.filter(p => p.orientation === 'vertical');
-    const square = photos.filter(p => p.orientation === 'square');
-    
+    const horizontal = photos.filter((p) => p.orientation === "horizontal");
+    const vertical = photos.filter((p) => p.orientation === "vertical");
+    const square = photos.filter((p) => p.orientation === "square");
+
     const organized = [];
-    let hIndex = 0, vIndex = 0, sIndex = 0;
-    
+    let hIndex = 0,
+      vIndex = 0,
+      sIndex = 0;
+
     while (hIndex < horizontal.length || vIndex < vertical.length || sIndex < square.length) {
-      // Try to create groups: 2 horizontal + 1 vertical, or mix with squares
       if (hIndex < horizontal.length - 1 && vIndex < vertical.length) {
-        // Group: 2 horizontal with 1 vertical
         organized.push({
-          type: 'group',
+          type: "group",
           items: [
-            { ...horizontal[hIndex], position: 'top-left' },
-            { ...horizontal[hIndex + 1], position: 'bottom-left' },
-            { ...vertical[vIndex], position: 'right' }
+            { ...horizontal[hIndex], position: "top-left" },
+            { ...horizontal[hIndex + 1], position: "bottom-left" },
+            { ...vertical[vIndex], position: "right" }
           ]
         });
         hIndex += 2;
         vIndex += 1;
       } else if (sIndex < square.length - 1) {
-        // Group: 2 squares side by side
         organized.push({
-          type: 'group',
+          type: "group",
           items: [
-            { ...square[sIndex], position: 'left' },
-            { ...square[sIndex + 1], position: 'right' }
+            { ...square[sIndex], position: "left" },
+            { ...square[sIndex + 1], position: "right" }
           ]
         });
         sIndex += 2;
       } else {
-        // Single items
         if (hIndex < horizontal.length) {
-          organized.push({ type: 'single', item: horizontal[hIndex] });
+          organized.push({ type: "single", item: horizontal[hIndex] });
           hIndex++;
         } else if (vIndex < vertical.length) {
-          organized.push({ type: 'single', item: vertical[vIndex] });
+          organized.push({ type: "single", item: vertical[vIndex] });
           vIndex++;
         } else if (sIndex < square.length) {
-          organized.push({ type: 'single', item: square[sIndex] });
+          organized.push({ type: "single", item: square[sIndex] });
           sIndex++;
         }
       }
     }
-    
+
     return organized;
   };
 
   return (
-    <section ref={scrollRef} className="min-h-screen desktop-container bg-jazz-grey md:overflow-y-auto custom-scrollbar">
+    <section
+      ref={scrollRef}
+      className="min-h-screen desktop-container bg-jazz-grey md:overflow-y-auto custom-scrollbar"
+    >
       <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
-        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
-          <h1 className="text-5xl font-bold text-purple-500 mb-6">Gallery</h1>
+        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
+          <h1 className="text-5xl font-bold text-purple-500 mb-6">Media</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
 
@@ -179,16 +168,15 @@ export default function Gallery() {
           </div>
         )}
 
-        {!isLoading && !error && photos.length === 0 && (
-          // Don't show placeholder - just empty space when no photos
-          <div></div>
-        )}
+        {!isLoading && photos.length === 0 && <div></div>}
 
-        {/* Simple masonry layout */}
         {!isLoading && photos.length > 0 && (
-          <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '400ms' }}>
-            {photos.map((photo, index) => (
-              <div 
+          <div
+            className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3 opacity-0 translate-y-4 animate-in"
+            style={{ animationDelay: "400ms" }}
+          >
+            {photos.map((photo) => (
+              <div
                 key={photo.id}
                 className="break-inside-avoid mb-3 cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
                 onClick={() => setSelectedPhoto(photo.imageUrl)}
@@ -204,9 +192,8 @@ export default function Gallery() {
           </div>
         )}
 
-        {/* Modal for enlarged photo view */}
         {selectedPhoto && (
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
             onClick={() => setSelectedPhoto(null)}
           >
@@ -229,8 +216,7 @@ export default function Gallery() {
           </div>
         )}
       </div>
-      
-      {/* Mobile Footer - only show when content is loaded or if there's an error */}
+
       {(!isLoading || error) && (
         <div className="md:hidden">
           <Footer />
