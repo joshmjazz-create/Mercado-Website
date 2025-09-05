@@ -299,7 +299,7 @@ export default function Bio() {
       )}
 
       {/* Desktop: Content with side image */}
-      <div className="hidden md:block h-full bg-jazz-grey overflow-y-auto">
+      <div className="hidden md:block h-full bg-white overflow-y-auto">
         <div className="container mx-auto px-4 py-8">
           {!isLoading && content && (
             <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
@@ -313,7 +313,7 @@ export default function Bio() {
               <div className="flex gap-12 items-center">
                 {/* Bio Content */}
                 <div className="flex-1">
-                  <div className="bg-jazz-grey rounded-lg shadow-lg p-8">
+                  <div className="bg-white rounded-lg shadow-lg p-8">
                     <div className="prose prose-base max-w-none text-gray-700 leading-relaxed space-y-6">
                       {parseBiographyContent(content)}
                     </div>
