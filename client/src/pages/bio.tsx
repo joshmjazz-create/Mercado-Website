@@ -293,7 +293,7 @@ export default function Bio() {
         </div>
       </div>
 
-      <div className="md:hidden relative z-10 min-h-screen flex flex-col px-4 py-8">
+      <div className="md:hidden relative z-10 min-h-screen flex flex-col px-4 py-8 bg-[#101010]">
         {!isLoading && content && imageLoaded && (
           <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '1500ms' }}>
             <h1 className="text-5xl font-bold text-purple-500 mb-6">Biography</h1>
