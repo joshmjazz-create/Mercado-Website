@@ -7,11 +7,6 @@ export default function Gallery() {
   const scrollRef = useRef<HTMLElement>(null);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Update document title
-  useEffect(() => {
-    document.title = "Gallery";
-  }, []);
-
   // Handle window resize for responsive sizing
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
