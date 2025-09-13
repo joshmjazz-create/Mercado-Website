@@ -7,7 +7,7 @@ export default function Gallery() {
   const scrollRef = useRef<HTMLElement>(null);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-      useEffect(() => {
+  useEffect(() => {
     document.title = "Gallery";
   }, []);
 
@@ -145,82 +145,78 @@ export default function Gallery() {
   };
 
   return (
-    <section
-      ref={scrollRef}
-      className="min-h-screen desktop-container bg-jazz-grey md:overflow-y-auto custom-scrollbar"
-    >
-      <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
-        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
-          <h1 className="text-5xl font-bold text-purple-500 mb-6">Gallery</h1>
-          <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
-        </div>
-
-        {isLoading && (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-800"></div>
+    <>
+      <section ref={scrollRef} className="desktop-container bg-jazz-grey custom-scrollbar">
+        <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
+          <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
+            <h1 className="text-5xl font-bold text-purple-500 mb-6">Gallery</h1>
+            <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
           </div>
-        )}
 
-        {error && (
-          <div className="text-center py-20">
-            <p className="text-red-600 text-lg">Error loading photos</p>
-          </div>
-        )}
-
-        {!isLoading && photos.length === 0 && <div></div>}
-
-        {!isLoading && photos.length > 0 && (
-          <div
-            className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3 opacity-0 translate-y-4 animate-in"
-            style={{ animationDelay: "400ms" }}
-          >
-            {photos.map((photo) => (
-              <div
-                key={photo.id}
-                className="break-inside-avoid mb-3 cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
-                onClick={() => setSelectedPhoto(photo.imageUrl)}
-              >
-                <img
-                  src={photo.imageUrl}
-                  alt={photo.name}
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {selectedPhoto && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
-            onClick={() => setSelectedPhoto(null)}
-          >
-            <div className="relative w-full h-full flex items-center justify-center p-8">
-              <img
-                src={selectedPhoto}
-                alt="Gallery photo"
-                className="max-w-full max-h-full object-contain rounded-lg"
-              />
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedPhoto(null);
-                }}
-                className="absolute top-8 right-8 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center z-10 transition-colors"
-              >
-                ×
-              </button>
+          {isLoading && (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-800"></div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
 
-      {(!isLoading || error) && (
-        <div className="md:hidden">
-          <Footer />
+          {error && (
+            <div className="text-center py-20">
+              <p className="text-red-600 text-lg">Error loading photos</p>
+            </div>
+          )}
+
+          {!isLoading && photos.length === 0 && <div></div>}
+
+          {!isLoading && photos.length > 0 && (
+            <div
+              className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3 opacity-0 translate-y-4 animate-in"
+              style={{ animationDelay: "400ms" }}
+            >
+              {photos.map((photo) => (
+                <div
+                  key={photo.id}
+                  className="break-inside-avoid mb-3 cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
+                  onClick={() => setSelectedPhoto(photo.imageUrl)}
+                >
+                  <img
+                    src={photo.imageUrl}
+                    alt={photo.name}
+                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {selectedPhoto && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
+              onClick={() => setSelectedPhoto(null)}
+            >
+              <div className="relative w-full h-full flex items-center justify-center p-8">
+                <img
+                  src={selectedPhoto}
+                  alt="Gallery photo"
+                  className="max-w-full max-h-full object-contain rounded-lg"
+                />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPhoto(null);
+                  }}
+                  className="absolute top-8 right-8 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center z-10 transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-    </section>
+      </section>
+
+      {/* Footer outside section to connect with page content */}
+      <Footer />
+    </>
   );
 }
