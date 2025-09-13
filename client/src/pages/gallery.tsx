@@ -9,7 +9,7 @@ export default function Gallery() {
 
   // Update document title
   useEffect(() => {
-    document.title = "Media";
+    document.title = "Gallery";
   }, []);
 
   // Handle window resize for responsive sizing
