@@ -32,6 +32,10 @@ export default function Music() {
   const scrollRef = useRef<HTMLElement>(null);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+      useEffect(() => {
+    document.title = "Music";
+  }, []);
+  
   useEffect(() => {
     const fetchMusicData = async () => {
       try {
