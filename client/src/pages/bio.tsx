@@ -28,6 +28,10 @@ export default function Bio() {
   const [content, setContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    document.title = "Bio";
+  }, []);
   
   useEffect(() => {
     const fetchBioContent = async () => {
