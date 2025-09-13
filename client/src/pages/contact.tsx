@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Footer from "@/components/footer";
 import emailjs from "@emailjs/browser";
 
@@ -10,6 +10,10 @@ export default function Contact() {
     date: "",
     message: ""
   });
+
+    useEffect(() => {
+    document.title = "Contact";
+  }, []);
   
   const [sending, setSending] = useState(false);
 
