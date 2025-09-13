@@ -5,11 +5,6 @@ import { FaApple, FaAndroid } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import Footer from "@/components/footer";
 
-// Update document title
-  useEffect(() => {
-    document.title = "Flexlist";
-  }, []);
-
 // Updated for GitHub Pages deployment - using relative asset paths
 const flexListLogo = "./assets/file_00000000293061f5b6c62d71c7ed0c97_1755824354993.png";
 
