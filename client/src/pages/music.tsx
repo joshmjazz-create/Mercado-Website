@@ -5,6 +5,11 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 
+// Update document title
+  useEffect(() => {
+    document.title = "Music";
+  }, []);
+
 interface Album {
   id: string;
   title: string;
