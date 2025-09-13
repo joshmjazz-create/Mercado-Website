@@ -2,6 +2,11 @@ import { useState } from "react";
 import Footer from "@/components/footer";
 import emailjs from "@emailjs/browser";
 
+// Update document title
+  useEffect(() => {
+    document.title = "Contact";
+  }, []);
+
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
@@ -10,11 +15,6 @@ export default function Contact() {
     date: "",
     message: ""
   });
-
-// Update document title
-  useEffect(() => {
-    document.title = "Contact";
-  }, []);
   
   const [sending, setSending] = useState(false);
 
