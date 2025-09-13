@@ -29,6 +29,11 @@ export default function Bio() {
   const [isLoading, setIsLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+// Update document title
+  useEffect(() => {
+    document.title = "Bio";
+  }, []);
+  
   useEffect(() => {
     const fetchBioContent = async () => {
       try {
