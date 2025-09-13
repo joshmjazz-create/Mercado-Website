@@ -17,6 +17,10 @@ export default function Schedule() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "Schedule";
+  }, []);
+
+  useEffect(() => {
     const fetchEvents = async () => {
       try {
         const CALENDAR_ID = "joshm.jazz@gmail.com";
