@@ -1,10 +1,15 @@
 // Updated for GitHub Pages deployment - using relative asset paths
 import Footer from "@/components/footer";
+import { useEffect } from "react";
 
 const bgImageMobile = "/assets/Screenshot_20250820_160009_Gallery_1755720047192.jpg";
 const bgImageDesktop = "/assets/Another_Screenshot_1755918412460.jpg";
 
 export default function Home() {
+  useEffect(() => {
+    document.title = "Home"; // Set tab title
+  }, []);
+
   return (
     <>
       <section className="relative min-h-screen md:fit-screen overflow-hidden" style={{ backgroundColor: '#101010' }}>
