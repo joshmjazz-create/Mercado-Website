@@ -12,11 +12,6 @@ interface CalendarEvent {
   color?: string;
 }
 
-// Update document title
-  useEffect(() => {
-    document.title = "Schedule";
-  }, []);
-
 export default function Schedule() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
