@@ -11,6 +11,11 @@ export default function Contact() {
     message: ""
   });
 
+// Update document title
+  useEffect(() => {
+    document.title = "Contact";
+  }, []);
+  
   const [sending, setSending] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
