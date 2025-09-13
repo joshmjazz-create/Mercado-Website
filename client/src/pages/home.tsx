@@ -4,6 +4,11 @@ import Footer from "@/components/footer";
 const bgImageMobile = "/assets/Screenshot_20250820_160009_Gallery_1755720047192.jpg";
 const bgImageDesktop = "/assets/Another_Screenshot_1755918412460.jpg";
 
+// Update document title
+  useEffect(() => {
+    document.title = "Home";
+  }, []);
+
 export default function Home() {
   return (
     <>
