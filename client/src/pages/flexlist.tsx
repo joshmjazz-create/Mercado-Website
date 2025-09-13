@@ -11,6 +11,10 @@ const flexListLogo = "./assets/file_00000000293061f5b6c62d71c7ed0c97_17558243549
 export default function FlexList() {
   const [isAndroidAppReady, setIsAndroidAppReady] = useState(false);
 
+    useEffect(() => {
+    document.title = "Flexlist";
+  }, []);
+  
   useEffect(() => {
     // Check if the APK file exists and has content
     const checkAppAvailability = async () => {
