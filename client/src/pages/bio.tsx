@@ -249,20 +249,23 @@ export default function Bio() {
   return (
     <>
     <section className="min-h-screen md:fit-screen relative bg-jazz-grey">
-      {/* ✅ Changed: removed imageLoaded check here */}
+      {/* ✅ Mobile: background color behind image overlay */}
       {!isLoading && content && (
-        <div 
-          className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 animate-in"
-          style={{ 
-            backgroundImage: `url(${bioImagePath})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            animationDelay: '500ms',
-            animationDuration: '800ms',
-            animationFillMode: 'forwards'
-          }}
-        >
-          <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div className="md:hidden absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[#101010]" />
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 animate-in"
+            style={{ 
+              backgroundImage: `url(${bioImagePath})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              animationDelay: '500ms',
+              animationDuration: '800ms',
+              animationFillMode: 'forwards'
+            }}
+          >
+            <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+          </div>
         </div>
       )}
 
