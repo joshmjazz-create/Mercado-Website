@@ -249,7 +249,8 @@ export default function Bio() {
   return (
     <>
     <section className="min-h-screen md:fit-screen relative bg-jazz-grey">
-      {!isLoading && content && imageLoaded && (
+      {/* ✅ Changed: removed imageLoaded check here */}
+      {!isLoading && content && (
         <div 
           className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 animate-in"
           style={{ 
@@ -298,7 +299,7 @@ export default function Bio() {
       </div>
 
       <div className="md:hidden relative z-10 min-h-screen flex flex-col px-4 py-8 bg-[#101010]">
-        {!isLoading && content && imageLoaded && (
+        {!isLoading && content && (
           <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '1500ms' }}>
             <h1 className="text-5xl font-bold text-purple-500 mb-6">Biography</h1>
             <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
@@ -306,7 +307,7 @@ export default function Bio() {
         )}
 
         <div className="flex-1 flex flex-col">
-          {!isLoading && content && imageLoaded ? (
+          {!isLoading && content ? (
             <div className="opacity-0 translate-y-4 animate-in" style={{ animationDelay: '2700ms' }}>
               <div className="bg-black bg-opacity-70 rounded-lg p-6 backdrop-blur-sm">
                 <div className="prose prose-base max-w-none text-white leading-relaxed space-y-6">
