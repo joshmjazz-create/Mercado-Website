@@ -252,9 +252,9 @@ export default function Bio() {
       {/* ✅ Mobile: background color behind image overlay */}
       {!isLoading && content && (
         <div className="md:hidden absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[#101010] z-0" />
+          <div className="absolute inset-0 bg-[#101010]" />
           <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 animate-in"
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 animate-in z-10"
             style={{ 
               backgroundImage: `url(${bioImagePath})`,
               backgroundSize: 'cover',
