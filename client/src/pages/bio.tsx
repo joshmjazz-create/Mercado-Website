@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Footer from "@/components/footer";
 
-const bioImagePath = "/assets/Headshot_2_1755873415112.jpeg";
+const bioImagePath = "./assets/Headshot_2_1755873415112.jpeg";
 
 function parseBiographyContent(content: string) {
   const paragraphs = content.split('\n\n').filter(p => p.trim());
@@ -252,7 +252,7 @@ export default function Bio() {
       {/* ✅ Mobile: background color behind image overlay */}
       {!isLoading && content && (
         <div className="md:hidden absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[#101010]" />
+          <div className="absolute inset-0 bg-[#101010] z-0" />
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 animate-in"
             style={{ 
