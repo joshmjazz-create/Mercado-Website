@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Footer from "@/components/footer";
 
-const bioImagePath = "./assets/Headshot_2_1755873415112.jpeg";
+const bioImagePath = "/assets/Headshot_2_1755873415112.jpeg";
 
 function parseBiographyContent(content: string) {
   const paragraphs = content.split('\n\n').filter(p => p.trim());
