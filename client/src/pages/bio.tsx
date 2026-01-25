@@ -252,7 +252,7 @@ export default function Bio() {
       {/* ✅ Mobile: background color behind image overlay */}
       <div className="md:hidden absolute inset-0 z-0 flex items-center justify-center bg-[#101010]">
         {/* Background immediately visible */}
-        <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div className="absolute inset-0 bg-[#101010] bg-opacity-60"></div>
 
         {/* IMAGE FIXED: starts hidden until loaded + animates in */}
         {imageLoaded && (
