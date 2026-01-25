@@ -251,10 +251,9 @@ export default function Bio() {
     <section className="min-h-screen md:fit-screen relative bg-jazz-grey">
       {/* ✅ Mobile: background color behind image overlay */}
       {!isLoading && content && (
-        <div className="md:hidden absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[#101010]" />
+        <div className="md:hidden absolute inset-0 z-0 flex items-center justify-center bg-[#101010]">
           <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-in z-10"
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat ${imageLoaded ? 'opacity-0 animate-in' : 'opacity-0'} z-10`}
             style={{ 
               backgroundImage: `url(${bioImagePath})`,
               backgroundSize: 'cover',
@@ -263,8 +262,8 @@ export default function Bio() {
               animationDuration: '800ms',
               animationFillMode: 'forwards'
             }}
-          >
-          </div>
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-60"></div>
         </div>
       )}
 
