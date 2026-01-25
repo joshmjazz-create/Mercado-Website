@@ -224,8 +224,8 @@ export default function Gallery() {
                           alt={video.name}
                           className="w-full h-full object-cover"
                         />
-                        {/* Text overlay like music page */}
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                        {/* Text overlay with black semi-transparent bar behind text */}
+                        <div className="absolute bottom-0 w-full flex items-center justify-start p-2 bg-black bg-opacity-60">
                           <p className="text-white font-semibold text-lg">{video.name}</p>
                         </div>
                         {/* Play button overlay */}
@@ -303,4 +303,4 @@ export default function Gallery() {
       )}
     </section>
   );
-        }
+}
