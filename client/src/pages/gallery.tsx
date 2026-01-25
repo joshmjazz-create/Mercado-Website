@@ -7,17 +7,18 @@ interface MediaItem {
   mimeType: string;
   imageUrl?: string;
   videoUrl?: string;
-  thumbnailLink?: string;
   width?: number;
   height?: number;
+  orientation?: string;
 }
 
 export default function Gallery() {
-  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<MediaItem | null>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [photos, setPhotos] = useState<MediaItem[]>([]);
   const [videos, setVideos] = useState<MediaItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingPhotos, setIsLoadingPhotos] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const scrollRef = useRef<HTMLElement>(null);
@@ -34,7 +35,7 @@ export default function Gallery() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Scroll fade effect
+  // Custom scrollbar fade
   useEffect(() => {
     const scrollElement = scrollRef.current;
     if (!scrollElement) return;
@@ -54,90 +55,80 @@ export default function Gallery() {
     };
   }, []);
 
-  // Fetch gallery media
+  // Fetch media from Google Drive
   useEffect(() => {
-    const fetchGallery = async () => {
+    const fetchMedia = async () => {
       try {
-        const FOLDER_ID = "1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd";
+        const GALLERY_FOLDER_ID = "1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd";
         const API_KEY = "AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI";
-
         const response = await fetch(
-          `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,thumbnailLink)`
+          `https://www.googleapis.com/drive/v3/files?q='${GALLERY_FOLDER_ID}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
         );
 
-        if (response.ok) {
-          const data = await response.json();
+        if (!response.ok) throw new Error("Failed to fetch gallery");
 
-          const mediaFiles: MediaItem[] = await Promise.all(
-            (data.files || []).map(async (file: any) => {
-              if (file.mimeType.startsWith("image/")) {
-                const imageUrl = `https://lh3.googleusercontent.com/d/${file.id}`;
-                const { width, height } = await getMediaDimensions(imageUrl);
-                return { ...file, imageUrl, width, height };
-              } else if (file.mimeType.startsWith("video/")) {
-                const videoUrl = `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`;
-                const thumbnail = file.thumbnailLink || "";
-                return { ...file, videoUrl, imageUrl: thumbnail };
-              }
-              return file;
-            })
-          );
+        const data = await response.json();
+        const items: MediaItem[] = await Promise.all(
+          (data.files || []).map(async (file: any) => {
+            const isImage = file.mimeType.startsWith("image/");
+            const isVideo = file.mimeType.startsWith("video/");
+            const url = isImage
+              ? `https://lh3.googleusercontent.com/d/${file.id}`
+              : isVideo
+              ? `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`
+              : undefined;
 
-          // Separate photos and videos
-          setPhotos(mediaFiles.filter((m) => m.imageUrl && m.mimeType.startsWith("image/")));
-          setVideos(mediaFiles.filter((m) => m.videoUrl));
-        } else {
-          const errData = await response.json();
-          console.error("Gallery API Error Response:", errData);
-          setError("Failed to fetch gallery.");
-        }
+            let width = 0,
+              height = 0,
+              orientation = "square";
+
+            if (isImage && url) {
+              const dims = await getImageDimensions(url);
+              width = dims.width;
+              height = dims.height;
+              orientation = dims.orientation;
+            }
+
+            return {
+              id: file.id,
+              name: file.name,
+              mimeType: file.mimeType,
+              imageUrl: isImage ? url : undefined,
+              videoUrl: isVideo ? url : undefined,
+              width,
+              height,
+              orientation,
+            };
+          })
+        );
+
+        setPhotos(items.filter((i) => i.imageUrl));
+        setVideos(items.filter((i) => i.videoUrl));
       } catch (err) {
-        console.error("Gallery API Error:", err);
-        setError("Failed to load gallery.");
+        console.error(err);
+        setError("Error loading gallery");
       } finally {
-        setIsLoading(false); // Page ready after images fetched
+        setIsLoadingPhotos(false); // page loads once photos are ready
       }
     };
 
-    fetchGallery();
+    fetchMedia();
   }, []);
 
-  // Get image dimensions
-  const getMediaDimensions = (src: string): Promise<{ width: number; height: number }> => {
+  const getImageDimensions = (
+    src: string
+  ): Promise<{ width: number; height: number; orientation: string }> => {
     return new Promise((resolve) => {
       const img = new Image();
-      img.onload = () => resolve({ width: img.width, height: img.height });
-      img.onerror = () => resolve({ width: 1, height: 1 });
+      img.onload = () => {
+        const aspectRatio = img.width / img.height;
+        const orientation =
+          aspectRatio > 1.2 ? "horizontal" : aspectRatio < 0.8 ? "vertical" : "square";
+        resolve({ width: img.width, height: img.height, orientation });
+      };
+      img.onerror = () => resolve({ width: 1, height: 1, orientation: "square" });
       img.src = src;
     });
-  };
-
-  const renderMediaSection = (title: string, media: MediaItem[], delay: number = 0) => {
-    if (!media || media.length === 0) return null;
-
-    return (
-      <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: `${delay}ms` }}>
-        <h2 className="text-3xl font-semibold text-gray-500 mb-6 text-left underline">{title}</h2>
-        <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
-          {media.map((item) => (
-            <div
-              key={item.id}
-              className="break-inside-avoid mb-3 cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
-              onClick={() => setSelectedMedia(item)}
-            >
-              {item.imageUrl && (
-                <img
-                  src={item.imageUrl}
-                  alt={item.name}
-                  className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -146,60 +137,112 @@ export default function Gallery() {
       className="min-h-screen desktop-container bg-jazz-grey md:overflow-y-auto custom-scrollbar"
     >
       <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
-        {/* Page header */}
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Gallery</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
 
-        {/* Loading spinner */}
-        {isLoading && (
+        {isLoadingPhotos && (
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-800"></div>
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <div className="text-center py-20">
             <p className="text-red-600 text-lg">{error}</p>
           </div>
         )}
 
-        {/* Photos and Videos */}
-        {!isLoading && !error && (
+        {!isLoadingPhotos && photos.length > 0 && (
           <>
-            {renderMediaSection("Pictures", photos, 400)}
-            {renderMediaSection("Videos", videos, 600)}
+            {/* Pictures Section */}
+            <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: "400ms" }}>
+              <h2 className="text-2xl font-semibold text-gray-700 mb-4 underline">{`Pictures`}</h2>
+              <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
+                {photos.map((photo) => (
+                  <div
+                    key={photo.id}
+                    className="break-inside-avoid mb-3 cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
+                    onClick={() => setSelectedPhoto(photo.imageUrl!)}
+                  >
+                    <img
+                      src={photo.imageUrl}
+                      alt={photo.name}
+                      className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Videos Section */}
+            {videos.length > 0 && (
+              <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: "600ms" }}>
+                <h2 className="text-2xl font-semibold text-gray-700 mb-4 underline">{`Videos`}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {videos.map((video) => (
+                    <div
+                      key={video.id}
+                      className="cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
+                      onClick={() => setSelectedVideo(video)}
+                    >
+                      <video
+                        preload="metadata"
+                        src={video.videoUrl}
+                        className="w-full h-auto object-cover"
+                        poster={video.imageUrl}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         )}
 
-        {/* Fullscreen modal */}
-        {selectedMedia && (
+        {/* Selected photo modal */}
+        {selectedPhoto && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
-            onClick={() => setSelectedMedia(null)}
+            className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
+            onClick={() => setSelectedPhoto(null)}
           >
-            <div className="relative max-w-full max-h-full flex items-center justify-center">
-              {selectedMedia.videoUrl ? (
-                <video
-                  src={selectedMedia.videoUrl}
-                  controls
-                  autoPlay
-                  className="max-w-full max-h-full rounded-lg"
-                />
-              ) : selectedMedia.imageUrl ? (
-                <img
-                  src={selectedMedia.imageUrl}
-                  alt={selectedMedia.name}
-                  className="max-w-full max-h-full object-contain rounded-lg"
-                />
-              ) : null}
+            <div className="relative w-full h-full flex items-center justify-center p-8">
+              <img
+                src={selectedPhoto}
+                alt="Gallery photo"
+                className="max-w-full max-h-full object-contain rounded-lg"
+              />
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedMedia(null);
+                  setSelectedPhoto(null);
                 }}
+                className="absolute top-8 right-8 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center z-10 transition-colors"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Fullscreen video modal */}
+        {selectedVideo && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50"
+            onClick={() => setSelectedVideo(null)}
+          >
+            <div className="relative w-full max-w-6xl h-auto">
+              <video
+                src={selectedVideo.videoUrl}
+                className="w-full h-auto"
+                autoPlay
+                controls
+                onClick={(e) => e.stopPropagation()}
+              />
+              <button
+                onClick={() => setSelectedVideo(null)}
                 className="absolute top-4 right-4 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center z-10 transition-colors"
               >
                 ×
@@ -210,7 +253,11 @@ export default function Gallery() {
       </div>
 
       {/* Footer */}
-      {(!isLoading || error) && <div className="md:hidden"><Footer /></div>}
+      {(!isLoadingPhotos || error) && (
+        <div className="md:hidden">
+          <Footer />
+        </div>
+      )}
     </section>
   );
-}
+                }
