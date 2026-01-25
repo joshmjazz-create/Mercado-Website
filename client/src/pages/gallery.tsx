@@ -55,68 +55,60 @@ export default function Gallery() {
     };
   }, []);
 
-  // Fetch media from Google Drive and Google Doc for videos
+  // Fetch media from Google Drive
   useEffect(() => {
     const fetchMedia = async () => {
       try {
         const GALLERY_FOLDER_ID = "1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd";
         const API_KEY = "AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI";
-
-        // 1️⃣ Fetch images from Drive
         const response = await fetch(
-          `https://www.googleapis.com/drive/v3/files?q='${GALLERY_FOLDER_ID}'+in+parents+and+mimeType+contains+'image'&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
+          `https://www.googleapis.com/drive/v3/files?q='${GALLERY_FOLDER_ID}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
         );
 
         if (!response.ok) throw new Error("Failed to fetch gallery");
 
         const data = await response.json();
-        const imageItems: MediaItem[] = await Promise.all(
+        const items: MediaItem[] = await Promise.all(
           (data.files || []).map(async (file: any) => {
-            const imageUrl = `https://lh3.googleusercontent.com/d/${file.id}`;
-            const dims = await getImageDimensions(imageUrl);
+            const isImage = file.mimeType.startsWith("image/");
+            const isVideo = file.mimeType.startsWith("video/");
+            const url = isImage
+              ? `https://lh3.googleusercontent.com/d/${file.id}`
+              : isVideo
+              ? file.webViewLink // We'll use the link from the Google Doc / YouTube
+              : undefined;
+
+            let width = 0,
+              height = 0,
+              orientation = "square";
+
+            if (isImage && url) {
+              const dims = await getImageDimensions(url);
+              width = dims.width;
+              height = dims.height;
+              orientation = dims.orientation;
+            }
+
             return {
               id: file.id,
               name: file.name,
               mimeType: file.mimeType,
-              imageUrl,
-              width: dims.width,
-              height: dims.height,
-              orientation: dims.orientation,
+              imageUrl: isImage ? url : undefined,
+              videoUrl: isVideo ? url : undefined,
+              width,
+              height,
+              orientation,
             };
           })
         );
 
-        setPhotos(imageItems);
-        setIsLoadingPhotos(false); // load page once photos are ready
-
-        // 2️⃣ Fetch videos from Google Doc
-        const docUrl =
-          "https://docs.google.com/document/d/1OgBLENlcU01O-yCxUfLJYixA6ijgT3t58HROwqpMVG8/export?format=txt";
-        const docRes = await fetch(docUrl);
-        if (!docRes.ok) throw new Error("Failed to fetch video list");
-        const docText = await docRes.text();
-
-        const videoItems: MediaItem[] = [];
-        const lines = docText.split("\n");
-        let currentTitle = "";
-        lines.forEach((line) => {
-          if (line.startsWith("TITLE:")) currentTitle = line.replace("TITLE:", "").trim();
-          if (line.startsWith("LINK:")) {
-            const link = line.replace("LINK:", "").trim();
-            videoItems.push({
-              id: link, // use link as ID
-              name: currentTitle,
-              videoUrl: link,
-            });
-            currentTitle = "";
-          }
-        });
-
-        setVideos(videoItems);
+        setPhotos(items.filter((i) => i.imageUrl));
+        setVideos(items.filter((i) => i.videoUrl));
       } catch (err) {
         console.error(err);
         setError("Error loading gallery");
-        setIsLoadingPhotos(false);
+      } finally {
+        setIsLoadingPhotos(false); // page loads once photos are ready
       }
     };
 
@@ -139,11 +131,10 @@ export default function Gallery() {
     });
   };
 
-  // Convert YouTube link to embed URL
+  // Extract YouTube video ID
   const extractYouTubeID = (url: string) => {
-    const shortMatch = url.match(/youtu\.be\/([^\?&]+)/);
-    const longMatch = url.match(/v=([^\?&]+)/);
-    return shortMatch ? shortMatch[1] : longMatch ? longMatch[1] : "";
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{11})/);
+    return match ? match[1] : "";
   };
 
   return (
@@ -152,10 +143,7 @@ export default function Gallery() {
       className="min-h-screen desktop-container bg-jazz-grey md:overflow-y-auto custom-scrollbar"
     >
       <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
-        <div
-          className="text-center mb-8 opacity-0 translate-y-4 animate-in"
-          style={{ animationDelay: "200ms" }}
-        >
+        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Gallery</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
@@ -175,11 +163,8 @@ export default function Gallery() {
         {!isLoadingPhotos && photos.length > 0 && (
           <>
             {/* Pictures Section */}
-            <div
-              className="opacity-0 translate-y-4 animate-in mb-8"
-              style={{ animationDelay: "400ms" }}
-            >
-              <h2 className="text-2xl font-semibold text-gray-600 mb-4 underline">
+            <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: "400ms" }}>
+              <h2 className="text-2xl font-semibold text-gray-700 mb-4 underline">
                 Pictures
               </h2>
               <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
@@ -202,13 +187,8 @@ export default function Gallery() {
 
             {/* Videos Section */}
             {videos.length > 0 && (
-              <div
-                className="opacity-0 translate-y-4 animate-in mb-8"
-                style={{ animationDelay: "600ms" }}
-              >
-                <h2 className="text-2xl font-semibold text-gray-600 mb-4 underline">
-                  Videos
-                </h2>
+              <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: "600ms" }}>
+                <h2 className="text-2xl font-semibold text-gray-600 mb-4 underline">Videos</h2>
                 <div className="flex flex-col gap-6">
                   {videos.map((video) => (
                     <div
@@ -218,19 +198,21 @@ export default function Gallery() {
                     >
                       <div className="relative w-full aspect-video bg-black">
                         <img
-                          src={`https://img.youtube.com/vi/${extractYouTubeID(
-                            video.videoUrl!
-                          )}/hqdefault.jpg`}
+                          src={`https://img.youtube.com/vi/${extractYouTubeID(video.videoUrl!)}/hqdefault.jpg`}
                           alt={video.name}
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <button className="bg-black bg-opacity-50 p-3 rounded-full text-white text-2xl">
+                        {/* Text overlay */}
+                        <div className="absolute inset-0 bg-black bg-opacity-30 flex items-end p-3">
+                          <p className="text-white font-semibold text-lg">{video.name}</p>
+                        </div>
+                        {/* Play button overlay */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div className="bg-black bg-opacity-50 p-3 rounded-full text-white text-2xl">
                             ▶
-                          </button>
+                          </div>
                         </div>
                       </div>
-                      <p className="text-gray-600 font-medium mt-2 px-2">{video.name}</p>
                     </div>
                   ))}
                 </div>
@@ -272,10 +254,8 @@ export default function Gallery() {
           >
             <div className="relative w-full max-w-6xl h-auto">
               <iframe
+                src={selectedVideo.videoUrl}
                 className="w-full aspect-video"
-                src={`https://www.youtube.com/embed/${extractYouTubeID(
-                  selectedVideo.videoUrl!
-                )}`}
                 title={selectedVideo.name}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
