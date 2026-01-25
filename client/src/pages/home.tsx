@@ -38,7 +38,7 @@ export default function Home() {
         />
         
         <div className="home-wrapper relative text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
-          <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-500 mb-8 drop-shadow-lg opacity-0 scale-95 animate-in" style={{ 
+          <h1 className="text-6xl md:text-8xl font-bold font-display text-purple-500 mb-8 [filter:drop-shadow(-2px_-2px_0_rgba(255,255,255,0.15))_drop-shadow(4px_6px_8px_rgba(0,0,0,0.6))] opacity-0 scale-95 animate-in" style={{ 
             animationDelay: '1500ms',
             animationDuration: '1200ms'
           } as React.CSSProperties}>
