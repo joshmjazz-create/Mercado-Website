@@ -67,6 +67,7 @@ export default function Gallery() {
 
         if (response.ok) {
           const data = await response.json();
+
           const mediaFiles: MediaItem[] = await Promise.all(
             (data.files || []).map(async (file: any) => {
               if (file.mimeType.startsWith("image/")) {
@@ -75,25 +76,26 @@ export default function Gallery() {
                 return { ...file, imageUrl, width, height };
               } else if (file.mimeType.startsWith("video/")) {
                 const videoUrl = `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`;
-                const { width, height } = await getVideoDimensions(videoUrl);
                 const thumbnail = file.thumbnailLink || "";
-                return { ...file, videoUrl, width, height, imageUrl: thumbnail };
+                return { ...file, videoUrl, imageUrl: thumbnail };
               }
               return file;
             })
           );
 
+          // Separate photos and videos
           setPhotos(mediaFiles.filter((m) => m.imageUrl && m.mimeType.startsWith("image/")));
           setVideos(mediaFiles.filter((m) => m.videoUrl));
         } else {
           const errData = await response.json();
           console.error("Gallery API Error Response:", errData);
+          setError("Failed to fetch gallery.");
         }
       } catch (err) {
         console.error("Gallery API Error:", err);
         setError("Failed to load gallery.");
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Page ready after images fetched
       }
     };
 
@@ -110,17 +112,7 @@ export default function Gallery() {
     });
   };
 
-  // Get video dimensions
-  const getVideoDimensions = (src: string): Promise<{ width: number; height: number }> => {
-    return new Promise((resolve) => {
-      const video = document.createElement("video");
-      video.onloadedmetadata = () => resolve({ width: video.videoWidth, height: video.videoHeight });
-      video.onerror = () => resolve({ width: 16, height: 9 });
-      video.src = src;
-    });
-  };
-
-  const renderMediaSection = (title: string, media: MediaItem[], isVideo: boolean = false, delay: number = 0) => {
+  const renderMediaSection = (title: string, media: MediaItem[], delay: number = 0) => {
     if (!media || media.length === 0) return null;
 
     return (
@@ -177,28 +169,18 @@ export default function Gallery() {
         {/* Photos and Videos */}
         {!isLoading && !error && (
           <>
-            {renderMediaSection("Pictures", photos, false, 400)}
-            {renderMediaSection("Videos", videos, true, 600)}
+            {renderMediaSection("Pictures", photos, 400)}
+            {renderMediaSection("Videos", videos, 600)}
           </>
         )}
 
-        {/* Fullscreen modal for both images and videos */}
+        {/* Fullscreen modal */}
         {selectedMedia && (
           <div
             className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
             onClick={() => setSelectedMedia(null)}
           >
-            <div
-              className="relative flex items-center justify-center"
-              style={{
-                width: selectedMedia.width && selectedMedia.height
-                  ? Math.min(windowWidth * 0.9, (windowWidth * 0.9) * (selectedMedia.width / selectedMedia.height))
-                  : "auto",
-                height: selectedMedia.height && selectedMedia.width
-                  ? Math.min(window.innerHeight * 0.9, (window.innerHeight * 0.9) * (selectedMedia.height / selectedMedia.width))
-                  : "auto",
-              }}
-            >
+            <div className="relative max-w-full max-h-full flex items-center justify-center">
               {selectedMedia.videoUrl ? (
                 <video
                   src={selectedMedia.videoUrl}
@@ -231,4 +213,4 @@ export default function Gallery() {
       {(!isLoading || error) && <div className="md:hidden"><Footer /></div>}
     </section>
   );
-                }
+}
