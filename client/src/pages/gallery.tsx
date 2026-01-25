@@ -8,10 +8,12 @@ interface MediaItem {
   imageUrl?: string;
   videoUrl?: string;
   thumbnailLink?: string;
+  width?: number;
+  height?: number;
 }
 
 export default function Gallery() {
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [photos, setPhotos] = useState<MediaItem[]>([]);
   const [videos, setVideos] = useState<MediaItem[]>([]);
@@ -65,17 +67,23 @@ export default function Gallery() {
 
         if (response.ok) {
           const data = await response.json();
-          const mediaFiles: MediaItem[] = (data.files || []).map((file: any) => {
-            if (file.mimeType.startsWith("image/")) {
-              return { ...file, imageUrl: `https://lh3.googleusercontent.com/d/${file.id}` };
-            } else if (file.mimeType.startsWith("video/")) {
-              return { ...file, videoUrl: `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}` };
-            } else {
+          const mediaFiles: MediaItem[] = await Promise.all(
+            (data.files || []).map(async (file: any) => {
+              if (file.mimeType.startsWith("image/")) {
+                const imageUrl = `https://lh3.googleusercontent.com/d/${file.id}`;
+                const { width, height } = await getMediaDimensions(imageUrl);
+                return { ...file, imageUrl, width, height };
+              } else if (file.mimeType.startsWith("video/")) {
+                const videoUrl = `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`;
+                const { width, height } = await getVideoDimensions(videoUrl);
+                const thumbnail = file.thumbnailLink || "";
+                return { ...file, videoUrl, width, height, imageUrl: thumbnail };
+              }
               return file;
-            }
-          });
+            })
+          );
 
-          setPhotos(mediaFiles.filter((m) => m.imageUrl));
+          setPhotos(mediaFiles.filter((m) => m.imageUrl && m.mimeType.startsWith("image/")));
           setVideos(mediaFiles.filter((m) => m.videoUrl));
         } else {
           const errData = await response.json();
@@ -92,33 +100,47 @@ export default function Gallery() {
     fetchGallery();
   }, []);
 
+  // Get image dimensions
+  const getMediaDimensions = (src: string): Promise<{ width: number; height: number }> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve({ width: img.width, height: img.height });
+      img.onerror = () => resolve({ width: 1, height: 1 });
+      img.src = src;
+    });
+  };
+
+  // Get video dimensions
+  const getVideoDimensions = (src: string): Promise<{ width: number; height: number }> => {
+    return new Promise((resolve) => {
+      const video = document.createElement("video");
+      video.onloadedmetadata = () => resolve({ width: video.videoWidth, height: video.videoHeight });
+      video.onerror = () => resolve({ width: 16, height: 9 });
+      video.src = src;
+    });
+  };
+
   const renderMediaSection = (title: string, media: MediaItem[], isVideo: boolean = false, delay: number = 0) => {
     if (!media || media.length === 0) return null;
 
     return (
       <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: `${delay}ms` }}>
-        <h2 className="text-3xl font-semibold text-gray-400 mb-6 text-left underline">{title}</h2>
+        <h2 className="text-3xl font-semibold text-gray-500 mb-6 text-left underline">{title}</h2>
         <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
           {media.map((item) => (
             <div
               key={item.id}
               className="break-inside-avoid mb-3 cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
+              onClick={() => setSelectedMedia(item)}
             >
-              {isVideo && item.videoUrl ? (
-                <video
-                  src={item.videoUrl}
-                  controls
-                  className="w-full h-auto object-cover rounded-lg"
-                />
-              ) : item.imageUrl ? (
+              {item.imageUrl && (
                 <img
                   src={item.imageUrl}
                   alt={item.name}
                   className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                  onClick={() => setSelectedPhoto(item.imageUrl!)}
                   loading="lazy"
                 />
-              ) : null}
+              )}
             </div>
           ))}
         </div>
@@ -160,24 +182,43 @@ export default function Gallery() {
           </>
         )}
 
-        {/* Image modal */}
-        {selectedPhoto && (
+        {/* Fullscreen modal for both images and videos */}
+        {selectedMedia && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
-            onClick={() => setSelectedPhoto(null)}
+            className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+            onClick={() => setSelectedMedia(null)}
           >
-            <div className="relative w-full h-full flex items-center justify-center p-8">
-              <img
-                src={selectedPhoto}
-                alt="Gallery photo"
-                className="max-w-full max-h-full object-contain rounded-lg"
-              />
+            <div
+              className="relative flex items-center justify-center"
+              style={{
+                width: selectedMedia.width && selectedMedia.height
+                  ? Math.min(windowWidth * 0.9, (windowWidth * 0.9) * (selectedMedia.width / selectedMedia.height))
+                  : "auto",
+                height: selectedMedia.height && selectedMedia.width
+                  ? Math.min(window.innerHeight * 0.9, (window.innerHeight * 0.9) * (selectedMedia.height / selectedMedia.width))
+                  : "auto",
+              }}
+            >
+              {selectedMedia.videoUrl ? (
+                <video
+                  src={selectedMedia.videoUrl}
+                  controls
+                  autoPlay
+                  className="max-w-full max-h-full rounded-lg"
+                />
+              ) : selectedMedia.imageUrl ? (
+                <img
+                  src={selectedMedia.imageUrl}
+                  alt={selectedMedia.name}
+                  className="max-w-full max-h-full object-contain rounded-lg"
+                />
+              ) : null}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedPhoto(null);
+                  setSelectedMedia(null);
                 }}
-                className="absolute top-8 right-8 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center z-10 transition-colors"
+                className="absolute top-4 right-4 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center z-10 transition-colors"
               >
                 ×
               </button>
@@ -186,12 +227,8 @@ export default function Gallery() {
         )}
       </div>
 
-      {/* Footer at bottom */}
-      {(!isLoading || error) && (
-        <div className="md:hidden">
-          <Footer />
-        </div>
-      )}
+      {/* Footer */}
+      {(!isLoading || error) && <div className="md:hidden"><Footer /></div>}
     </section>
   );
-            }
+                }
