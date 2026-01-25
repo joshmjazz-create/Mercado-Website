@@ -28,6 +28,7 @@ export default function Bio() {
   const [content, setContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [showImage, setShowImage] = useState(false); // <-- NEW: for delayed visibility
 
   useEffect(() => {
     document.title = "Bio";
@@ -51,15 +52,18 @@ export default function Bio() {
     fetchBioContent();
   }, []);
 
+  // ---------- IMAGE LOADING WITH DELAY ----------
   useEffect(() => {
     const img = new Image();
     img.onload = () => {
       console.log('Bio image preloaded');
       setImageLoaded(true);
+      setTimeout(() => setShowImage(true), 100); // <-- 0.1s delay before showing animation
     };
     img.onerror = () => {
       console.log('Bio image failed to load');
       setImageLoaded(true);
+      setTimeout(() => setShowImage(true), 100); // <-- also delay even if error
     };
     img.src = bioImagePath;
   }, []);
@@ -254,8 +258,8 @@ export default function Bio() {
         {/* Background immediately visible */}
         <div className="absolute inset-0 bg-[#101010] bg-opacity-60"></div>
 
-        {/* IMAGE FIXED: starts hidden until loaded + animates in */}
-        {imageLoaded && (
+        {/* IMAGE FIXED: starts hidden until loaded + animates in with 0.1s delay */}
+        {showImage && (
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat z-10 opacity-0 translate-y-4 animate-in"
             style={{
@@ -329,4 +333,4 @@ export default function Bio() {
     </div>
     </>
   );
-}
+    }
