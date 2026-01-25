@@ -254,17 +254,17 @@ export default function Bio() {
         {/* Background immediately visible */}
         <div className="absolute inset-0 bg-black bg-opacity-60"></div>
 
-        {/* Image only appears after loaded */}
+        {/* IMAGE FIXED: starts hidden until loaded + animates in */}
         {imageLoaded && (
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat z-10 animate-in"
-            style={{ 
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat z-10 opacity-0 translate-y-4 animate-in"
+            style={{
               backgroundImage: `url(${bioImagePath})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               animationDelay: '500ms',
               animationDuration: '800ms',
-              animationFillMode: 'forwards'
+              animationFillMode: 'forwards',
             }}
           />
         )}
