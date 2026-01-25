@@ -12,12 +12,17 @@ interface MediaItem {
   orientation?: string;
 }
 
+interface VideoItem {
+  title: string;
+  link: string;
+}
+
 export default function Gallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
-  const [selectedVideo, setSelectedVideo] = useState<MediaItem | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [photos, setPhotos] = useState<MediaItem[]>([]);
-  const [videos, setVideos] = useState<MediaItem[]>([]);
+  const [videos, setVideos] = useState<VideoItem[]>([]);
   const [isLoadingPhotos, setIsLoadingPhotos] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,65 +60,86 @@ export default function Gallery() {
     };
   }, []);
 
-  // Fetch media from Google Drive
+  // Fetch media from Google Drive (Photos)
   useEffect(() => {
-    const fetchMedia = async () => {
+    const fetchPhotos = async () => {
       try {
         const GALLERY_FOLDER_ID = "1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd";
         const API_KEY = "AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI";
         const response = await fetch(
-          `https://www.googleapis.com/drive/v3/files?q='${GALLERY_FOLDER_ID}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
+          `https://www.googleapis.com/drive/v3/files?q='${GALLERY_FOLDER_ID}'+in+parents+and+mimeType+contains+'image'&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
         );
 
         if (!response.ok) throw new Error("Failed to fetch gallery");
 
         const data = await response.json();
-        const items: MediaItem[] = await Promise.all(
-          (data.files || []).map(async (file: any) => {
-            const isImage = file.mimeType.startsWith("image/");
-            const isVideo = file.mimeType.startsWith("video/");
-            const url = isImage
-              ? `https://lh3.googleusercontent.com/d/${file.id}`
-              : isVideo
-              ? `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}`
-              : undefined;
-
-            let width = 0,
-              height = 0,
-              orientation = "square";
-
-            if (isImage && url) {
-              const dims = await getImageDimensions(url);
-              width = dims.width;
-              height = dims.height;
-              orientation = dims.orientation;
-            }
-
-            return {
-              id: file.id,
-              name: file.name,
-              mimeType: file.mimeType,
-              imageUrl: isImage ? url : undefined,
-              videoUrl: isVideo ? url : undefined,
-              width,
-              height,
-              orientation,
-            };
+        const photosWithDimensions = await Promise.all(
+          (data.files || []).map(async (photo: any) => {
+            const imageUrl = `https://lh3.googleusercontent.com/d/${photo.id}`;
+            const dimensions = await getImageDimensions(imageUrl);
+            return { ...photo, imageUrl, ...dimensions };
           })
         );
 
-        setPhotos(items.filter((i) => i.imageUrl));
-        setVideos(items.filter((i) => i.videoUrl));
+        setPhotos(photosWithDimensions);
       } catch (err) {
         console.error(err);
         setError("Error loading gallery");
       } finally {
-        setIsLoadingPhotos(false); // page loads once photos are ready
+        setIsLoadingPhotos(false);
       }
     };
 
-    fetchMedia();
+    fetchPhotos();
   }, []);
+
+  // Fetch videos from Google Doc
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const docId = "1OgBLENlcU01O-yCxUfLJYixA6ijgT3t58HROwqpMVG8";
+        const response = await fetch(
+          `https://docs.googleapis.com/v1/documents/${docId}?key=AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI`
+        );
+        if (!response.ok) throw new Error("Failed to fetch videos doc");
+
+        const data = await response.json();
+        const text = extractTextFromGoogleDoc(data);
+
+        const videoItems: VideoItem[] = [];
+        const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].startsWith("TITLE:")) {
+            const title = lines[i].replace("TITLE:", "").trim();
+            const linkLine = lines[i + 1];
+            if (linkLine && linkLine.startsWith("LINK:")) {
+              const link = linkLine.replace("LINK:", "").trim();
+              videoItems.push({ title, link });
+              i++; // skip next line since processed
+            }
+          }
+        }
+
+        setVideos(videoItems);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
+  const extractTextFromGoogleDoc = (doc: any): string => {
+    const paragraphs = doc.body.content || [];
+    return paragraphs
+      .map((p: any) =>
+        (p.paragraph?.elements || [])
+          .map((e: any) => e.textRun?.content || "")
+          .join("")
+      )
+      .join("\n");
+  };
 
   const getImageDimensions = (
     src: string
@@ -154,52 +180,48 @@ export default function Gallery() {
           </div>
         )}
 
+        {/* Pictures */}
         {!isLoadingPhotos && photos.length > 0 && (
-          <>
-            {/* Pictures Section */}
-            <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: "400ms" }}>
-              <h2 className="text-2xl font-semibold text-gray-700 mb-4 underline">{`Pictures`}</h2>
-              <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
-                {photos.map((photo) => (
-                  <div
-                    key={photo.id}
-                    className="break-inside-avoid mb-3 cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
-                    onClick={() => setSelectedPhoto(photo.imageUrl!)}
-                  >
-                    <img
-                      src={photo.imageUrl}
-                      alt={photo.name}
-                      className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Videos Section */}
-            {videos.length > 0 && (
-              <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: "600ms" }}>
-                <h2 className="text-2xl font-semibold text-gray-700 mb-4 underline">{`Videos`}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {videos.map((video) => (
-                    <div
-                      key={video.id}
-                      className="cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
-                      onClick={() => setSelectedVideo(video)}
-                    >
-                      <video
-                        preload="metadata"
-                        src={video.videoUrl}
-                        className="w-full h-auto object-cover"
-                        poster={video.imageUrl}
-                      />
-                    </div>
-                  ))}
+          <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: "400ms" }}>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4 underline">Pictures</h2>
+            <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
+              {photos.map((photo) => (
+                <div
+                  key={photo.id}
+                  className="break-inside-avoid mb-3 cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
+                  onClick={() => setSelectedPhoto(photo.imageUrl!)}
+                >
+                  <img
+                    src={photo.imageUrl}
+                    alt={photo.name}
+                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
                 </div>
-              </div>
-            )}
-          </>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Videos */}
+        {videos.length > 0 && (
+          <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: "600ms" }}>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4 underline">Videos</h2>
+            <div className="flex flex-col gap-6">
+              {videos.map((video, index) => (
+                <div
+                  key={index}
+                  className="cursor-pointer w-full max-w-4xl mx-auto rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
+                  onClick={() => setSelectedVideo(video)}
+                >
+                  <div className="bg-black text-white p-4 font-semibold">{video.title}</div>
+                  <div className="bg-gray-800 h-56 flex items-center justify-center text-gray-400 text-sm">
+                    Click to play
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Selected photo modal */}
@@ -227,20 +249,19 @@ export default function Gallery() {
           </div>
         )}
 
-        {/* Fullscreen video modal */}
+        {/* Selected video modal */}
         {selectedVideo && (
           <div
             className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50"
             onClick={() => setSelectedVideo(null)}
           >
             <div className="relative w-full max-w-6xl h-auto">
-              <video
-                src={selectedVideo.videoUrl}
-                className="w-full h-auto"
-                autoPlay
-                controls
-                onClick={(e) => e.stopPropagation()}
-              />
+              <iframe
+                src={selectedVideo.link}
+                className="w-full aspect-video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
               <button
                 onClick={() => setSelectedVideo(null)}
                 className="absolute top-4 right-4 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center z-10 transition-colors"
@@ -260,4 +281,4 @@ export default function Gallery() {
       )}
     </section>
   );
-                }
+      }
