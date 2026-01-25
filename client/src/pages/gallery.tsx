@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import Footer from "@/components/footer";
 
 interface MediaItem {
-  id: string;
+  id?: string;
   name: string;
-  mimeType: string;
+  mimeType?: string;
   imageUrl?: string;
   videoUrl?: string;
   width?: number;
@@ -12,17 +12,12 @@ interface MediaItem {
   orientation?: string;
 }
 
-interface VideoItem {
-  title: string;
-  link: string;
-}
-
 export default function Gallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
-  const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<MediaItem | null>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [photos, setPhotos] = useState<MediaItem[]>([]);
-  const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [videos, setVideos] = useState<MediaItem[]>([]);
   const [isLoadingPhotos, setIsLoadingPhotos] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,14 +28,14 @@ export default function Gallery() {
     document.title = "Gallery";
   }, []);
 
-  // Window resize
+  // Handle window resize
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Custom scrollbar fade
+  // Custom scrollbar fade effect
   useEffect(() => {
     const scrollElement = scrollRef.current;
     if (!scrollElement) return;
@@ -60,33 +55,41 @@ export default function Gallery() {
     };
   }, []);
 
-  // Fetch media from Google Drive (Photos)
+  // Fetch photos from Google Drive
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
-        const GALLERY_FOLDER_ID = "1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd";
+        const PHOTOS_FOLDER_ID = "1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd";
         const API_KEY = "AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI";
         const response = await fetch(
-          `https://www.googleapis.com/drive/v3/files?q='${GALLERY_FOLDER_ID}'+in+parents+and+mimeType+contains+'image'&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
+          `https://www.googleapis.com/drive/v3/files?q='${PHOTOS_FOLDER_ID}'+in+parents+and+mimeType+contains+'image'&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink,thumbnailLink)`
         );
 
-        if (!response.ok) throw new Error("Failed to fetch gallery");
+        if (!response.ok) throw new Error("Failed to fetch gallery photos");
 
         const data = await response.json();
-        const photosWithDimensions = await Promise.all(
-          (data.files || []).map(async (photo: any) => {
-            const imageUrl = `https://lh3.googleusercontent.com/d/${photo.id}`;
-            const dimensions = await getImageDimensions(imageUrl);
-            return { ...photo, imageUrl, ...dimensions };
+        const photosWithDimensions: MediaItem[] = await Promise.all(
+          (data.files || []).map(async (file: any) => {
+            const imageUrl = `https://lh3.googleusercontent.com/d/${file.id}`;
+            const dims = await getImageDimensions(imageUrl);
+            return {
+              id: file.id,
+              name: file.name,
+              mimeType: file.mimeType,
+              imageUrl,
+              width: dims.width,
+              height: dims.height,
+              orientation: dims.orientation,
+            };
           })
         );
 
         setPhotos(photosWithDimensions);
       } catch (err) {
         console.error(err);
-        setError("Error loading gallery");
+        setError("Error loading photos");
       } finally {
-        setIsLoadingPhotos(false);
+        setIsLoadingPhotos(false); // page loads once photos are ready
       }
     };
 
@@ -97,26 +100,29 @@ export default function Gallery() {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const docId = "1OgBLENlcU01O-yCxUfLJYixA6ijgT3t58HROwqpMVG8";
-        const response = await fetch(
-          `https://docs.googleapis.com/v1/documents/${docId}?key=AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI`
-        );
-        if (!response.ok) throw new Error("Failed to fetch videos doc");
+        const docUrl =
+          "https://docs.google.com/document/d/1OgBLENlcU01O-yCxUfLJYixA6ijgT3t58HROwqpMVG8/export?format=txt";
+        const response = await fetch(docUrl);
+        if (!response.ok) throw new Error("Failed to fetch video doc");
+        const text = await response.text();
 
-        const data = await response.json();
-        const text = extractTextFromGoogleDoc(data);
-
-        const videoItems: VideoItem[] = [];
-        const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+        const lines = text.split("\n").map((l) => l.trim());
+        const videoItems: MediaItem[] = [];
 
         for (let i = 0; i < lines.length; i++) {
           if (lines[i].startsWith("TITLE:")) {
             const title = lines[i].replace("TITLE:", "").trim();
-            const linkLine = lines[i + 1];
-            if (linkLine && linkLine.startsWith("LINK:")) {
-              const link = linkLine.replace("LINK:", "").trim();
-              videoItems.push({ title, link });
-              i++; // skip next line since processed
+            let link = "";
+            // look ahead for LINK:
+            if (i + 1 < lines.length && lines[i + 1].startsWith("LINK:")) {
+              link = lines[i + 1].replace("LINK:", "").trim();
+              i++; // skip next line since it’s consumed
+            }
+            if (title && link) {
+              videoItems.push({
+                name: title,
+                videoUrl: link,
+              });
             }
           }
         }
@@ -129,17 +135,6 @@ export default function Gallery() {
 
     fetchVideos();
   }, []);
-
-  const extractTextFromGoogleDoc = (doc: any): string => {
-    const paragraphs = doc.body.content || [];
-    return paragraphs
-      .map((p: any) =>
-        (p.paragraph?.elements || [])
-          .map((e: any) => e.textRun?.content || "")
-          .join("")
-      )
-      .join("\n");
-  };
 
   const getImageDimensions = (
     src: string
@@ -163,7 +158,10 @@ export default function Gallery() {
       className="min-h-screen desktop-container bg-jazz-grey md:overflow-y-auto custom-scrollbar"
     >
       <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
-        <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
+        <div
+          className="text-center mb-8 opacity-0 translate-y-4 animate-in"
+          style={{ animationDelay: "200ms" }}
+        >
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Gallery</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
@@ -180,43 +178,55 @@ export default function Gallery() {
           </div>
         )}
 
-        {/* Pictures */}
         {!isLoadingPhotos && photos.length > 0 && (
-          <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: "400ms" }}>
-            <h2 className="text-2xl font-semibold text-gray-700 mb-4 underline">Pictures</h2>
-            <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
-              {photos.map((photo) => (
-                <div
-                  key={photo.id}
-                  className="break-inside-avoid mb-3 cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
-                  onClick={() => setSelectedPhoto(photo.imageUrl!)}
-                >
-                  <img
-                    src={photo.imageUrl}
-                    alt={photo.name}
-                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                </div>
-              ))}
+          <>
+            {/* Pictures Section */}
+            <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: "400ms" }}>
+              <h2 className="text-2xl md:text-3xl font-semibold text-gray-600 mb-4 underline">
+                Pictures
+              </h2>
+              <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
+                {photos.map((photo) => (
+                  <div
+                    key={photo.id}
+                    className="break-inside-avoid mb-3 cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
+                    onClick={() => setSelectedPhoto(photo.imageUrl!)}
+                  >
+                    <img
+                      src={photo.imageUrl}
+                      alt={photo.name}
+                      className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          </>
         )}
 
-        {/* Videos */}
+        {/* Videos Section */}
         {videos.length > 0 && (
           <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: "600ms" }}>
-            <h2 className="text-2xl font-semibold text-gray-700 mb-4 underline">Videos</h2>
+            <h2 className="text-2xl md:text-3xl font-semibold text-gray-600 mb-4 underline">
+              Videos
+            </h2>
             <div className="flex flex-col gap-6">
-              {videos.map((video, index) => (
+              {videos.map((video, idx) => (
                 <div
-                  key={index}
-                  className="cursor-pointer w-full max-w-4xl mx-auto rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
+                  key={idx}
+                  className="cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
                   onClick={() => setSelectedVideo(video)}
                 >
-                  <div className="bg-black text-white p-4 font-semibold">{video.title}</div>
-                  <div className="bg-gray-800 h-56 flex items-center justify-center text-gray-400 text-sm">
-                    Click to play
+                  <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+                    <img
+                      src={`https://img.youtube.com/vi/${extractYouTubeID(video.videoUrl!)}/hqdefault.jpg`}
+                      alt={video.name}
+                      className="absolute top-0 left-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-0 left-0 w-full bg-black bg-opacity-60 text-white p-2 font-semibold text-lg">
+                      {video.name}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -249,7 +259,7 @@ export default function Gallery() {
           </div>
         )}
 
-        {/* Selected video modal */}
+        {/* Fullscreen video modal */}
         {selectedVideo && (
           <div
             className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50"
@@ -257,11 +267,12 @@ export default function Gallery() {
           >
             <div className="relative w-full max-w-6xl h-auto">
               <iframe
-                src={selectedVideo.link}
                 className="w-full aspect-video"
+                src={selectedVideo.videoUrl!.replace("watch?v=", "embed/")}
+                title={selectedVideo.name}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-              ></iframe>
+              />
               <button
                 onClick={() => setSelectedVideo(null)}
                 className="absolute top-4 right-4 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center z-10 transition-colors"
@@ -281,4 +292,12 @@ export default function Gallery() {
       )}
     </section>
   );
-      }
+}
+
+// Helper to extract YouTube ID for thumbnails
+function extractYouTubeID(url: string) {
+  const regExp =
+    /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2].length === 11 ? match[2] : "";
+}
