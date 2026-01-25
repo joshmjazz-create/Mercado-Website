@@ -1,27 +1,38 @@
 import { useState, useEffect, useRef } from "react";
 import Footer from "@/components/footer";
 
-export default function Gallery() {
-  const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const scrollRef = useRef<HTMLElement>(null);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+interface MediaItem {
+  id: string;
+  name: string;
+  mimeType: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  thumbnailLink?: string;
+}
 
-  const [pictures, setPictures] = useState<any[]>([]);
-  const [videos, setVideos] = useState<any[]>([]);
+export default function Gallery() {
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [photos, setPhotos] = useState<MediaItem[]>([]);
+  const [videos, setVideos] = useState<MediaItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const scrollRef = useRef<HTMLElement>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     document.title = "Gallery";
   }, []);
 
+  // Window resize
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Scroll fade effect
   useEffect(() => {
     const scrollElement = scrollRef.current;
     if (!scrollElement) return;
@@ -41,87 +52,73 @@ export default function Gallery() {
     };
   }, []);
 
-  // Load media from Google Drive
+  // Fetch gallery media
   useEffect(() => {
-    const fetchMedia = async () => {
+    const fetchGallery = async () => {
       try {
         const FOLDER_ID = "1ORtM5yFEzaCN5B_Sx3ErmDH5qTDCRXGd";
         const API_KEY = "AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI";
 
         const response = await fetch(
-          `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType)`
+          `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,thumbnailLink)`
         );
 
         if (response.ok) {
           const data = await response.json();
-          const mediaItems = data.files || [];
+          const mediaFiles: MediaItem[] = (data.files || []).map((file: any) => {
+            if (file.mimeType.startsWith("image/")) {
+              return { ...file, imageUrl: `https://lh3.googleusercontent.com/d/${file.id}` };
+            } else if (file.mimeType.startsWith("video/")) {
+              return { ...file, videoUrl: `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}` };
+            } else {
+              return file;
+            }
+          });
 
-          const pics = mediaItems
-            .filter((f: any) => f.mimeType.startsWith("image/"))
-            .map((f: any) => ({
-              ...f,
-              imageUrl: `https://lh3.googleusercontent.com/d/${f.id}`,
-            }));
-
-          const vids = mediaItems
-            .filter((f: any) => f.mimeType.startsWith("video/"))
-            .map((f: any) => ({
-              ...f,
-              videoUrl: `https://www.googleapis.com/drive/v3/files/${f.id}?alt=media&key=${API_KEY}`,
-            }));
-
-          setPictures(pics);
-          setVideos(vids);
+          setPhotos(mediaFiles.filter((m) => m.imageUrl));
+          setVideos(mediaFiles.filter((m) => m.videoUrl));
         } else {
-          const errorData = await response.json();
-          console.error("Gallery API Error:", errorData);
-          setError("Failed to load media");
+          const errData = await response.json();
+          console.error("Gallery API Error Response:", errData);
         }
       } catch (err) {
-        console.error(err);
-        setError("Failed to load media");
+        console.error("Gallery API Error:", err);
+        setError("Failed to load gallery.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchMedia();
+    fetchGallery();
   }, []);
 
-  const renderMediaSection = (title: string, items: any[], isVideo = false) => {
-    if (!items.length) return null;
+  const renderMediaSection = (title: string, media: MediaItem[], isVideo: boolean = false, delay: number = 0) => {
+    if (!media || media.length === 0) return null;
 
     return (
-      <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: "400ms" }}>
-        <h2 className="text-gray-500 text-lg mb-4 font-semibold underline">{title}</h2>
+      <div className="opacity-0 translate-y-4 animate-in mb-8" style={{ animationDelay: `${delay}ms` }}>
+        <h2 className="text-3xl font-semibold text-gray-400 mb-6 text-left underline">{title}</h2>
         <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
-          {items.map((item) => (
+          {media.map((item) => (
             <div
               key={item.id}
               className="break-inside-avoid mb-3 cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group"
-              onClick={() => setSelectedMedia(isVideo ? item.videoUrl : item.imageUrl)}
             >
-              {isVideo ? (
-                <div className="relative aspect-video bg-black">
-                  <video
-                    src={item.videoUrl}
-                    className="w-full h-full object-cover"
-                    muted
-                    playsInline
-                    preload="metadata"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
-                    <span className="text-white text-2xl">▶</span>
-                  </div>
-                </div>
-              ) : (
+              {isVideo && item.videoUrl ? (
+                <video
+                  src={item.videoUrl}
+                  controls
+                  className="w-full h-auto object-cover rounded-lg"
+                />
+              ) : item.imageUrl ? (
                 <img
                   src={item.imageUrl}
                   alt={item.name}
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                  onClick={() => setSelectedPhoto(item.imageUrl!)}
                   loading="lazy"
                 />
-              )}
+              ) : null}
             </div>
           ))}
         </div>
@@ -135,50 +132,50 @@ export default function Gallery() {
       className="min-h-screen desktop-container bg-jazz-grey md:overflow-y-auto custom-scrollbar"
     >
       <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
+        {/* Page header */}
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Gallery</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
 
+        {/* Loading spinner */}
         {isLoading && (
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-800"></div>
           </div>
         )}
 
+        {/* Error */}
         {error && (
           <div className="text-center py-20">
             <p className="text-red-600 text-lg">{error}</p>
           </div>
         )}
 
-        {!isLoading && renderMediaSection("Pictures", pictures)}
-        {!isLoading && renderMediaSection("Video", videos, true)}
+        {/* Photos and Videos */}
+        {!isLoading && !error && (
+          <>
+            {renderMediaSection("Pictures", photos, false, 400)}
+            {renderMediaSection("Videos", videos, true, 600)}
+          </>
+        )}
 
-        {selectedMedia && (
+        {/* Image modal */}
+        {selectedPhoto && (
           <div
             className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
-            onClick={() => setSelectedMedia(null)}
+            onClick={() => setSelectedPhoto(null)}
           >
             <div className="relative w-full h-full flex items-center justify-center p-8">
-              {selectedMedia?.endsWith(".mp4") ? (
-                <video
-                  src={selectedMedia}
-                  controls
-                  autoPlay
-                  className="max-w-full max-h-full rounded-lg"
-                />
-              ) : (
-                <img
-                  src={selectedMedia}
-                  alt="Selected Media"
-                  className="max-w-full max-h-full object-contain rounded-lg"
-                />
-              )}
+              <img
+                src={selectedPhoto}
+                alt="Gallery photo"
+                className="max-w-full max-h-full object-contain rounded-lg"
+              />
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedMedia(null);
+                  setSelectedPhoto(null);
                 }}
                 className="absolute top-8 right-8 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center z-10 transition-colors"
               >
@@ -189,6 +186,7 @@ export default function Gallery() {
         )}
       </div>
 
+      {/* Footer at bottom */}
       {(!isLoading || error) && (
         <div className="md:hidden">
           <Footer />
@@ -196,4 +194,4 @@ export default function Gallery() {
       )}
     </section>
   );
-}
+            }
