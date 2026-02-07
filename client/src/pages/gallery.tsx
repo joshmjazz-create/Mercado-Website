@@ -104,7 +104,7 @@ export default function Gallery() {
           if (line.startsWith("LINK:")) {
             const link = line.replace("LINK:", "").trim();
             videoItems.push({
-              id: link, // use link as ID
+              id: link,
               name: currentTitle,
               videoUrl: link,
             });
@@ -220,15 +220,21 @@ export default function Gallery() {
                         <img
                           src={`https://img.youtube.com/vi/${extractYouTubeID(
                             video.videoUrl!
-                          )}/hqdefault.jpg`}
+                          )}/maxresdefault.jpg`}
                           alt={video.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            if (!target.src.includes("hqdefault")) {
+                              target.src = `https://img.youtube.com/vi/${extractYouTubeID(
+                                video.videoUrl!
+                              )}/hqdefault.jpg`;
+                            }
+                          }}
                         />
-                        {/* Text overlay with black semi-transparent bar behind text */}
                         <div className="absolute bottom-0 w-full flex items-center justify-start p-2 bg-black bg-opacity-60">
                           <p className="text-white font-semibold text-lg">{video.name}</p>
                         </div>
-                        {/* Play button overlay */}
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                           <div className="bg-black bg-opacity-50 p-3 rounded-full text-white text-2xl">
                             ▶
