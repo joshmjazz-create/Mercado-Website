@@ -292,7 +292,7 @@ export default function Gallery() {
                 className="w-full aspect-video"
                 src={`https://www.youtube.com/embed/${extractYouTubeID(
                   selectedVideo.videoUrl!
-                )}`}
+                )}?autoplay=1&rel=0&modestbranding=1`}
                 title={selectedVideo.name}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
