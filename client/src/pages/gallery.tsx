@@ -217,6 +217,7 @@ export default function Gallery() {
                       onClick={() => setSelectedVideo(video)}
                     >
                       <div className="relative w-full aspect-video bg-black">
+
                         <img
                           src={`https://img.youtube.com/vi/${extractYouTubeID(
                             video.videoUrl!
@@ -232,14 +233,20 @@ export default function Gallery() {
                             }
                           }}
                         />
+
+                        {/* Hover dark overlay */}
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300"></div>
+
                         <div className="absolute bottom-0 w-full flex items-center justify-start p-2 bg-black bg-opacity-60">
                           <p className="text-white font-semibold text-lg">{video.name}</p>
                         </div>
+
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <div className="bg-black bg-opacity-50 p-3 rounded-full text-white text-2xl">
+                          <div className="bg-black bg-opacity-50 p-3 rounded-full text-white text-2xl transform transition-all duration-300 group-hover:scale-110 group-hover:text-purple-500">
                             ▶
                           </div>
                         </div>
+
                       </div>
                     </div>
                   ))}
