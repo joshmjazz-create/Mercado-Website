@@ -26,7 +26,7 @@ export default function Footer() {
               <FaInstagram className="w-6 h-6" />
             </a>
             <a 
-              href="https://youtube.com/@joshm.music_?si=6rdyKqF43CHNXqDY" 
+              href="https://youtube.com/@joshuamercadomusic?si=Xk2UjiwpVoF4pWts" 
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-gray-300 transition-colors duration-300"
