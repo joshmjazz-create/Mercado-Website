@@ -17,7 +17,7 @@ export default function Footer() {
               <FaFacebook className="w-6 h-6" />
             </a>
             <a 
-              href="https://www.instagram.com/josh.m_music?igsh=MWtlZmZlZDQ5enZtMQ==" 
+              href="https://www.instagram.com/joshuamercadomusic?igsh=MWtlZmZlZDQ5enZtMQ==" 
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-gray-300 transition-colors duration-300"
