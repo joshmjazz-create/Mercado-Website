@@ -3,6 +3,7 @@ import { ExternalLink, Play, Pause } from "lucide-react";
 import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/footer";
 
 interface Album {
   id: string;
@@ -28,7 +29,6 @@ export default function Music() {
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [loadingAudio, setLoadingAudio] = useState<string | null>(null);
   const [audioElements, setAudioElements] = useState<Map<string, HTMLAudioElement>>(new Map());
-
   const scrollRef = useRef<HTMLElement>(null);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -39,9 +39,10 @@ export default function Music() {
   useEffect(() => {
     const fetchMusicData = async () => {
       try {
+        // Google Docs IDs
         const MY_MUSIC_DOC_ID = "1rPGjdTrPG3pqmPdstqgl95K0L8kKtJ6qPftO6yTAMxY";
         const FEATURED_ON_DOC_ID = "1JyOjg2kg3YcW6L9DGzgO99rd2WD1oQ9qwNnq2aJrTsE";
-        const UPCOMING_FOLDER_ID = "1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6"; // Upcoming folder
+        const UPCOMING_FOLDER_ID = "1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6"; // upcoming folder
 
         const myMusic = await fetchDocumentAlbums(MY_MUSIC_DOC_ID, "My Music");
         const featuredOn = await fetchDocumentAlbums(FEATURED_ON_DOC_ID, "Featured On");
@@ -76,7 +77,7 @@ export default function Music() {
     };
   }, []);
 
-  // --- Fetch albums from Google Docs ---
+  // ------------------- GOOGLE DOCS FETCHING -------------------
   const fetchDocumentAlbums = async (docId: string, categoryName: string): Promise<Album[]> => {
     try {
       const response = await fetch(`https://docs.google.com/document/d/${docId}/export?format=txt`);
@@ -109,6 +110,7 @@ export default function Music() {
           if (key === "youtube") currentAlbum.links.youtube = url.trim();
         }
       });
+
       if (currentAlbum.title) albums.push({ ...currentAlbum, category: categoryName });
 
       // Fetch Spotify cover art
@@ -134,12 +136,13 @@ export default function Music() {
       if (!oembedRes.ok) return "";
       const data = await oembedRes.json();
       return data.thumbnail_url || "";
-    } catch {
+    } catch (error) {
+      console.error("Error fetching Spotify cover art:", error);
       return "";
     }
   };
 
-  // --- Fetch Upcoming albums (subfolders only) ---
+  // ------------------- UPCOMING FOLDER FETCHING -------------------
   const fetchUpcomingAlbums = async (folderId: string): Promise<Album[]> => {
     try {
       const API_KEY = "AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI";
@@ -148,19 +151,16 @@ export default function Music() {
       );
       if (!res.ok) throw new Error("Failed to fetch upcoming folder");
       const data = await res.json();
-
       const upcomingAlbums: Album[] = [];
-
       for (const subfolder of data.files) {
-        const filesRes = await fetch(
+        const albumFilesRes = await fetch(
           `https://www.googleapis.com/drive/v3/files?q='${subfolder.id}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink)`
         );
-        if (!filesRes.ok) continue;
-        const filesData = await filesRes.json();
-        const files = filesData.files || [];
-        const imageFile = files.find((f: any) => f.mimeType.startsWith("image/"));
-        const audioFile = files.find((f: any) => f.mimeType.startsWith("audio/"));
-
+        if (!albumFilesRes.ok) continue;
+        const albumFilesData = await albumFilesRes.json();
+        const files = albumFilesData.files || [];
+        let imageFile = files.find((f: any) => f.mimeType.startsWith("image/"));
+        let audioFile = files.find((f: any) => f.mimeType.startsWith("audio/"));
         upcomingAlbums.push({
           id: subfolder.id,
           title: subfolder.name,
@@ -172,7 +172,6 @@ export default function Music() {
           links: {},
         });
       }
-
       return upcomingAlbums;
     } catch (error) {
       console.error("Error fetching upcoming albums:", error);
@@ -180,16 +179,105 @@ export default function Music() {
     }
   };
 
-  // --- Audio logic ---
-  const handlePlayPreview = async (album: Album) => { /* same as original code */ };
-  const handleAlbumClick = (album: Album) => { /* same as original code */ };
-  const handlePlatformClick = (url: string) => { /* same as original code */ };
+  // ------------------- AUDIO HANDLERS -------------------
+  const handlePlayPreview = async (album: Album) => {
+    if (!album.audioPreviewUrl) return;
+    if (playingAudio === album.id) {
+      const audio = audioElements.get(album.id);
+      if (audio) { audio.pause(); setPlayingAudio(null); }
+      return;
+    }
+    if (playingAudio) {
+      const currentAudio = audioElements.get(playingAudio);
+      if (currentAudio) currentAudio.pause();
+      setPlayingAudio(null);
+    }
+    setLoadingAudio(album.id);
+    let audio = audioElements.get(album.id);
+    if (!audio) {
+      audio = new Audio(album.audioPreviewUrl);
+      audio.preload = "auto";
+      setAudioElements(prev => new Map(prev.set(album.id, audio!)));
+      audio.addEventListener("ended", () => setPlayingAudio(null));
+    }
+    audio.currentTime = audio.duration / 3;
+    audio.volume = 0;
+    audio.play().then(() => {
+      setPlayingAudio(album.id);
+      setLoadingAudio(null);
+      const fadeIn = setInterval(() => {
+        if (audio!.volume < 1) audio!.volume = Math.min(1, audio!.volume + 0.05);
+        else clearInterval(fadeIn);
+      }, 50);
+      setTimeout(() => {
+        const fadeOut = setInterval(() => {
+          if (audio!.volume > 0) audio!.volume = Math.max(0, audio!.volume - 0.05);
+          else { clearInterval(fadeOut); audio!.pause(); setPlayingAudio(null); }
+        }, 50);
+      }, 15000);
+    });
+  };
 
-  const renderSection = (title: string, sectionAlbums: Album[]) => { /* same as original code */ };
+  const handleAlbumClick = (album: Album) => {
+    if (album.category === "Upcoming") handlePlayPreview(album);
+    else { setSelectedAlbum(album); setShowPlatforms(true); }
+  };
 
+  const handlePlatformClick = (url: string) => { window.open(url, "_blank"); setShowPlatforms(false); };
+
+  // ------------------- RENDER -------------------
   const myMusicAlbums = albums.filter(a => a.category === "My Music");
   const featuredAlbums = albums.filter(a => a.category === "Featured On");
   const upcomingAlbums = albums.filter(a => a.category === "Upcoming");
+
+  const renderSection = (title: string, sectionAlbums: Album[]) => {
+    if (sectionAlbums.length === 0) return null;
+    return (
+      <div className="opacity-0 translate-y-4 animate-in mb-12">
+        <h2 className="text-2xl font-semibold text-gray-700 mb-8 text-left underline decoration-gray-700">{title}</h2>
+        <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
+          {sectionAlbums.map((album, index) => (
+            <div key={`${album.title}-${index}`} className="group cursor-pointer transform transition-all duration-300 hover:scale-105" onClick={() => handleAlbumClick(album)}>
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden border">
+                <div className="aspect-square relative">
+                  {album.coverImageUrl || album.imageFileUrl ? (
+                    <img src={album.coverImageUrl || album.imageFileUrl} alt={album.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gray-400 flex items-center justify-center">
+                      <span className="text-gray-600 text-sm">No Cover</span>
+                    </div>
+                  )}
+                  {album.category === "Upcoming" && album.audioPreviewUrl && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {loadingAudio === album.id ? (
+                        <div className="bg-black bg-opacity-50 rounded-full p-3">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                        </div>
+                      ) : playingAudio === album.id ? (
+                        <div className="bg-black bg-opacity-50 rounded-full p-3">
+                          <Pause className="w-8 h-8 text-white" />
+                        </div>
+                      ) : (
+                        <div className="bg-black bg-opacity-50 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Play className="w-8 h-8 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="p-4 bg-white border-t">
+                  <h3 className="text-base font-semibold text-gray-900 mb-1 truncate">{album.title}</h3>
+                  <p className="text-gray-600 text-sm truncate">{album.artist}</p>
+                  <p className="text-gray-500 text-sm">{album.year}</p>
+                  {album.audioPreviewUrl && album.category === "Upcoming" && <p className="text-purple-600 text-sm font-medium">Preview Available</p>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <section ref={scrollRef} className="min-h-screen desktop-container bg-jazz-grey md:overflow-y-auto custom-scrollbar">
@@ -198,11 +286,9 @@ export default function Music() {
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Music</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
-        {isLoading && (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-          </div>
-        )}
+
+        {isLoading && <div className="flex justify-center items-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div></div>}
+
         {!isLoading && (
           <>
             {renderSection("My Music", myMusicAlbums)}
@@ -213,10 +299,25 @@ export default function Music() {
 
         <Dialog open={showPlatforms} onOpenChange={setShowPlatforms}>
           <DialogContent className="bg-white border-purple-800">
-            {/* Dialog content same as original code */}
+            {selectedAlbum?.coverImageUrl || selectedAlbum?.imageFileUrl ? (
+              <img src={selectedAlbum.coverImageUrl || selectedAlbum.imageFileUrl} alt={selectedAlbum.title} className="w-48 h-48 object-cover rounded-lg shadow-lg mx-auto mb-6" />
+            ) : (
+              <div className="w-48 h-48 bg-gray-300 flex items-center justify-center rounded-lg shadow-lg mx-auto mb-6">
+                <span className="text-gray-600 text-sm">No Cover</span>
+              </div>
+            )}
+            <DialogTitle className="text-xl font-semibold text-gray-900 mb-4 text-center">{selectedAlbum?.title}</DialogTitle>
+            <p className="text-gray-600 text-center mb-4">{selectedAlbum?.artist}</p>
+            <p className="text-gray-500 text-center mb-6">{selectedAlbum?.year}</p>
+            <div className="grid grid-cols-1 gap-4">
+              {selectedAlbum?.links.spotify && <Button onClick={() => handlePlatformClick(selectedAlbum.links.spotify)} className="w-full bg-green-600 hover:bg-green-700 text-white p-4 h-auto flex items-center justify-center"><FaSpotify className="mr-3 text-xl" /> Listen on Spotify <ExternalLink className="ml-auto w-4 h-4" /></Button>}
+              {selectedAlbum?.links.applemusic && <Button onClick={() => handlePlatformClick(selectedAlbum.links.applemusic)} className="w-full bg-gray-800 hover:bg-gray-900 text-white p-4 h-auto flex items-center justify-center"><FaApple className="mr-3 text-xl" /> Listen on Apple Music <ExternalLink className="ml-auto w-4 h-4" /></Button>}
+              {selectedAlbum?.links.youtube && <Button onClick={() => handlePlatformClick(selectedAlbum.links.youtube)} className="w-full bg-red-600 hover:bg-red-700 text-white p-4 h-auto flex items-center justify-center"><FaYoutube className="mr-3 text-xl" /> Watch on YouTube <ExternalLink className="ml-auto w-4 h-4" /></Button>}
+            </div>
           </DialogContent>
         </Dialog>
       </div>
+      {!isLoading && <Footer />}
     </section>
   );
 }
