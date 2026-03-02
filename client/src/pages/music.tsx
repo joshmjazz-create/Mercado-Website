@@ -393,3 +393,35 @@ export default function Music() {
               {selectedAlbum?.coverImageUrl || selectedAlbum?.imageFileUrl ? (
                 <img src={selectedAlbum.coverImageUrl || selectedAlbum.imageFileUrl} alt={selectedAlbum.title} className="w-48 h-48 object-cover rounded-lg shadow-lg" />
               ) :
+                              ) : (
+                <div className="w-48 h-48 bg-gray-300 flex items-center justify-center rounded-lg shadow-lg">
+                  <span className="text-gray-600 text-sm">No Cover</span>
+                </div>
+              )}
+            </div>
+            <DialogTitle className="text-xl font-semibold text-gray-900 mb-4">{selectedAlbum?.title}</DialogTitle>
+            <div className="flex justify-center space-x-4">
+              {selectedAlbum?.links.spotify && (
+                <Button variant="outline" onClick={() => handlePlatformClick(selectedAlbum.links.spotify)}>
+                  <FaSpotify className="mr-2" /> Spotify
+                </Button>
+              )}
+              {selectedAlbum?.links.applemusic && (
+                <Button variant="outline" onClick={() => handlePlatformClick(selectedAlbum.links.applemusic)}>
+                  <FaApple className="mr-2" /> Apple Music
+                </Button>
+              )}
+              {selectedAlbum?.links.youtube && (
+                <Button variant="outline" onClick={() => handlePlatformClick(selectedAlbum.links.youtube)}>
+                  <FaYoutube className="mr-2" /> YouTube
+                </Button>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Footer />
+      </div>
+    </section>
+  );
+}
