@@ -25,6 +25,7 @@ export default function Music() {
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
   const [showPlatforms, setShowPlatforms] = useState(false);
   const [albums, setAlbums] = useState<Album[]>([]);
+  const [upcomingAlbums, setUpcomingAlbums] = useState<Album[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [loadingAudio, setLoadingAudio] = useState<string | null>(null);
@@ -37,7 +38,6 @@ export default function Music() {
     document.title = "Music";
   }, []);
 
-  // Fetch Music Data from the two Google Docs
   useEffect(() => {
     const fetchMusicData = async () => {
       try {
@@ -50,9 +50,7 @@ export default function Music() {
         const allAlbums: Album[] = [];
 
         for (const doc of docsToFetch) {
-          // Fetch the document content
           const albumData = await fetchDocumentContent(doc.id);
-          // Wrap in Album object
           allAlbums.push({
             id: doc.id,
             title: albumData.title || '',
@@ -65,6 +63,12 @@ export default function Music() {
         }
 
         setAlbums(allAlbums);
+
+        // Fetch Upcoming albums using the old Drive folder/subfolder routing
+        const upcomingFolderId = '1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6'; // your existing folder ID
+        const upcomingAlbumsData = await fetchAlbumsInCategory(upcomingFolderId, 'Upcoming');
+        setUpcomingAlbums(upcomingAlbumsData);
+
       } catch (error) {
         console.error('Music API Error:', error);
         console.log('Using offline mode for music');
@@ -76,7 +80,6 @@ export default function Music() {
     fetchMusicData();
   }, []);
 
-  // Handle custom scrollbar fade effect
   useEffect(() => {
     const scrollElement = scrollRef.current;
     if (!scrollElement) return;
@@ -96,7 +99,7 @@ export default function Music() {
     };
   }, []);
 
-  // --- Existing helper functions from your original code ---
+  // --- Functions to fetch Google Docs and Drive content ---
 
   const fetchDocumentContent = async (docId: string): Promise<any> => {
     try {
@@ -145,6 +148,72 @@ export default function Music() {
       console.error('Error fetching Spotify cover art:', error);
     }
     return '';
+  };
+
+  const fetchAlbumsInCategory = async (categoryFolderId: string, categoryName: string): Promise<Album[]> => {
+    try {
+      const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
+      const response = await fetch(
+        `https://www.googleapis.com/drive/v3/files?q='${categoryFolderId}'+in+parents+and+mimeType='application/vnd.google-apps.folder'&key=${API_KEY}&fields=files(id,name)`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const albumFolders = data.files || [];
+        const albums: Album[] = [];
+        for (const albumFolder of albumFolders) {
+          const albumData = await fetchAlbumData(albumFolder.id, albumFolder.name, categoryName);
+          if (albumData) albums.push(albumData);
+        }
+        return albums;
+      }
+    } catch (error) {
+      console.error('Error fetching albums in category:', error);
+    }
+    return [];
+  };
+
+  const fetchAlbumData = async (albumFolderId: string, folderName: string, categoryName: string): Promise<Album | null> => {
+    try {
+      const API_KEY = 'AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI';
+      const filesResponse = await fetch(
+        `https://www.googleapis.com/drive/v3/files?q='${albumFolderId}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink)`
+      );
+      if (filesResponse.ok) {
+        const filesData = await filesResponse.json();
+        const files = filesData.files || [];
+        const docFile = files.find((file: any) => file.mimeType === 'application/vnd.google-apps.document');
+        let albumMetadata: any = { title: folderName, artist: 'Joshua Mercado', year: new Date().getFullYear().toString(), links: {} };
+        if (docFile) albumMetadata = await fetchDocumentContent(docFile.id);
+
+        let coverImageUrl = '';
+        let audioPreviewUrl = '';
+        let imageFileUrl = '';
+
+        if (categoryName === 'Upcoming') {
+          const imageFile = files.find((file: any) => file.mimeType?.startsWith('image/'));
+          const audioFile = files.find((file: any) => file.mimeType?.startsWith('audio/'));
+          if (imageFile) imageFileUrl = `https://lh3.googleusercontent.com/d/${imageFile.id}`;
+          if (audioFile) audioPreviewUrl = `https://www.googleapis.com/drive/v3/files/${audioFile.id}?alt=media&key=${API_KEY}`;
+        } else if (albumMetadata.links.spotify) {
+          coverImageUrl = await fetchSpotifyCoverArt(albumMetadata.links.spotify);
+        }
+
+        return {
+          id: albumFolderId,
+          title: albumMetadata.title || folderName,
+          artist: albumMetadata.artist || 'Joshua Mercado',
+          year: albumMetadata.year || new Date().getFullYear().toString(),
+          category: categoryName,
+          coverImageUrl,
+          links: albumMetadata.links || {},
+          audioPreviewUrl,
+          imageFileUrl
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching album data:', error);
+    }
+    return null;
   };
 
   const handleAlbumClick = (album: Album) => {
@@ -214,7 +283,6 @@ export default function Music() {
 
   const originalAlbums = albums.filter(album => album.category === 'My Music');
   const featuredAlbums = albums.filter(album => album.category === 'Featured On');
-  const upcomingAlbums = albums.filter(album => album.category === 'Upcoming');
 
   return (
     <section ref={scrollRef} className="min-h-screen desktop-container bg-jazz-grey md:overflow-y-auto custom-scrollbar">
@@ -235,6 +303,7 @@ export default function Music() {
             {/* My Music Section */}
             {originalAlbums.length > 0 && (
               <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '400ms' }}>
+                <h2 className="text-2xl font-semibold text-gray-700 mb-8 text-left underline decoration-gray-700">My Music</h2>
                 <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
                   {originalAlbums.map((album, index) => (
                     <div key={`${album.title}-${index}`} className="group cursor-pointer transform transition-all duration-300 hover:scale-105" onClick={() => handleAlbumClick(album)}>
@@ -288,10 +357,57 @@ export default function Music() {
                 </div>
               </div>
             )}
+
+            {/* Upcoming Section */}
+            {upcomingAlbums.length > 0 && (
+              <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '800ms' }}>
+                <h2 className="text-2xl font-semibold text-gray-700 mb-8 text-left underline decoration-gray-700">Upcoming</h2>
+                <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
+                  {upcomingAlbums.map((album, index) => (
+                    <div key={`${album.title}-${index}`} className="group cursor-pointer transform transition-all duration-300 hover:scale-105" onClick={() => handlePlayPreview(album)}>
+                      <div className="bg-white rounded-lg shadow-lg overflow-hidden border">
+                        <div className="aspect-square relative">
+                          {album.imageFileUrl ? (
+                            <img src={album.imageFileUrl} alt={album.title} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-gray-400 flex items-center justify-center">
+                              <span className="text-gray-600 text-sm">No Cover</span>
+                            </div>
+                          )}
+                          {album.audioPreviewUrl && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              {loadingAudio === album.id ? (
+                                <div className="bg-black bg-opacity-50 rounded-full p-3">
+                                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                                </div>
+                              ) : playingAudio === album.id ? (
+                                <div className="bg-black bg-opacity-50 rounded-full p-3">
+                                  <Pause className="w-8 h-8 text-white" />
+                                </div>
+                              ) : (
+                                <div className="bg-black bg-opacity-50 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Play className="w-8 h-8 text-white" />
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-4 bg-white border-t">
+                          <h3 className="text-base font-semibold text-gray-900 mb-1 truncate">{album.title}</h3>
+                          <p className="text-gray-600 text-sm truncate">{album.artist}</p>
+                          <p className="text-gray-500 text-sm">{album.year}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
           </>
         )}
 
-        {/* Platform Selection Dialog */}
+        {/* Platform Dialog */}
         <Dialog open={showPlatforms} onOpenChange={setShowPlatforms}>
           <DialogContent className="bg-white border-purple-800">
             <div className="flex justify-center mb-6">
