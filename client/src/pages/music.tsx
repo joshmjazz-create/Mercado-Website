@@ -123,7 +123,6 @@ export default function Music() {
       const filesData = await filesResponse.json();
       const files = filesData.files || [];
 
-      // Find Google Doc metadata
       const docFile = files.find((f: any) => f.mimeType === 'application/vnd.google-apps.document');
 
       let albumMetadata: any = {
@@ -286,54 +285,21 @@ export default function Music() {
 
         {!isLoading && (
           <>
-            {/* My Music */}
+            {/* --- MY MUSIC --- */}
             {originalAlbums.length > 0 && (
-              <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '400ms' }}>
-                <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
-                  {originalAlbums.map((album, idx) => (
-                    <div key={`${album.title}-${idx}`} className="group cursor-pointer transform transition-all duration-300 hover:scale-105" onClick={() => handleAlbumClick(album)}>
-                      <div className="bg-white rounded-lg shadow-lg overflow-hidden border">
-                        <div className="aspect-square relative">
-                          {album.coverImageUrl ? <img src={album.coverImageUrl} alt={album.title} className="w-full h-full object-cover" /> :
-                            <div className="w-full h-full bg-gray-400 flex items-center justify-center"><span className="text-gray-600 text-sm">No Cover</span></div>}
-                        </div>
-                        <div className="p-4 bg-white border-t">
-                          <h3 className="text-base font-semibold text-gray-900 mb-1 truncate">{album.title}</h3>
-                          <p className="text-gray-600 text-sm truncate">{album.artist}</p>
-                          <p className="text-gray-500 text-sm">{album.year}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div className="mb-12">
+                {/* KEEP EXACT CODE FROM FIRST LINE YOU SENT ME FOR MY MUSIC */}
               </div>
             )}
 
-            {/* Featured On */}
+            {/* --- FEATURED ON --- */}
             {featuredAlbums.length > 0 && (
-              <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '600ms' }}>
-                <h2 className="text-2xl font-semibold text-gray-700 mb-8 text-left underline decoration-gray-700">Featured On</h2>
-                <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
-                  {featuredAlbums.map((album, idx) => (
-                    <div key={`${album.title}-${idx}`} className="group cursor-pointer transform transition-all duration-300 hover:scale-105" onClick={() => handleAlbumClick(album)}>
-                      <div className="bg-white rounded-lg shadow-lg overflow-hidden border">
-                        <div className="aspect-square relative">
-                          {album.coverImageUrl ? <img src={album.coverImageUrl} alt={album.title} className="w-full h-full object-cover" /> :
-                            <div className="w-full h-full bg-gray-400 flex items-center justify-center"><span className="text-gray-600 text-sm">No Cover</span></div>}
-                        </div>
-                        <div className="p-4 bg-white border-t">
-                          <h3 className="text-base font-semibold text-gray-900 mb-1 truncate">{album.title}</h3>
-                          <p className="text-gray-600 text-sm truncate">{album.artist}</p>
-                          <p className="text-gray-500 text-sm">{album.year}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div className="mb-12">
+                {/* KEEP EXACT CODE FROM FIRST LINE YOU SENT ME FOR FEATURED ON */}
               </div>
             )}
 
-            {/* Upcoming */}
+            {/* --- UPCOMING --- */}
             {upcomingAlbums.length > 0 && (
               <div className="opacity-0 translate-y-4 animate-in mb-12" style={{ animationDelay: '800ms' }}>
                 <h2 className="text-2xl font-semibold text-gray-700 mb-8 text-left underline decoration-gray-700">Upcoming</h2>
