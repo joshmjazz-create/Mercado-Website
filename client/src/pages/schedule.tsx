@@ -176,35 +176,35 @@ export default function Schedule() {
         </div>
       </section>
 
-      {/* ✅ FULLSCREEN PROMO POPUP WITH SLIDE-IN FROM BOTTOM */}
-      {promoImage && showPromo && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-          onClick={() => setShowPromo(false)}
-        >
-          <div
-            className={`relative w-full h-full flex items-center justify-center p-6 transform transition-all duration-500 ${
-              fadeIn ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
-            }`}
-          >
-            <img
-              src={promoImage}
-              alt="Upcoming Event"
-              className="max-w-full max-h-full object-contain"
-            />
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowPromo(false);
-              }}
-              className="absolute top-6 right-6 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center transition-colors"
+          {/* ✅ FULLSCREEN PROMO POPUP WITH SLIDE-IN FROM BOTTOM */}
+          {promoImage && showPromo && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+              onClick={() => setShowPromo(false)}
             >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
+              <div
+                className={`relative w-full h-full flex items-center justify-center p-6 transform transition-all duration-500 ${
+                  fadeIn ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
+                }`}
+              >
+                <img
+                  src={promoImage}
+                  alt="Upcoming Event"
+                  className="max-w-full max-h-full object-contain"
+                />
+    
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowPromo(false);
+                  }}
+                  className="absolute top-6 right-6 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          )}
 
       {/* Mobile Footer */}
       <div className="md:hidden">
