@@ -75,10 +75,10 @@ export default function Schedule() {
           const imageId = data.files[0].id;
           setPromoImage(`https://lh3.googleusercontent.com/d/${imageId}`);
 
-          // Show popup 0.25s after page loads
+          // Show popup 0.25s after page loads with slide-in
           setTimeout(() => {
             setShowPromo(true);
-            setFadeIn(true); // trigger fade-in animation
+            setFadeIn(true);
           }, 250);
         }
       } catch (error) {
@@ -176,13 +176,17 @@ export default function Schedule() {
         </div>
       </section>
 
-      {/* ✅ FULLSCREEN PROMO POPUP WITH FADE-IN */}
+      {/* ✅ FULLSCREEN PROMO POPUP WITH SLIDE-IN FROM BOTTOM */}
       {promoImage && showPromo && (
         <div
-          className={`fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 transition-opacity duration-500 ${fadeIn ? 'opacity-100' : 'opacity-0'}`}
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
           onClick={() => setShowPromo(false)}
         >
-          <div className={`relative w-full h-full flex items-center justify-center p-6 transform transition-transform duration-500 ${fadeIn ? 'scale-100' : 'scale-90'}`}>
+          <div
+            className={`relative w-full h-full flex items-center justify-center p-6 transform transition-all duration-500 ${
+              fadeIn ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
+            }`}
+          >
             <img
               src={promoImage}
               alt="Upcoming Event"
