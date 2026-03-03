@@ -18,7 +18,8 @@ export default function Schedule() {
 
   // ✅ NEW STATE FOR PROMO IMAGE
   const [promoImage, setPromoImage] = useState<string | null>(null);
-  const [showPromo, setShowPromo] = useState(true);
+  const [showPromo, setShowPromo] = useState(false);
+  const [fadeIn, setFadeIn] = useState(false);
 
   useEffect(() => {
     document.title = "Schedule";
@@ -73,6 +74,12 @@ export default function Schedule() {
         if (data.files && data.files.length > 0) {
           const imageId = data.files[0].id;
           setPromoImage(`https://lh3.googleusercontent.com/d/${imageId}`);
+
+          // Show popup 0.25s after page loads
+          setTimeout(() => {
+            setShowPromo(true);
+            setFadeIn(true); // trigger fade-in animation
+          }, 250);
         }
       } catch (error) {
         console.error("Promo image fetch error:", error);
@@ -169,10 +176,10 @@ export default function Schedule() {
         </div>
       </section>
 
-      {/* ✅ FULLSCREEN PROMO POPUP */}
+      {/* ✅ FULLSCREEN PROMO POPUP WITH FADE-IN */}
       {promoImage && showPromo && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50"
+          className={`fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 transition-opacity duration-500 ${fadeIn ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setShowPromo(false)}
         >
           <div className="relative w-full h-full flex items-center justify-center p-6">
