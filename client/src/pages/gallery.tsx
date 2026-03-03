@@ -176,7 +176,7 @@ export default function Gallery() {
           <>
             {/* Pictures Section */}
             <div
-              className="opacity-0 translate-y-4 animate-in mb-8"
+              className="opacity-0 translate-y-4 animate-in mb-12"
               style={{ animationDelay: "400ms" }}
             >
               <h2 className="text-2xl font-semibold text-gray-600 mb-4 underline">
