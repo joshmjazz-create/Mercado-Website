@@ -209,7 +209,7 @@ export default function Gallery() {
                 <h2 className="text-2xl font-semibold text-gray-600 mb-4 underline">
                   Videos
                 </h2>
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
                   {videos.map((video) => (
                     <div
                       key={video.id}
