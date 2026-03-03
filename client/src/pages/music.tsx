@@ -312,9 +312,9 @@ export default function Music() {
                 <span className="text-gray-600 text-sm">No Cover</span>
               </div>
             )}
-            <DialogTitle className="text-xl font-semibold text-gray-900 mb-4 text-center">{selectedAlbum?.title}</DialogTitle>
-            <p className="text-gray-600 text-center mb-4">{selectedAlbum?.artist}</p>
-            <p className="text-gray-500 text-center mb-6">{selectedAlbum?.year}</p>
+            <DialogTitle className="text-xl font-semibold text-gray-900 mb-2 text-center">{selectedAlbum?.title}</DialogTitle>
+            <p className="text-gray-600 text-center mb-1">{selectedAlbum?.artist}</p>
+            <p className="text-gray-500 text-center mb-4">{selectedAlbum?.year}</p>
             <div className="grid grid-cols-1 gap-4">
               {selectedAlbum?.links.spotify && <Button onClick={() => handlePlatformClick(selectedAlbum.links.spotify)} className="w-full bg-green-600 hover:bg-green-700 text-white p-4 h-auto flex items-center justify-center"><FaSpotify className="mr-3 text-xl" /> Listen on Spotify <ExternalLink className="ml-auto w-4 h-4" /></Button>}
               {selectedAlbum?.links.applemusic && <Button onClick={() => handlePlatformClick(selectedAlbum.links.applemusic)} className="w-full bg-gray-800 hover:bg-gray-900 text-white p-4 h-auto flex items-center justify-center"><FaApple className="mr-3 text-xl" /> Listen on Apple Music <ExternalLink className="ml-auto w-4 h-4" /></Button>}
