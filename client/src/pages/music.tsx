@@ -241,7 +241,7 @@ export default function Music() {
     return (
       <div className="opacity-0 translate-y-4 animate-in mb-12">
         <h2 className="text-2xl font-semibold text-gray-700 mb-8 text-left underline decoration-gray-700">{title}</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-4 gap-4">
           {sectionAlbums.map((album, index) => (
             <div key={`${album.title}-${index}`} className="group cursor-pointer transform transition-all duration-300 hover:scale-105" onClick={() => handleAlbumClick(album)}>
               <div className="bg-white rounded-lg shadow-lg overflow-hidden border">
