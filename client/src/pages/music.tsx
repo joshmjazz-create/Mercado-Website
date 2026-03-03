@@ -306,7 +306,7 @@ export default function Music() {
         <Dialog open={showPlatforms} onOpenChange={setShowPlatforms}>
           <DialogContent className="bg-white border-purple-800">
             {selectedAlbum?.coverImageUrl || selectedAlbum?.imageFileUrl ? (
-              <img src={selectedAlbum.coverImageUrl || selectedAlbum.imageFileUrl} alt={selectedAlbum.title} className="w-64 h-64 object-cover rounded-lg shadow-lg mx-auto mb-4" />
+              <img src={selectedAlbum.coverImageUrl || selectedAlbum.imageFileUrl} alt={selectedAlbum.title} className="w-72 h-72 object-cover rounded-lg shadow-lg mx-auto mb-4" />
             ) : (
               <div className="w-48 h-48 bg-gray-300 flex items-center justify-center rounded-lg shadow-lg mx-auto mb-6">
                 <span className="text-gray-600 text-sm">No Cover</span>
