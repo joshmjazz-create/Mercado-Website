@@ -203,7 +203,7 @@ export default function Gallery() {
             {/* Videos Section */}
             {videos.length > 0 && (
               <div
-                className="opacity-0 translate-y-4 animate-in mb-8"
+                className="opacity-0 translate-y-4 animate-in mb-4"
                 style={{ animationDelay: "600ms" }}
               >
                 <h2 className="text-2xl font-semibold text-gray-600 mb-4 underline">
