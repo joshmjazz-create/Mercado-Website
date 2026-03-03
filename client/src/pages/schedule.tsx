@@ -182,7 +182,7 @@ export default function Schedule() {
           className={`fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 transition-opacity duration-500 ${fadeIn ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setShowPromo(false)}
         >
-          <div className="relative w-full h-full flex items-center justify-center p-6">
+          <div className={`relative w-full h-full flex items-center justify-center p-6 transform transition-transform duration-500 ${fadeIn ? 'scale-100' : 'scale-90'}`}>
             <img
               src={promoImage}
               alt="Upcoming Event"
