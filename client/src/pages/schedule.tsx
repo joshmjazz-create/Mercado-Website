@@ -16,6 +16,10 @@ export default function Schedule() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // ✅ NEW STATE FOR PROMO IMAGE
+  const [promoImage, setPromoImage] = useState<string | null>(null);
+  const [showPromo, setShowPromo] = useState(true);
+
   useEffect(() => {
     document.title = "Schedule";
   }, []);
@@ -50,6 +54,32 @@ export default function Schedule() {
     };
 
     fetchEvents();
+  }, []);
+
+  // ✅ NEW USEEFFECT TO FETCH PROMO IMAGE FROM DRIVE FOLDER
+  useEffect(() => {
+    const fetchPromoImage = async () => {
+      try {
+        const FOLDER_ID = "16LRiz2HqAzL2hELbP6Az6GXj_7kdnZW4";
+        const API_KEY = "AIzaSyDSYNweU099_DLxYW7ICIn7MapibjSquYI";
+
+        const res = await fetch(
+          `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+mimeType+contains+'image'&key=${API_KEY}&fields=files(id,name)`
+        );
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (data.files && data.files.length > 0) {
+          const imageId = data.files[0].id;
+          setPromoImage(`https://lh3.googleusercontent.com/d/${imageId}`);
+        }
+      } catch (error) {
+        console.error("Promo image fetch error:", error);
+      }
+    };
+
+    fetchPromoImage();
   }, []);
 
   const formatDate = (dateString: string) => {
@@ -138,6 +168,32 @@ export default function Schedule() {
           )}
         </div>
       </section>
+
+      {/* ✅ FULLSCREEN PROMO POPUP */}
+      {promoImage && showPromo && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50"
+          onClick={() => setShowPromo(false)}
+        >
+          <div className="relative w-full h-full flex items-center justify-center p-6">
+            <img
+              src={promoImage}
+              alt="Upcoming Event"
+              className="max-w-full max-h-full object-contain"
+            />
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowPromo(false);
+              }}
+              className="absolute top-6 right-6 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center transition-colors"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Footer */}
       <div className="md:hidden">
