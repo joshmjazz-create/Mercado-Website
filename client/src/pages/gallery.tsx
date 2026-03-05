@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Footer from "@/components/footer";
 
 interface MediaItem {
@@ -21,9 +21,6 @@ export default function Gallery() {
   const [isLoadingPhotos, setIsLoadingPhotos] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const scrollRef = useRef<HTMLElement>(null);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
   useEffect(() => {
     document.title = "Gallery";
   }, []);
@@ -33,26 +30,6 @@ export default function Gallery() {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Custom scrollbar fade
-  useEffect(() => {
-    const scrollElement = scrollRef.current;
-    if (!scrollElement) return;
-
-    const handleScroll = () => {
-      scrollElement.classList.add("scrolling");
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-      scrollTimeoutRef.current = setTimeout(() => {
-        scrollElement.classList.remove("scrolling");
-      }, 2000);
-    };
-
-    scrollElement.addEventListener("scroll", handleScroll);
-    return () => {
-      scrollElement.removeEventListener("scroll", handleScroll);
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-    };
   }, []);
 
   // Fetch media from Google Drive and Google Doc for videos
@@ -87,7 +64,7 @@ export default function Gallery() {
         );
 
         setPhotos(imageItems);
-        setIsLoadingPhotos(false); // load page once photos are ready
+        setIsLoadingPhotos(false);
 
         // 2️⃣ Fetch videos from Google Doc
         const docUrl =
@@ -147,10 +124,7 @@ export default function Gallery() {
   };
 
   return (
-    <section
-      ref={scrollRef}
-      className="min-h-screen desktop-container bg-jazz-grey md:overflow-y-auto custom-scrollbar"
-    >
+    <section className="min-h-screen bg-jazz-grey">
       <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
         <div
           className="text-center mb-8 opacity-0 translate-y-4 animate-in"
@@ -174,7 +148,6 @@ export default function Gallery() {
 
         {!isLoadingPhotos && photos.length > 0 && (
           <>
-            {/* Pictures Section */}
             <div
               className="opacity-0 translate-y-4 animate-in mb-12"
               style={{ animationDelay: "400ms" }}
@@ -200,7 +173,6 @@ export default function Gallery() {
               </div>
             </div>
 
-            {/* Videos Section */}
             {videos.length > 0 && (
               <div
                 className="opacity-0 translate-y-4 animate-in mb-4"
@@ -217,7 +189,6 @@ export default function Gallery() {
                       onClick={() => setSelectedVideo(video)}
                     >
                       <div className="relative w-full aspect-video bg-black">
-
                         <img
                           src={`https://img.youtube.com/vi/${extractYouTubeID(
                             video.videoUrl!
@@ -234,7 +205,6 @@ export default function Gallery() {
                           }}
                         />
 
-                        {/* Hover dark overlay */}
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300"></div>
 
                         <div className="absolute bottom-0 w-full flex items-center justify-start p-2 bg-black bg-opacity-60">
@@ -246,7 +216,6 @@ export default function Gallery() {
                             ▶
                           </div>
                         </div>
-
                       </div>
                     </div>
                   ))}
@@ -256,7 +225,6 @@ export default function Gallery() {
           </>
         )}
 
-        {/* Selected photo modal */}
         {selectedPhoto && (
           <div
             className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
@@ -281,7 +249,6 @@ export default function Gallery() {
           </div>
         )}
 
-        {/* Fullscreen video modal */}
         {selectedVideo && (
           <div
             className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50"
@@ -308,7 +275,6 @@ export default function Gallery() {
         )}
       </div>
 
-      {/* Footer */}
       {(!isLoadingPhotos || error) && (
         <div className="md:hidden">
           <Footer />
