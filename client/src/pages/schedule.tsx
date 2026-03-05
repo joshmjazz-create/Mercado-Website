@@ -192,19 +192,17 @@ export default function Schedule() {
           className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
           onClick={handleClosePromo}
         >
-          <div className="relative w-full h-full flex items-center justify-center p-6">
-            <div
-              className={`transform transition-all duration-700 ${
-                fadeIn ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
-              }`}
-            >
-              <img
-                src={promoImage}
-                alt="Upcoming Event"
-                className="max-w-full max-h-full object-contain"
-              />
-            </div>
-          </div>
+          {/* ✅ INLINE-BLOCK DIV TO ENABLE SLIDE-IN */}
+          <div
+            className={`inline-block transform transition-all duration-700 ${
+              fadeIn ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
+            } relative p-6`}
+          >
+            <img
+              src={promoImage}
+              alt="Upcoming Event"
+              className="max-w-full max-h-full object-contain"
+            />
 
             <button
               onClick={(e) => {
