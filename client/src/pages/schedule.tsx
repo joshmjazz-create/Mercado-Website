@@ -197,16 +197,7 @@ export default function Schedule() {
               alt="Upcoming Event"
               className="max-w-full max-h-full object-contain"
             />
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleClosePromo();
-              }}
-              className="absolute top-6 right-6 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center transition-colors"
-            >
-              ×
-            </button>
+            
           </div>
         </div>
       )}
