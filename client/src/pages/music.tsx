@@ -148,7 +148,6 @@ export default function Music() {
           id: subfolder.id,
           title: subfolder.name,
           artist: "Joshua Mercado",
-          year: new Date().getFullYear().toString(),
           category: "Upcoming",
           imageFileUrl: imageFile ? `https://lh3.googleusercontent.com/d/${imageFile.id}` : "",
           audioPreviewUrl: audioFile ? `https://www.googleapis.com/drive/v3/files/${audioFile.id}?alt=media&key=${API_KEY}` : "",
