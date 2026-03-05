@@ -20,6 +20,7 @@ export default function Schedule() {
   const [promoImage, setPromoImage] = useState<string | null>(null);
   const [showPromo, setShowPromo] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
+  const [showCloseButton, setShowCloseButton] = useState(false); // ✅ X button fade state
 
   useEffect(() => {
     document.title = "Schedule";
@@ -75,11 +76,14 @@ export default function Schedule() {
           const imageId = data.files[0].id;
           setPromoImage(`https://lh3.googleusercontent.com/d/${imageId}`);
 
-          // ✅ Show popup first
-          setShowPromo(true);
+          // Show popup 0.25s after page loads with slide-in
+          setTimeout(() => {
+            setShowPromo(true);
+            setFadeIn(true);
 
-          // ✅ Trigger fade-in on next tick
-          setTimeout(() => setFadeIn(true), 50);
+            // ✅ Fade in X button 2s after promo appears
+            setTimeout(() => setShowCloseButton(true), 2000);
+          }, 250);
         }
       } catch (error) {
         console.error("Promo image fetch error:", error);
@@ -88,11 +92,6 @@ export default function Schedule() {
 
     fetchPromoImage();
   }, []);
-
-  const handleClosePromo = () => {
-    setFadeIn(false); // start fade-out
-    setTimeout(() => setShowPromo(false), 500); // match duration-500
-  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -114,6 +113,12 @@ export default function Schedule() {
     const urlRegex = /(https?:\/\/[^\s]+)/;
     const match = description.match(urlRegex);
     return match ? match[0] : undefined;
+  };
+
+  const handleClosePromo = () => {
+    setShowPromo(false);
+    setFadeIn(false);
+    setShowCloseButton(false);
   };
 
   return (
@@ -181,7 +186,7 @@ export default function Schedule() {
         </div>
       </section>
 
-      {/* ✅ FULLSCREEN PROMO POPUP WITH SLIDE-IN AND SLIDE-OUT */}
+      {/* ✅ FULLSCREEN PROMO POPUP WITH SLIDE-IN FROM BOTTOM */}
       {promoImage && showPromo && (
         <div
           className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
@@ -203,7 +208,9 @@ export default function Schedule() {
                 e.stopPropagation();
                 handleClosePromo();
               }}
-              className="absolute top-6 right-6 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center transition-colors"
+              className={`absolute top-6 right-6 text-white text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center transition-opacity duration-500 ${
+                showCloseButton ? "opacity-100" : "opacity-0"
+              } hover:text-purple-500`}
             >
               ×
             </button>
