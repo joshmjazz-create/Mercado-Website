@@ -152,7 +152,7 @@ export default function Gallery() {
               className="opacity-0 translate-y-4 animate-in mb-12"
               style={{ animationDelay: "400ms" }}
             >
-              <h2 className="text-2xl font-semibold text-gray-600 mb-4 underline">
+              <h2 className="text-2xl font-semibold text-gray-700 mb-4 underline">
                 Pictures
               </h2>
               <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
@@ -178,7 +178,7 @@ export default function Gallery() {
                 className="opacity-0 translate-y-4 animate-in mb-4"
                 style={{ animationDelay: "600ms" }}
               >
-                <h2 className="text-2xl font-semibold text-gray-600 mb-4 underline">
+                <h2 className="text-2xl font-semibold text-gray-700 mb-4 underline">
                   Videos
                 </h2>
                 <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
