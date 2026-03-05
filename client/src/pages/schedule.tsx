@@ -75,11 +75,11 @@ export default function Schedule() {
           const imageId = data.files[0].id;
           setPromoImage(`https://lh3.googleusercontent.com/d/${imageId}`);
 
-          // Show popup 0.25s after page loads with slide-in
-          setTimeout(() => {
-            setShowPromo(true);
-            setFadeIn(true);
-          }, 250);
+          // ✅ Show popup first
+          setShowPromo(true);
+
+          // ✅ Trigger fade-in on next tick
+          setTimeout(() => setFadeIn(true), 50);
         }
       } catch (error) {
         console.error("Promo image fetch error:", error);
@@ -88,6 +88,11 @@ export default function Schedule() {
 
     fetchPromoImage();
   }, []);
+
+  const handleClosePromo = () => {
+    setFadeIn(false); // start fade-out
+    setTimeout(() => setShowPromo(false), 500); // match duration-500
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -176,35 +181,35 @@ export default function Schedule() {
         </div>
       </section>
 
-          {/* ✅ FULLSCREEN PROMO POPUP WITH SLIDE-IN FROM BOTTOM */}
-          {promoImage && showPromo && (
-            <div
-              className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-              onClick={() => setShowPromo(false)}
+      {/* ✅ FULLSCREEN PROMO POPUP WITH SLIDE-IN AND SLIDE-OUT */}
+      {promoImage && showPromo && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+          onClick={handleClosePromo}
+        >
+          <div
+            className={`relative w-full h-full flex items-center justify-center p-6 transform transition-all duration-500 ${
+              fadeIn ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
+            }`}
+          >
+            <img
+              src={promoImage}
+              alt="Upcoming Event"
+              className="max-w-full max-h-full object-contain"
+            />
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClosePromo();
+              }}
+              className="absolute top-6 right-6 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center transition-colors"
             >
-              <div
-                className={`relative w-full h-full flex items-center justify-center p-6 transform transition-all duration-500 ${
-                  fadeIn ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
-                }`}
-              >
-                <img
-                  src={promoImage}
-                  alt="Upcoming Event"
-                  className="max-w-full max-h-full object-contain"
-                />
-    
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowPromo(false);
-                  }}
-                  className="absolute top-6 right-6 text-white hover:text-purple-500 text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center transition-colors"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-          )}
+              ×
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Footer */}
       <div className="md:hidden">
