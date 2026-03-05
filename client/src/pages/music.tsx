@@ -150,7 +150,7 @@ export default function Music() {
           artist: "Joshua Mercado",
           category: "Upcoming",
           imageFileUrl: imageFile ? `https://lh3.googleusercontent.com/d/${imageFile.id}` : "",
-          audioPreviewUrl: audioFile ? `https://www.googleapis.com/drive/v3/files/${audioFile.id}?alt=media&key=${API_KEY}` : "",
+          audioPreviewUrl: audioFile ? `https://drive.google.com/uc?export=download&id=${audioFile.id}` : "",
           links: {},
         });
       }
