@@ -110,11 +110,16 @@ export default function Schedule() {
   };
 
   const getEventLink = (description?: string) => {
-    if (!description) return undefined;
-    const urlRegex = /(https?:\/\/[^\s]+)/;
-    const match = description.match(urlRegex);
-    return match ? match[0] : undefined;
-  };
+  if (!description) return undefined;
+
+  // Extract the URL exactly as it is from href="..."
+  const htmlHrefMatch = description.match(/href="([^"]+)"/);
+  if (htmlHrefMatch) return htmlHrefMatch[1];
+
+  // Fallback: plain text URL if no HTML link exists
+  const plainUrlMatch = description.match(/https?:\/\/[^\s<"]+/);
+  return plainUrlMatch ? plainUrlMatch[0] : undefined;
+};
 
   return (
     <>
