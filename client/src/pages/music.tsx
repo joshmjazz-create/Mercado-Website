@@ -40,7 +40,7 @@ export default function Music() {
       try {
         const MY_MUSIC_DOC_ID = "1rPGjdTrPG3pqmPdstqgl95K0L8kKtJ6qPftO6yTAMxY";
         const FEATURED_ON_DOC_ID = "1JyOjg2kg3YcW6L9DGzgO99rd2WD1oQ9qwNnq2aJrTsE";
-        const UPCOMING_FOLDER_ID = "1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6";
+        const UPCOMING_FOLDER_ID = "1QVocaAX-GhJoHKIu3zP81_s0tgdBI8qo";
 
         const myMusic = await fetchDocumentAlbums(MY_MUSIC_DOC_ID, "My Music");
         const featuredOn = await fetchDocumentAlbums(FEATURED_ON_DOC_ID, "Featured On");
