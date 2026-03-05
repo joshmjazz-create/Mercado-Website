@@ -194,7 +194,7 @@ export default function Music() {
       audio.addEventListener("ended", () => setPlayingAudio(null));
     }
 
-    audio.currentTime = audio.duration / 3;
+    audio.currentTime = 120;
     audio.volume = 0;
 
     audio.play().then(() => {
