@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { ExternalLink, Play, Pause } from "lucide-react";
 import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -28,8 +28,6 @@ export default function Music() {
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [loadingAudio, setLoadingAudio] = useState<string | null>(null);
   const [audioElements, setAudioElements] = useState<Map<string, HTMLAudioElement>>(new Map());
-  const scrollRef = useRef<HTMLElement>(null);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // ------------------- PAGE TITLE -------------------
   useEffect(() => {
@@ -40,11 +38,8 @@ export default function Music() {
   useEffect(() => {
     const fetchMusicData = async () => {
       try {
-        // Google Docs IDs for My Music and Featured On
         const MY_MUSIC_DOC_ID = "1rPGjdTrPG3pqmPdstqgl95K0L8kKtJ6qPftO6yTAMxY";
         const FEATURED_ON_DOC_ID = "1JyOjg2kg3YcW6L9DGzgO99rd2WD1oQ9qwNnq2aJrTsE";
-
-        // Upcoming folder ID
         const UPCOMING_FOLDER_ID = "1QLjaPQHjqguX1bD4UDVyN2xaPyCvvLN6";
 
         const myMusic = await fetchDocumentAlbums(MY_MUSIC_DOC_ID, "My Music");
@@ -60,27 +55,6 @@ export default function Music() {
     };
 
     fetchMusicData();
-  }, []);
-
-  // ------------------- SCROLL FADE EFFECT -------------------
-  useEffect(() => {
-    const scrollElement = scrollRef.current;
-    if (!scrollElement) return;
-
-    const handleScroll = () => {
-      scrollElement.classList.add("scrolling");
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-      scrollTimeoutRef.current = setTimeout(() => {
-        scrollElement.classList.remove("scrolling");
-      }, 2000);
-    };
-
-    scrollElement.addEventListener("scroll", handleScroll);
-
-    return () => {
-      scrollElement.removeEventListener("scroll", handleScroll);
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-    };
   }, []);
 
   // ------------------- GOOGLE DOCS FETCH -------------------
@@ -119,7 +93,6 @@ export default function Music() {
 
       if (currentAlbum.title) albums.push({ ...currentAlbum, category: categoryName });
 
-      // Fetch Spotify cover art
       for (const album of albums) {
         if (album.links.spotify) {
           album.coverImageUrl = await fetchSpotifyCoverArt(album.links.spotify);
@@ -158,15 +131,19 @@ export default function Music() {
       if (!res.ok) throw new Error("Failed to fetch upcoming folder");
       const data = await res.json();
       const upcomingAlbums: Album[] = [];
+
       for (const subfolder of data.files) {
         const albumFilesRes = await fetch(
           `https://www.googleapis.com/drive/v3/files?q='${subfolder.id}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,webViewLink)`
         );
         if (!albumFilesRes.ok) continue;
+
         const albumFilesData = await albumFilesRes.json();
         const files = albumFilesData.files || [];
+
         let imageFile = files.find((f: any) => f.mimeType.startsWith("image/"));
         let audioFile = files.find((f: any) => f.mimeType.startsWith("audio/"));
+
         upcomingAlbums.push({
           id: subfolder.id,
           title: subfolder.name,
@@ -178,6 +155,7 @@ export default function Music() {
           links: {},
         });
       }
+
       return upcomingAlbums;
     } catch (error) {
       console.error("Error fetching upcoming albums:", error);
@@ -188,37 +166,55 @@ export default function Music() {
   // ------------------- AUDIO HANDLERS -------------------
   const handlePlayPreview = async (album: Album) => {
     if (!album.audioPreviewUrl) return;
+
     if (playingAudio === album.id) {
       const audio = audioElements.get(album.id);
-      if (audio) { audio.pause(); setPlayingAudio(null); }
+      if (audio) {
+        audio.pause();
+        setPlayingAudio(null);
+      }
       return;
     }
+
     if (playingAudio) {
       const currentAudio = audioElements.get(playingAudio);
       if (currentAudio) currentAudio.pause();
       setPlayingAudio(null);
     }
+
     setLoadingAudio(album.id);
+
     let audio = audioElements.get(album.id);
+
     if (!audio) {
       audio = new Audio(album.audioPreviewUrl);
       audio.preload = "auto";
+
       setAudioElements(prev => new Map(prev.set(album.id, audio!)));
+
       audio.addEventListener("ended", () => setPlayingAudio(null));
     }
+
     audio.currentTime = audio.duration / 3;
     audio.volume = 0;
+
     audio.play().then(() => {
       setPlayingAudio(album.id);
       setLoadingAudio(null);
+
       const fadeIn = setInterval(() => {
         if (audio!.volume < 1) audio!.volume = Math.min(1, audio!.volume + 0.05);
         else clearInterval(fadeIn);
       }, 50);
+
       setTimeout(() => {
         const fadeOut = setInterval(() => {
           if (audio!.volume > 0) audio!.volume = Math.max(0, audio!.volume - 0.05);
-          else { clearInterval(fadeOut); audio!.pause(); setPlayingAudio(null); }
+          else {
+            clearInterval(fadeOut);
+            audio!.pause();
+            setPlayingAudio(null);
+          }
         }, 50);
       }, 15000);
     });
@@ -226,33 +222,49 @@ export default function Music() {
 
   const handleAlbumClick = (album: Album) => {
     if (album.category === "Upcoming") handlePlayPreview(album);
-    else { setSelectedAlbum(album); setShowPlatforms(true); }
+    else {
+      setSelectedAlbum(album);
+      setShowPlatforms(true);
+    }
   };
 
-  const handlePlatformClick = (url: string) => { window.open(url, "_blank"); setShowPlatforms(false); };
+  const handlePlatformClick = (url: string) => {
+    window.open(url, "_blank");
+    setShowPlatforms(false);
+  };
 
-  // ------------------- RENDER SECTIONS -------------------
   const myMusicAlbums = albums.filter(a => a.category === "My Music");
   const featuredAlbums = albums.filter(a => a.category === "Featured On");
   const upcomingAlbums = albums.filter(a => a.category === "Upcoming");
 
   const renderSection = (title: string, sectionAlbums: Album[]) => {
     if (sectionAlbums.length === 0) return null;
+
     return (
       <div className="opacity-0 translate-y-4 animate-in mb-12">
         <h2 className="text-2xl font-semibold text-gray-700 mb-8 text-left underline decoration-gray-700">{title}</h2>
+
         <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-4 gap-4">
           {sectionAlbums.map((album, index) => (
-            <div key={`${album.title}-${index}`} className="group cursor-pointer transform transition-all duration-300 hover:scale-105" onClick={() => handleAlbumClick(album)}>
+            <div
+              key={`${album.title}-${index}`}
+              className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+              onClick={() => handleAlbumClick(album)}
+            >
               <div className="bg-white rounded-lg shadow-lg overflow-hidden border">
                 <div className="aspect-square relative">
                   {album.coverImageUrl || album.imageFileUrl ? (
-                    <img src={album.coverImageUrl || album.imageFileUrl} alt={album.title} className="w-full h-full object-cover" />
+                    <img
+                      src={album.coverImageUrl || album.imageFileUrl}
+                      alt={album.title}
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <div className="w-full h-full bg-gray-400 flex items-center justify-center">
                       <span className="text-gray-600 text-sm">No Cover</span>
                     </div>
                   )}
+
                   {album.category === "Upcoming" && album.audioPreviewUrl && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       {loadingAudio === album.id ? (
@@ -271,11 +283,15 @@ export default function Music() {
                     </div>
                   )}
                 </div>
+
                 <div className="p-4 bg-white border-t">
                   <h3 className="text-base font-semibold text-gray-900 mb-1 truncate">{album.title}</h3>
                   <p className="text-gray-600 text-sm truncate">{album.artist}</p>
                   <p className="text-gray-500 text-sm">{album.year}</p>
-                  {album.audioPreviewUrl && album.category === "Upcoming" && <p className="text-purple-600 text-sm font-medium">Preview Available</p>}
+
+                  {album.audioPreviewUrl && album.category === "Upcoming" && (
+                    <p className="text-purple-600 text-sm font-medium">Preview Available</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -286,14 +302,19 @@ export default function Music() {
   };
 
   return (
-    <section ref={scrollRef} className="min-h-screen desktop-container bg-jazz-grey md:overflow-y-auto custom-scrollbar">
+    <section className="min-h-screen bg-jazz-grey">
       <div className="container mx-auto px-4 py-8 pb-16 md:pb-80">
+
         <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
           <h1 className="text-5xl font-bold text-purple-500 mb-6">Music</h1>
           <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
         </div>
 
-        {isLoading && <div className="flex justify-center items-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div></div>}
+        {isLoading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+          </div>
+        )}
 
         {!isLoading && (
           <>
@@ -305,23 +326,65 @@ export default function Music() {
 
         <Dialog open={showPlatforms} onOpenChange={setShowPlatforms}>
           <DialogContent className="bg-white border-purple-800">
+
             {selectedAlbum?.coverImageUrl || selectedAlbum?.imageFileUrl ? (
-              <img src={selectedAlbum.coverImageUrl || selectedAlbum.imageFileUrl} alt={selectedAlbum.title} className="w-72 h-72 object-cover rounded-lg shadow-lg mx-auto mb-4" />
+              <img
+                src={selectedAlbum.coverImageUrl || selectedAlbum.imageFileUrl}
+                alt={selectedAlbum.title}
+                className="w-72 h-72 object-cover rounded-lg shadow-lg mx-auto mb-4"
+              />
             ) : (
               <div className="w-48 h-48 bg-gray-300 flex items-center justify-center rounded-lg shadow-lg mx-auto mb-6">
                 <span className="text-gray-600 text-sm">No Cover</span>
               </div>
             )}
-            <DialogTitle className="text-xl font-semibold text-gray-900 mb-2 text-center">{selectedAlbum?.title}</DialogTitle>
+
+            <DialogTitle className="text-xl font-semibold text-gray-900 mb-2 text-center">
+              {selectedAlbum?.title}
+            </DialogTitle>
+
             <p className="text-gray-600 text-center mb-1">{selectedAlbum?.artist}</p>
             <p className="text-gray-500 text-center mb-4">{selectedAlbum?.year}</p>
+
             <div className="grid grid-cols-1 gap-4">
-              {selectedAlbum?.links.spotify && <Button onClick={() => handlePlatformClick(selectedAlbum.links.spotify)} className="w-full bg-green-600 hover:bg-green-700 text-white p-4 h-auto flex items-center justify-center"><FaSpotify className="mr-3 text-xl" /> Listen on Spotify <ExternalLink className="ml-auto w-4 h-4" /></Button>}
-              {selectedAlbum?.links.applemusic && <Button onClick={() => handlePlatformClick(selectedAlbum.links.applemusic)} className="w-full bg-gray-800 hover:bg-gray-900 text-white p-4 h-auto flex items-center justify-center"><FaApple className="mr-3 text-xl" /> Listen on Apple Music <ExternalLink className="ml-auto w-4 h-4" /></Button>}
-              {selectedAlbum?.links.youtube && <Button onClick={() => handlePlatformClick(selectedAlbum.links.youtube)} className="w-full bg-red-600 hover:bg-red-700 text-white p-4 h-auto flex items-center justify-center"><FaYoutube className="mr-3 text-xl" /> Watch on YouTube <ExternalLink className="ml-auto w-4 h-4" /></Button>}
+
+              {selectedAlbum?.links.spotify && (
+                <Button
+                  onClick={() => handlePlatformClick(selectedAlbum.links.spotify)}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white p-4 h-auto flex items-center justify-center"
+                >
+                  <FaSpotify className="mr-3 text-xl" />
+                  Listen on Spotify
+                  <ExternalLink className="ml-auto w-4 h-4" />
+                </Button>
+              )}
+
+              {selectedAlbum?.links.applemusic && (
+                <Button
+                  onClick={() => handlePlatformClick(selectedAlbum.links.applemusic)}
+                  className="w-full bg-gray-800 hover:bg-gray-900 text-white p-4 h-auto flex items-center justify-center"
+                >
+                  <FaApple className="mr-3 text-xl" />
+                  Listen on Apple Music
+                  <ExternalLink className="ml-auto w-4 h-4" />
+                </Button>
+              )}
+
+              {selectedAlbum?.links.youtube && (
+                <Button
+                  onClick={() => handlePlatformClick(selectedAlbum.links.youtube)}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white p-4 h-auto flex items-center justify-center"
+                >
+                  <FaYoutube className="mr-3 text-xl" />
+                  Watch on YouTube
+                  <ExternalLink className="ml-auto w-4 h-4" />
+                </Button>
+              )}
+
             </div>
           </DialogContent>
         </Dialog>
+
       </div>
     </section>
   );
