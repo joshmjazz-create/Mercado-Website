@@ -192,16 +192,15 @@ export default function Schedule() {
           className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
           onClick={handleClosePromo}
         >
-          {/* ✅ INLINE-BLOCK DIV TO ENABLE SLIDE-IN */}
           <div
-            className={`inline-block transform transition-all duration-700 ${
-              fadeIn ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
-            } relative p-6`}
+            className={`relative transform transition-transform duration-700 ${
+              fadeIn ? "translate-y-0 opacity-100" : "translate-y-32 opacity-0"
+            } max-w-[90vw] max-h-[90vh]`}
           >
             <img
               src={promoImage}
               alt="Upcoming Event"
-              className="max-w-full max-h-full object-contain"
+              className="w-full h-full object-contain rounded-md"
             />
 
             <button
@@ -209,7 +208,7 @@ export default function Schedule() {
                 e.stopPropagation();
                 handleClosePromo();
               }}
-              className={`absolute top-6 right-6 text-white text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center transition-opacity duration-500 ${
+              className={`absolute top-4 right-4 text-white text-4xl font-bold bg-black bg-opacity-70 rounded-full w-12 h-12 flex items-center justify-center transition-opacity duration-500 ${
                 showCloseButton ? "opacity-100" : "opacity-0"
               } hover:text-purple-500`}
             >
