@@ -150,7 +150,7 @@ export default function Music() {
           artist: "Joshua Mercado",
           category: "Upcoming",
           imageFileUrl: imageFile ? `https://lh3.googleusercontent.com/d/${imageFile.id}` : "",
-          audioPreviewUrl: audioFile ? `https://lh3.googleusercontent.com/d/${audioFile.id}` : "",
+          audioPreviewUrl: audioFile ? `https://www.googleapis.com/drive/v3/files/${audioFile.id}?alt=media&key=${API_KEY}` : "",
           links: {},
         });
       }
@@ -189,7 +189,11 @@ export default function Music() {
       audio = new Audio(album.audioPreviewUrl);
       audio.preload = "metadata";
 
-      setAudioElements(prev => new Map(prev.set(album.id, audio!)));
+    setAudioElements(prev => {
+      const newMap = new Map(prev);
+      newMap.set(album.id, audio!);
+      return newMap;
+    });
 
       audio.addEventListener("ended", () => setPlayingAudio(null));
     }
