@@ -196,6 +196,7 @@ export default function Schedule() {
               src={promoImage}
               alt="Upcoming Event"
               className="max-w-full max-h-full object-contain"
+              onClick={(e) => e.stopPropagation()}
             />
             
           </div>
