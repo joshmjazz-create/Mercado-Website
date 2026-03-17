@@ -435,7 +435,7 @@ export default function Music() {
 
   return (
 
-    <section className="min-h-screen bg-jazz-grey">
+    <section className="min-h-[100dvh] bg-jazz-grey">
 
       <div className="container mx-auto px-4 py-8 pb-16 md:pb-20">
 
