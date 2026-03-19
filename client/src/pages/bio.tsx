@@ -32,6 +32,13 @@ export default function Bio() {
 
   useEffect(() => {
     document.title = "Bio";
+       // Set background color for this page
+    document.body.style.backgroundColor = "#dedfe7";
+  
+    return () => {
+      // Reset when leaving the page
+      document.body.style.backgroundColor = "";
+    };
   }, []);
   
   useEffect(() => {
