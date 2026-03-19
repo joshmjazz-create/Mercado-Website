@@ -252,7 +252,7 @@ export default function Bio() {
 
   return (
     <>
-    <section className="min-h-screen md:fit-screen relative bg-jazz-grey">
+    <section className="relative bg-jazz-grey">
       {/* ✅ Mobile: background color behind image overlay */}
       <div className="md:hidden absolute inset-0 z-0 flex items-center justify-center bg-[#101010]">
         {/* Background immediately visible */}
@@ -274,7 +274,7 @@ export default function Bio() {
         )}
       </div>
 
-      <div className="hidden md:block h-full overflow-y-auto">
+      <div className="hidden md:block">
         <div className="container mx-auto px-4 py-8">
           {!isLoading && content && (
             <div className="text-center mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: '200ms' }}>
