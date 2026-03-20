@@ -59,7 +59,7 @@ export default function Contact() {
   return (
     <>
       <section className="min-h-screen bg-jazz-grey">
-        <div className="container mx-auto px-4 py-16 w-full">
+        <div className="container mx-auto px-4 pt-16 pb-16 md:pb-2 w-full">
           <div className="text-center mb-12 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
             <h1 className="text-5xl font-bold text-purple-500 mb-6">Contact</h1>
             <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
