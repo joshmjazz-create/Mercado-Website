@@ -13,6 +13,13 @@ export default function Contact() {
 
   useEffect(() => {
     document.title = "Contact";
+    // Set default background color for entire page
+    document.body.style.backgroundColor = "#dedfe7";
+
+    return () => {
+      // Reset background when leaving page
+      document.body.style.backgroundColor = "";
+    };
   }, []);
 
   const [sending, setSending] = useState(false);
@@ -57,17 +64,22 @@ export default function Contact() {
 
   return (
     <>
-      <section className="bg-jazz-grey md:min-h-0 min-h-screen">
-        <div className="container mx-auto px-4 pt-16 pb-16 md:pb-8 w-full bg-jazz-grey">
-          {/* Section heading */}
-          <div className="text-center mb-12 md:mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
+      <section className="min-h-screen bg-jazz-grey">
+        <div className="container mx-auto px-4 pt-16 pb-16 md:pb-8 w-full">
+          <div
+            className="text-center mb-12 opacity-0 translate-y-4 animate-in"
+            style={{ animationDelay: "200ms" }}
+          >
             <h1 className="text-5xl font-bold text-purple-500 mb-6">Contact</h1>
             <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
           </div>
 
           {/* Contact Form */}
-          <div className="max-w-2xl mx-auto opacity-0 translate-y-4 animate-in" style={{ animationDelay: "400ms" }}>
-            <form onSubmit={handleSubmit} className="space-y-6 bg-white p-10 md:p-8 rounded-lg shadow-xl">
+          <div
+            className="max-w-2xl mx-auto opacity-0 translate-y-4 animate-in"
+            style={{ animationDelay: "400ms" }}
+          >
+            <form onSubmit={handleSubmit} className="space-y-6 bg-white p-10 rounded-lg shadow-xl">
               <div>
                 <label className="block font-semibold text-gray-700 mb-1">
                   Name <span className="text-red-500">*</span>
@@ -81,7 +93,6 @@ export default function Contact() {
                   className="w-full border border-gray-300 rounded p-2"
                 />
               </div>
-
               <div>
                 <label className="block font-semibold text-gray-700 mb-1">
                   Email <span className="text-red-500">*</span>
@@ -95,7 +106,6 @@ export default function Contact() {
                   className="w-full border border-gray-300 rounded p-2"
                 />
               </div>
-
               <div>
                 <label className="block font-semibold text-gray-700 mb-1">
                   Subject <span className="text-red-500">*</span>
@@ -109,7 +119,6 @@ export default function Contact() {
                   className="w-full border border-gray-300 rounded p-2"
                 />
               </div>
-
               <div>
                 <label className="block font-semibold text-gray-700 mb-1">
                   Date <span className="text-red-500">*</span>
@@ -123,7 +132,6 @@ export default function Contact() {
                   className="w-full border border-gray-300 rounded p-2"
                 />
               </div>
-
               <div>
                 <label className="block font-semibold text-gray-700 mb-1">
                   Your Message <span className="text-red-500">*</span>
@@ -137,7 +145,6 @@ export default function Contact() {
                   className="w-full border border-gray-300 rounded p-2"
                 />
               </div>
-
               <button
                 type="submit"
                 disabled={sending}
