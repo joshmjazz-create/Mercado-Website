@@ -58,7 +58,7 @@ export default function Contact() {
   return (
     <>
       <section className="bg-jazz-grey md:min-h-0 min-h-screen">
-        <div className="container mx-auto px-4 pt-16 pb-16 md:pb-8 w-full">
+        <div className="container mx-auto px-4 pt-16 pb-16 md:pb-8 w-full bg-jazz-grey">
           
           <div className="text-center mb-12 md:mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
             <h1 className="text-5xl font-bold text-purple-500 mb-6">Contact</h1>
