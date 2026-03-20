@@ -11,9 +11,10 @@ export default function Contact() {
     message: ""
   });
 
+  // ---------------- SET BODY BACKGROUND ----------------
   useEffect(() => {
     document.title = "Contact";
-    // Set default background color for entire page
+    // Set page background color so bottom margin matches section
     document.body.style.backgroundColor = "#dedfe7";
 
     return () => {
@@ -31,6 +32,7 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // ---------------- VALIDATE FORM ----------------
     const allFilled = Object.values(formData).every(value => value.trim() !== "");
     if (!allFilled) {
       alert("Please fill in all fields before sending.");
@@ -64,7 +66,8 @@ export default function Contact() {
 
   return (
     <>
-      <section className="min-h-screen bg-jazz-grey">
+      {/* ---------------- CONTACT SECTION ---------------- */}
+      <section className="bg-jazz-grey flex flex-col justify-start min-h-screen md:min-h-[calc(100vh-8rem)]">
         <div className="container mx-auto px-4 pt-16 pb-16 md:pb-8 w-full">
           <div
             className="text-center mb-12 opacity-0 translate-y-4 animate-in"
@@ -74,7 +77,7 @@ export default function Contact() {
             <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
           </div>
 
-          {/* Contact Form */}
+          {/* ---------------- CONTACT FORM ---------------- */}
           <div
             className="max-w-2xl mx-auto opacity-0 translate-y-4 animate-in"
             style={{ animationDelay: "400ms" }}
@@ -154,7 +157,7 @@ export default function Contact() {
               </button>
             </form>
 
-            {/* Left-aligned Email Info */}
+            {/* ---------------- EMAIL INFO ---------------- */}
             <div className="mt-6 text-left">
               <p className="text-purple-500 text-sm font-semibold">Contact Joshua Mercado</p>
               <a href="mailto:joshm.jazz@gmail.com" className="text-gray-700 text-sm underline">
@@ -165,6 +168,7 @@ export default function Contact() {
         </div>
       </section>
 
+      {/* ---------------- FOOTER ---------------- */}
       <div className="md:hidden">
         <Footer />
       </div>
