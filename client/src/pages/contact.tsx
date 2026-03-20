@@ -59,7 +59,7 @@ export default function Contact() {
     <>
       <section className="bg-jazz-grey md:min-h-0 min-h-screen">
         <div className="container mx-auto px-4 pt-16 pb-16 md:pb-8 w-full bg-jazz-grey">
-          
+          {/* Section heading */}
           <div className="text-center mb-12 md:mb-8 opacity-0 translate-y-4 animate-in" style={{ animationDelay: "200ms" }}>
             <h1 className="text-5xl font-bold text-purple-500 mb-6">Contact</h1>
             <div className="w-24 h-1 bg-purple-500 mx-auto"></div>
@@ -155,7 +155,6 @@ export default function Contact() {
               </a>
             </div>
           </div>
-
         </div>
       </section>
 
