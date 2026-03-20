@@ -68,7 +68,7 @@ export default function Contact() {
     <>
       {/* ---------------- CONTACT SECTION ---------------- */}
       <section className="bg-jazz-grey flex flex-col justify-start min-h-screen md:min-h-[calc(100vh-8rem)]">
-        <div className="container mx-auto px-4 pt-16 pb-16 md:pb-8 w-full">
+        <div className="container mx-auto px-4 pt-16 pb-16 md:pb-2 w-full">
           <div
             className="text-center mb-12 opacity-0 translate-y-4 animate-in"
             style={{ animationDelay: "200ms" }}
