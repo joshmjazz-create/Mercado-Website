@@ -16,33 +16,14 @@ export default function FlexList() {
   }, []);
   
   useEffect(() => {
-    // Check if the APK file exists and has content
-    const checkAppAvailability = async () => {
-      try {
-        const response = await fetch('./assets/FlexList-v1.0.4.apk', { method: 'HEAD' });
-        if (response.ok) {
-          const contentLength = response.headers.get('content-length');
-          // Consider the app ready if file exists and has content (> 1KB)
-          setIsAndroidAppReady(contentLength && parseInt(contentLength) > 1024);
-        }
-      } catch (error) {
-        console.log('APK file not ready yet');
-        setIsAndroidAppReady(false);
-      }
-    };
-
-    checkAppAvailability();
+    setIsAndroidAppReady(true);
   }, []);
 
   const handleAndroidDownload = () => {
-    if (isAndroidAppReady) {
-      const link = document.createElement('a');
-      link.href = './assets/FlexList-v1.0.2.apk';
-      link.download = 'FlexList.apk';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    window.open(
+      'https://github.com/joshmjazz-create/Mercado-Website/releases/download/v1.0.4/FlexList-v1.0.4.apk',
+      '_blank'
+    );
   };
 
   return (
