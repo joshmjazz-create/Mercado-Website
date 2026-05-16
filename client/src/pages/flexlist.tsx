@@ -19,7 +19,7 @@ export default function FlexList() {
     // Check if the APK file exists and has content
     const checkAppAvailability = async () => {
       try {
-        const response = await fetch('./assets/FlexList-v1.0.2.apk', { method: 'HEAD' });
+        const response = await fetch('./assets/FlexList-v1.0.4.apk', { method: 'HEAD' });
         if (response.ok) {
           const contentLength = response.headers.get('content-length');
           // Consider the app ready if file exists and has content (> 1KB)
